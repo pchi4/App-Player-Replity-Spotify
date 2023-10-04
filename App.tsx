@@ -1,20 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import "react-native-gesture-handler";
+import { NativeBaseProvider, StorageManager, ColorMode } from "native-base";
+import { extendTheme } from "native-base";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Routes from "./routes";
 
 export default function App() {
+  const colorModeManager: StorageManager = {
+    get: async () => {
+      try {
+        let val = await AsyncStorage.getItem("color-mode");
+        return val === "dark" ? "dark" : "light";
+      } catch (e) {
+        return "light";
+      }
+    },
+    set: async (value: ColorMode) => {
+      try {
+        await AsyncStorage.setItem("color-mode", value);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NativeBaseProvider colorModeManager={colorModeManager}>
+      <Routes />
+    </NativeBaseProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

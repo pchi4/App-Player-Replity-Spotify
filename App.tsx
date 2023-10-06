@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 import { NativeBaseProvider, StorageManager, ColorMode } from "native-base";
-import { extendTheme } from "native-base";
+import { extendTheme, StatusBar } from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Routes from "./routes";
 
@@ -25,6 +25,7 @@ export default function App() {
 
   return (
     <NativeBaseProvider colorModeManager={colorModeManager}>
+      <StatusBar barStyle={"light-content"} />
       <Routes />
     </NativeBaseProvider>
   );

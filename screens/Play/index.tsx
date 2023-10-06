@@ -12,35 +12,31 @@ import { Pressable } from "react-native";
 
 import Slider from "@react-native-community/slider";
 
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackTolerance } from "expo-av";
 import { useState, useEffect } from "react";
-import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { Sound } from "expo-av/build/Audio";
 
 export const Play = ({ navigation }) => {
   const [sound, setSound] = useState<Audio.Sound>();
   const [statusSound, setStatusSound] = useState<Sound | null>();
-  const [progress, setProgress] = useState(null);
-  const [progressR, setProgressR] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlayAudio = async () => {
     try {
-      if (sound) {
-        await sound.stopAsync();
-      }
-
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
         shouldDuckAndroid: false,
+        playThroughEarpieceAndroid: true,
       });
 
       const { sound, status } = await Audio.Sound.createAsync(
-        require("../../assets/songs/into-the-night-20928.mp3"),
+        {
+          uri: "spotify:track:6OmhkSOpvYBokMKQxpIGx2",
+        },
 
         {
           shouldPlay: true,
@@ -61,140 +57,112 @@ export const Play = ({ navigation }) => {
   const onPlaybackStatusUpdate = async (status) => {
     setStatusSound(status);
     if (status.isLoaded && status.isPlaying) {
-      const progress = status.positionMillis / status.durationMillis;
-      console.log({ status });
-      console.log({ progress });
       setCurrentTime(status.positionMillis);
       setTotalDuration(status.durationMillis);
     }
     if (status.didJustFinish === true) {
       setSound(null);
-      playNextTrack();
+      const timeFinish = formatTime(0);
+      console.log(timeFinish);
+      setCurrentTime(timeFinish);
+      setIsPlaying(false);
+      /*       playNextTrack(); */
     }
   };
 
   const handlePlayPause = async () => {
-    if (sound) {
-      if (isPlaying) {
-        await sound.pauseAsync();
-      } else {
-        await sound.playAsync();
-      }
-      setIsPlaying(!isPlaying);
+    if (!sound) {
+      handlePlayAudio();
     }
+
+    if (isPlaying) {
+      await sound?.pauseAsync();
+    } else {
+      await sound?.playFromPositionAsync(currentTime);
+    }
+    setIsPlaying(!isPlaying);
   };
 
-  // const formatTime = (time: number): string => {
-  //   const minutes = Math.floor(time / 60000);
-  //   const seconds = Math.floor((time % 60000) / 1000);
-  //   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  // };
-
-  function formatTime(duration) {
-    const Minutes = (duration / 60000).toFixed(2).replace(".", ":");
-    return Minutes;
-  }
-
-  const handlePlay = async () => {
-    const statusPlay = await sound?.playAsync();
-    setStatusSound(statusPlay);
+  const onChangeSlider = async (time: number) => {
+    await sound?.playFromPositionAsync(time * 1000);
+    setIsPlaying(true);
   };
 
-  const handlePause = async () => {
-    const statusPause = await sound?.pauseAsync();
-    setStatusSound(statusPause);
+  const formatTime = (time: number): string => {
+    const minutes = Math.floor(time / 60000);
+    const seconds = Math.floor((time % 60000) / 1000);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
-  // const handlePauseAudio = async () => {
-  //   if (sound) {
-  //     if (isPlaying) {
-  //       const statusPause = await sound.pauseAsync();
-  //       setStatusSound(statusPause);
-  //     } else {
-  //       await sound.playAsync();
-  //     }
-  //     setIsPlaying(!isPlaying);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const progress = statusSound?.positionMillis / statusSound?.durationMillis;
-  //   console.log({ progress });
-  //   setProgress(progress);
-  //   return sound
-  //     ? () => {
-  //         console.log("Unloading Sound");
-  //         sound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, [sound]);
-
-  // useEffect(() => {
-  //   handlePlayAudio();
-  //   console.log({ statusSound });
-  // }, [sound]);
 
   return (
-    <Center marginTop="1/6">
-      <Text color="black" fontWeight="bold" fontSize="xl">
-        {statusSound?.isPlaying}
-      </Text>
+    <Box bg="rgb(24, 26, 27)" h="100%">
+      <Center marginTop="5%">
+        <VStack space={1} alignItems="center" marginY="2%">
+          <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
+            Tocando do album
+          </Text>
 
-      <Image
-        borderRadius={10}
-        source={{
-          uri: "https://wallpaperaccess.com/full/317501.jpg",
-        }}
-        alt="ArtWork albuns"
-        width="md"
-        height="md"
-      />
+          <Text color="#FFFFFF" fontSize="lg">
+            Bloom
+          </Text>
+        </VStack>
 
-      <VStack space={1} alignItems="center" marginTop="3.5">
-        <Text color="black" fontWeight="bold" fontSize="2xl">
-          Into the Night
-        </Text>
+        <Image
+          borderRadius={10}
+          source={require("../../assets/artsworks/Troye_Sivan_-_Bloom.png")}
+          alt="ArtWork albuns"
+          width="80%"
+          height="50%"
+        />
 
-        <Text color="black" fontSize="xl">
-          Aokiji Kizaru
-        </Text>
-      </VStack>
+        <VStack space={1} alignItems="center" marginTop="3.5">
+          <Text color="#FFFFFF" fontWeight="bold" fontSize="2xl">
+            Into the Night
+          </Text>
 
-      <Slider
-        style={{ width: "90%", height: 40 }}
-        value={progress * 100}
-        minimumTrackTintColor="#000000"
-        maximumTrackTintColor="#000000"
-      />
+          <Text color="#FFFFFF" fontSize="xl">
+            Troye Sivan
+          </Text>
+        </VStack>
 
-      <HStack space="4/6" justifyContent="space-between" marginBottom="3.5">
-        <Text color="black" fontWeight="bold" fontSize="xl">
-          {formatTime(currentTime)}
-        </Text>
-        <Text color="black" fontWeight="bold" fontSize="xl">
-          {formatTime(totalDuration)}
-        </Text>
-      </HStack>
+        <Slider
+          style={{ width: "90%", height: 40 }}
+          value={currentTime / 1000}
+          maximumValue={totalDuration / 1000}
+          minimumTrackTintColor="#FFFFFF"
+          maximumTrackTintColor="#FFFFFF"
+          onValueChange={(value) => onChangeSlider(value)}
+        />
 
-      <HStack space={8} justifyContent="space-between">
-        <Pressable>
-          <Feather name="skip-back" size={60} color="black" />
-        </Pressable>
+        <HStack space="4/6" justifyContent="space-between" marginBottom="5%">
+          <Text color="#FFFFFF" fontWeight="bold" fontSize="xl">
+            {formatTime(currentTime)}
+          </Text>
+          <Text color="#FFFFFF" fontWeight="bold" fontSize="xl">
+            {formatTime(totalDuration)}
+          </Text>
+        </HStack>
 
-        {isPlaying ? (
-          <Pressable onPress={handlePlayPause}>
-            <Feather name={"pause"} size={60} color="black" />
+        <HStack space={8} justifyContent="space-between">
+          <Pressable>
+            <Feather name="skip-back" size={50 % 100} color="#FFFFFF" />
           </Pressable>
-        ) : (
-          <Pressable onPress={handlePlayAudio}>
-            <Feather name={"play"} size={60} color="black" />
-          </Pressable>
-        )}
 
-        <Pressable>
-          <Feather name="skip-forward" size={60} color="black" />
-        </Pressable>
-      </HStack>
-    </Center>
+          {isPlaying ? (
+            <Pressable onPress={handlePlayPause}>
+              <Feather name={"pause"} size={50 % 100} color="#FFFFFF" />
+            </Pressable>
+          ) : (
+            <Pressable onPress={handlePlayPause}>
+              <Feather name={"play"} size={50 % 100} color="#FFFFFF" />
+            </Pressable>
+          )}
+
+          <Pressable>
+            <Feather name="skip-forward" size={50 % 100} color="#FFFFFF" />
+          </Pressable>
+        </HStack>
+      </Center>
+    </Box>
   );
 };

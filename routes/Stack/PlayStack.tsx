@@ -8,8 +8,9 @@ export default function HomeScreen() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerShown: false,
         headerStyle: {
-          backgroundColor: "rgb(145, 174, 198)",
+          backgroundColor: "rgb(111 109 213)",
         },
       }}
     >

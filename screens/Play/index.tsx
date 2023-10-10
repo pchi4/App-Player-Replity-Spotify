@@ -34,9 +34,7 @@ export const Play = ({ navigation }) => {
       });
 
       const { sound, status } = await Audio.Sound.createAsync(
-        {
-          uri: "spotify:track:6OmhkSOpvYBokMKQxpIGx2",
-        },
+        require("../../assets/songs/into-the-night-20928.mp3"),
 
         {
           shouldPlay: true,

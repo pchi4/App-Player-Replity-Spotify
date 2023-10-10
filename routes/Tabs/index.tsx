@@ -6,6 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import HomeScreen from "../Stack/HomeStack";
 import PlayScreen from "../Stack/PlayStack";
 import PlaylistScreen from "../Stack/PlaylistStack";
+import AuthScreen from "../Stack/AuthStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,6 +24,14 @@ export default function TabsRoutes() {
           tabBarInactiveTintColor: "rgb(111 109 213)",
         }}
       >
+        <Tab.Screen
+          name="Error"
+          component={AuthScreen}
+          options={{
+            tabBarStyle: { display: "none" },
+          }}
+        />
+
         <Tab.Screen
           name="Home"
           component={HomeScreen}

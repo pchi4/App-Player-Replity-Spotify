@@ -2,6 +2,7 @@
   "expo": {
     "name": "player",
     "slug": "player",
+    "scheme": "exp://10.91.116.3:8082",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -1,14 +1,5 @@
-import { useColorModeValue, Button } from "native-base";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Button } from "native-base";
 
-export const Home = () => {
-  const darkMode = async () => {
-    try {
-      await AsyncStorage.setItem("color-mode", "dark");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return <Button onPress={darkMode}>Sample</Button>;
+export const Home = ({ navigation }: object) => {
+  return <Button>Conectar com o Spotify</Button>;
 };

@@ -2,7 +2,7 @@
   "expo": {
     "name": "player",
     "slug": "player",
-    "scheme": "exp://10.91.116.3:8082",
+    "scheme": "myapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,13 +16,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pchia.player"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.pchia.player"
     },
     "web": {
       "favicon": "./assets/favicon.png"

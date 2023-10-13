@@ -11,6 +11,7 @@ import {
   makeRedirectUri,
 } from "expo-auth-session";
 import { Platform } from "react-native";
+import * as Linking from "expo-linking";
 
 export const Auth = ({ navigation }: object) => {
   const [clientId] = useState<string>("0e7989953adc4c5cba284909c50fe613");
@@ -34,7 +35,7 @@ export const Auth = ({ navigation }: object) => {
       "playlist-modify-public",
     ],
     usePKCE: false,
-    redirectUri: "exp://10.91.116.3:8082/--/Home",
+    redirectUri: "exp://10.91.116.3:8082/--/myapp",
   };
 
   const [request, response, promptAsync] = useAuthRequest(config, discovery);

@@ -2,7 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
 
-import { Auth } from "../../screens/Auth/index";
+import { Auth } from "../../src/screens/Auth/";
 
 export default function NotFoundScreen() {
   return (

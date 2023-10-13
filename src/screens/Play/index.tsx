@@ -107,7 +107,7 @@ export const Play = ({ navigation }) => {
 
         <Image
           borderRadius={10}
-          source={require("../../assets/artsworks/Troye_Sivan_-_Bloom.png")}
+          source={require("../../../assets/artsworks/Troye_Sivan_-_Bloom.png")}
           alt="ArtWork albuns"
           width="80%"
           height="50%"

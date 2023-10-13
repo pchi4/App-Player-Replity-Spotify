@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Linking from "expo-linking";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
@@ -11,8 +12,27 @@ import AuthScreen from "../Stack/AuthStack";
 const Tab = createBottomTabNavigator();
 
 export default function TabsRoutes() {
+  const url = Linking.useURL();
+
+  const linking = {
+    prefixes: ["exp://10.91.116.3:8082/--/myapp"],
+    config: {
+      screens: {
+        home: {
+          path: "home",
+        },
+        playlist: {
+          path: "playlist",
+        },
+        play: {
+          path: "play",
+        },
+      },
+    },
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
@@ -25,7 +45,7 @@ export default function TabsRoutes() {
         }}
       >
         <Tab.Screen
-          name="Error"
+          name="auth"
           component={AuthScreen}
           options={{
             tabBarStyle: { display: "none" },
@@ -33,7 +53,7 @@ export default function TabsRoutes() {
         />
 
         <Tab.Screen
-          name="Home"
+          name="home"
           component={HomeScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
@@ -42,7 +62,7 @@ export default function TabsRoutes() {
           }}
         />
         <Tab.Screen
-          name="Music Player"
+          name="play"
           component={PlayScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
@@ -51,7 +71,7 @@ export default function TabsRoutes() {
           }}
         />
         <Tab.Screen
-          name="Library"
+          name="playlist"
           component={PlaylistScreen}
           options={{
             tabBarIcon: ({ color, size }) => (

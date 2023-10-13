@@ -2,7 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
 
-import { Play } from "../../screens/Play";
+import { Play } from "../../src/screens/Play";
 
 export default function HomeScreen() {
   return (

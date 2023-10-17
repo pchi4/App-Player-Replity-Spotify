@@ -35,7 +35,7 @@ export const Auth = ({ navigation }: object) => {
       "playlist-modify-public",
     ],
     usePKCE: false,
-    redirectUri: "exp://10.91.116.3:8082/--/spotify-auth-callback",
+    redirectUri: "exp://192.168.10.4:8081/--/spotify-auth-callback",
   };
 
   const [request, response, promptAsync] = useAuthRequest(config, discovery);

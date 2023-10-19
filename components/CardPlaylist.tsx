@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
 
-type PropsCardAlbum = {
+type PropsCardPlaylist = {
   items: Array<any>;
   navigation: object;
   handleClick: () => void;
@@ -10,17 +10,15 @@ type PropsCardAlbum = {
   height: number | string;
 };
 
-export const CardAlbum = ({
+export const CardPlaylist = ({
   items,
   navigation,
   handleClick,
   width,
   height,
-}: PropsCardAlbum) => {
-  // console.log(items);
-
+}: PropsCardPlaylist) => {
   return (
-    <VStack paddingRight="4" justifyContent="center" alignItems="center">
+    <VStack paddingRight="4">
       <Box style={{ flex: 1 }}>
         <Pressable onPress={handleClick}>
           <Box shadow={3}>
@@ -31,11 +29,11 @@ export const CardAlbum = ({
               height={height}
               rounded="6"
               source={{
-                uri: items.album.images[0].url,
+                uri: items?.images[0]?.url,
               }}
             />
           </Box>
-          {/* <Box>
+          <Box>
             <Text
               fontSize="xl"
               fontWeight="bold"
@@ -43,12 +41,12 @@ export const CardAlbum = ({
               isTruncated
               width="200"
             >
-              {items.album.name}
+              {items.name}
             </Text>
-            <Text fontSize="md" color="black">
-              {items.album.type + "º" + items.album.artists[0].name}
+            <Text fontSize="md" color="black" isTruncated width="200">
+              {items.type + " " + items?.owner?.display_name}
             </Text>
-          </Box> */}
+          </Box>
         </Pressable>
       </Box>
     </VStack>

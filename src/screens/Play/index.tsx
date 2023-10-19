@@ -17,12 +17,14 @@ import { useState, useEffect } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Sound } from "expo-av/build/Audio";
 
-export const Play = ({ navigation }) => {
+export const Play = ({ route, navigation }) => {
   const [sound, setSound] = useState<Audio.Sound>();
   const [statusSound, setStatusSound] = useState<Sound | null>();
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // console.log(route);
 
   const handlePlayAudio = async () => {
     try {
@@ -48,11 +50,11 @@ export const Play = ({ navigation }) => {
 
       setIsPlaying(status.isLoaded);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
-  const onPlaybackStatusUpdate = async (status) => {
+  const onPlaybackStatusUpdate = async (status: object) => {
     setStatusSound(status);
     if (status.isLoaded && status.isPlaying) {
       setCurrentTime(status.positionMillis);
@@ -61,7 +63,7 @@ export const Play = ({ navigation }) => {
     if (status.didJustFinish === true) {
       setSound(null);
       const timeFinish = formatTime(0);
-      console.log(timeFinish);
+
       setCurrentTime(timeFinish);
       setIsPlaying(false);
       /*       playNextTrack(); */
@@ -94,7 +96,7 @@ export const Play = ({ navigation }) => {
 
   return (
     <Box bg="rgb(24, 26, 27)" h="100%">
-      <Center marginTop="5%">
+      {/* <Center marginTop="5%">
         <VStack space={1} alignItems="center" marginY="2%">
           <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
             Tocando do album
@@ -160,7 +162,7 @@ export const Play = ({ navigation }) => {
             <Feather name="skip-forward" size={50 % 100} color="#FFFFFF" />
           </Pressable>
         </HStack>
-      </Center>
+      </Center> */}
     </Box>
   );
 };

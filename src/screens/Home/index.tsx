@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   FlatList,
@@ -15,66 +15,109 @@ import {
   Text,
   VStack,
   Icon,
+  Button,
+  Spinner,
 } from "native-base";
+
 import { CardHome } from "../../../components/CardHome";
 import { CardAlbum } from "../../../components/CardAlbum";
-
-import { itemsAlbums } from "../../../models/albumns";
+import { CardPlaylist } from "../../../components/CardPlaylist";
+import { useGetProfile, useGetAlbums, useGetNewsReleases } from "./hooks";
 import { itemsMusics } from "../../../models/recentsMusics";
 
 export const Home = ({ navigation }: object) => {
-  const Col = ({ numRows, children }) => {
-    return <View style={{ flex: 2 }}>{children}</View>;
-  };
+  const { data, isError, isLoading, isFetching } = useGetAlbums();
+  const {
+    data: profile,
+    isError: profileIsError,
+    isLoading: profileIsLoading,
+    isFetching: profileIsFetching,
+  } = useGetProfile();
 
-  const Row = ({ children }) => (
-    <View style={{ flexDirection: "row" }}>{children}</View>
-  );
+  const {
+    data: newsRealeases,
+    isLoading: newReleasesIsLoading,
+    isFetching: newReleasesIsFetching,
+  } = useGetNewsReleases();
+
+  if (
+    isLoading ||
+    isFetching ||
+    profileIsFetching ||
+    profileIsLoading ||
+    newReleasesIsLoading ||
+    newReleasesIsFetching
+  ) {
+    return (
+      <Center>
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
-    <ScrollView>
-      <SafeAreaView>
-        <Box padding="4">
-          <FlatList
-            style={{ paddingTop: StatusBar.currentHeight }}
-            data={itemsMusics}
-            numColumns={2}
-            keyExtractor={(item) => String(item.id)}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <CardHome items={item} navigation={navigation} />
-            )}
-          />
+    <SafeAreaView>
+      <Box padding="4">
+        <FlatList
+          style={{ paddingTop: StatusBar.currentHeight }}
+          data={itemsMusics}
+          numColumns={2}
+          keyExtractor={(item) => String(item.id)}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <CardHome items={item} navigation={navigation} />
+          )}
+        />
 
-          <Box>
-            <Text
-              fontSize="2xl"
-              fontWeight="bold"
-              color="black"
-              alignItems="start"
-            >
-              Feito para Usuário
-            </Text>
-          </Box>
-
-          <FlatList
-            style={{ paddingTop: StatusBar.currentHeight }}
-            data={itemsAlbums}
-            keyExtractor={(item) => String(item.id)}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            renderItem={({ item }) => (
-              <CardAlbum
-                items={item}
-                navigation={navigation}
-                handleClick={() => navigation.navigate("albums", item)}
-              />
-            )}
-          />
+        <Box>
+          <Text fontSize="2xl" fontWeight="bold" color="black">
+            Feito para {profile?.display_name}
+          </Text>
         </Box>
-      </SafeAreaView>
-    </ScrollView>
+
+        <FlatList
+          style={{ paddingTop: StatusBar.currentHeight }}
+          data={data?.items}
+          keyExtractor={(item) => item?.album.id}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          renderItem={({ item }) => (
+            <CardAlbum
+              width={250}
+              height={250}
+              items={item}
+              navigation={navigation}
+              handleClick={() => navigation.navigate("albums", item)}
+            />
+          )}
+        />
+        {/* 
+        <Box paddingTop="4">
+          <Text fontSize="2xl" fontWeight="bold" color="black">
+            Novidades na áreaa
+          </Text>
+        </Box>
+
+        <FlatList
+          style={{ paddingTop: StatusBar.currentHeight }}
+          data={newsRealeases?.albums?.items}
+          keyExtractor={(item) => item?.id}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          renderItem={({ item }) => (
+            <CardPlaylist
+              width={250}
+              height={250}
+              items={item}
+              navigation={navigation}
+              handleClick={() => navigation.navigate("albums", item)}
+            />
+          )}
+        /> */}
+      </Box>
+    </SafeAreaView>
   );
 };

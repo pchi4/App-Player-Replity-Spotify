@@ -12,27 +12,8 @@ import AuthScreen from "../Stack/AuthStack";
 const Tab = createBottomTabNavigator();
 
 export default function TabsRoutes() {
-  const url = Linking.useURL();
-
-  const linking = {
-    prefixes: ["exp://10.91.116.3:8082/--/myapp"],
-    config: {
-      screens: {
-        home: {
-          path: "home",
-        },
-        playlist: {
-          path: "playlist",
-        },
-        play: {
-          path: "play",
-        },
-      },
-    },
-  };
-
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,

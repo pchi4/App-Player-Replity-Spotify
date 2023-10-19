@@ -14,7 +14,7 @@ export default function HomeScreen() {
         },
       }}
     >
-      <Stack.Screen name="Voltar" component={Play} />
+      <Stack.Screen name="playMusic" component={Play} />
     </Stack.Navigator>
   );
 }

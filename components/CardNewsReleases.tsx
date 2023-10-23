@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
 
-type PropsCardPlaylist = {
+type PropsCardNewsReleases = {
   items: Array<any>;
   navigation: object;
   handleClick: () => void;
@@ -10,13 +10,13 @@ type PropsCardPlaylist = {
   height: number | string;
 };
 
-export const CardPlaylist = ({
+export const CardNewsReleases = ({
   items,
   navigation,
   handleClick,
   width,
   height,
-}: PropsCardPlaylist) => {
+}: PropsCardNewsReleases) => {
   return (
     <Box paddingRight="4">
       <Pressable onPress={handleClick}>
@@ -43,7 +43,7 @@ export const CardPlaylist = ({
             {items.name}
           </Text>
           <Text fontSize="md" color="black" isTruncated width="200">
-            {items.type + " " + items?.owner?.display_name}
+            {items.type + " ° " + items.artists[0].name}
           </Text>
         </Box>
       </Pressable>

@@ -24,6 +24,8 @@ type PropsAlbums = {
 export const Albums = ({ route, navigation }: PropsAlbums) => {
   const { album } = route.params;
 
+  console.log(route);
+
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
@@ -63,7 +65,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
           </HStack>
           <FlatList
             data={album.tracks.items}
-            keyExtractor={({ item, idx }) => String(idx)}
+            keyExtractor={({ item, idx }) => String(item.id)}
             renderItem={({ item }) => (
               <Pressable onPress={() => navigation.navigate("play", item)}>
                 <Box

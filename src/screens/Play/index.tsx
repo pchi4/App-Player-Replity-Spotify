@@ -24,7 +24,7 @@ export const Play = ({ route, navigation }) => {
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // console.log(route);
+  console.log(route);
 
   const handlePlayAudio = async () => {
     try {

@@ -22,9 +22,9 @@ export const useGetPlatlist = () => {
 
     refetchOnWindowFocus: false,
     onError: (error) => {
-      Object.keys(error).forEach((k) => {
-        console.log(k, error[k]);
-      });
+      // Object.keys(error).forEach((k) => {
+      //   console.log(k, error[k]);
+      // });
     },
   });
 };

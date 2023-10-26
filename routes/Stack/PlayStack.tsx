@@ -4,7 +4,7 @@ const Stack = createStackNavigator();
 
 import { Play } from "../../src/screens/Play";
 
-export default function HomeScreen() {
+export default function PlayScreen() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -14,7 +14,7 @@ export default function HomeScreen() {
         },
       }}
     >
-      <Stack.Screen name="playMusic" component={Play} />
+      <Stack.Screen name="player" component={Play} />
     </Stack.Navigator>
   );
 }

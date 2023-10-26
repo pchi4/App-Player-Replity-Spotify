@@ -43,7 +43,7 @@ export const Playlist = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Box padding="4">
+      <Box padding="4" bg="rgb(24, 26, 27)">
         <FlatList
           style={{ paddingTop: StatusBar.currentHeight }}
           data={data?.items}

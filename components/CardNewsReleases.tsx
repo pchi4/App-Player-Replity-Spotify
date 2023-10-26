@@ -36,14 +36,15 @@ export const CardNewsReleases = ({
           <Text
             fontSize="xl"
             fontWeight="bold"
-            color="black"
+            color="white"
             isTruncated
             width="200"
           >
             {items.name}
           </Text>
-          <Text fontSize="md" color="black" isTruncated width="200">
-            {items.type + " ° " + items.artists[0].name}
+          <Text fontSize="md" color="white" isTruncated width="200">
+            {items.type[0].toUpperCase() +
+        items.type.slice(1) + " ° " + items.artists[0].name}
           </Text>
         </Box>
       </Pressable>

@@ -20,6 +20,7 @@ import { CardPlaylist } from "../../../components/CardPlaylist";
 import { CardNewsReleases } from "../../../components/CardNewsReleases";
 import { useGetProfile, useGetAlbums, useGetNewsReleases } from "./hooks";
 import { itemsMusics } from "../../../models/recentsMusics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Home = ({ navigation }: object) => {
   const { data, isError, isLoading, isFetching } = useGetAlbums();
@@ -36,6 +37,14 @@ export const Home = ({ navigation }: object) => {
     isFetching: newReleasesIsFetching,
   } = useGetNewsReleases();
 
+  const setProfileStore = async () => {
+    await AsyncStorage.setItem("profile", JSON.stringify(profile));
+  };
+
+  useEffect(() => {
+    setProfileStore();
+  }, [profile]);
+
   if (
     isLoading ||
     isFetching ||
@@ -45,15 +54,17 @@ export const Home = ({ navigation }: object) => {
     newReleasesIsFetching
   ) {
     return (
-      <Center>
-        <Spinner size="xl" />
+      <Center marginTop="4/5">
+        <Box bg="rgb(24, 26, 27)">
+          <Spinner size="xl" />
+        </Box>
       </Center>
     );
   }
 
   return (
     <SafeAreaView>
-      <Box padding="4">
+      <Box padding="4" bg="rgb(24, 26, 27)">
         <ScrollView>
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
@@ -68,7 +79,7 @@ export const Home = ({ navigation }: object) => {
           />
 
           <Box>
-            <Text fontSize="2xl" fontWeight="bold" color="black">
+            <Text fontSize="2xl" fontWeight="bold" color="white">
               Feito para {profile?.display_name}
             </Text>
           </Box>
@@ -92,8 +103,8 @@ export const Home = ({ navigation }: object) => {
           />
 
           <Box paddingTop="4">
-            <Text fontSize="2xl" fontWeight="bold" color="black">
-              Novidades na áreaa
+            <Text fontSize="2xl" fontWeight="bold" color="white">
+              Novidades na área
             </Text>
           </Box>
 

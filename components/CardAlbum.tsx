@@ -36,14 +36,15 @@ export const CardAlbum = ({
           <Text
             fontSize="xl"
             fontWeight="bold"
-            color="black"
+            color="white"
             isTruncated
             width="200"
           >
             {items.album.name}
           </Text>
-          <Text fontSize="md" color="black">
-            {items.album.type + "º" + items.album.artists[0].name}
+          <Text fontSize="md" color="white">
+            {items.album.type[0].toUpperCase() +
+        items.album.type.slice(1) + " ° " + items.album.artists[0].name}
           </Text>
         </Box>
       </Pressable>

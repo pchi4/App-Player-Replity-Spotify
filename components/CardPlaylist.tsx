@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Dimensions } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
 
 type PropsCardPlaylist = {
@@ -10,6 +10,8 @@ type PropsCardPlaylist = {
   height: number | string;
 };
 
+const { width, height } = Dimensions.get("screen");
+
 export const CardPlaylist = ({
   items,
   navigation,
@@ -18,14 +20,14 @@ export const CardPlaylist = ({
   height,
 }: PropsCardPlaylist) => {
   return (
-    <Box paddingRight="4">
+    <Box style={{flex: 1}} paddingRight="4"  justifyContent="center" alignItems="center">
       <Pressable onPress={handleClick}>
         <Box shadow={3}>
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={width}
-            height={height}
+            width={width / 1}
+            height={width / 1}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,
@@ -36,14 +38,15 @@ export const CardPlaylist = ({
           <Text
             fontSize="xl"
             fontWeight="bold"
-            color="black"
+            color="white"
             isTruncated
             width="200"
           >
             {items.name}
           </Text>
-          <Text fontSize="md" color="black" isTruncated width="200">
-            {items.type + " " + items?.owner?.display_name}
+          <Text fontSize="md" color="white" isTruncated width="200">
+            {items.type[0].toUpperCase() +
+        items.type.slice(1) + " " + items?.owner?.display_name}
           </Text>
         </Box>
       </Pressable>

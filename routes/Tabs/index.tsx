@@ -20,6 +20,8 @@ export default function TabsRoutes() {
 
           tabBarStyle: {
             backgroundColor: "rgb(24, 26, 27)",
+            borderTopWidth: 0,
+            elevation: 0,
           },
           tabBarActiveTintColor: "#FFFFFF",
           tabBarInactiveTintColor: "rgb(111 109 213)",
@@ -30,6 +32,7 @@ export default function TabsRoutes() {
           component={AuthScreen}
           options={{
             tabBarStyle: { display: "none" },
+            tabBarButton: () => null,
           }}
         />
 
@@ -43,12 +46,11 @@ export default function TabsRoutes() {
           }}
         />
         <Tab.Screen
-          name="play"
+          name="playMusic"
           component={PlayScreen}
           options={{
-            tabBarIcon: ({ color, size }) => (
-              <Feather name="music" color={color} size={size} />
-            ),
+            tabBarStyle: { display: "none" },
+            tabBarButton: () => null,
           }}
         />
         <Tab.Screen

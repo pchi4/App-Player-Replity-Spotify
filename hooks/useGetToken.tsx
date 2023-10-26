@@ -13,7 +13,6 @@ export const useGetToken = () => {
   const [clientId] = useState<string>("0e7989953adc4c5cba284909c50fe613");
   const [token, setToken] = useState<string>();
   const [codeHash, setCode] = useState<string | null>("");
-  const [codeVerifer, setCodeVerifer] = useState("");
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -33,7 +32,7 @@ export const useGetToken = () => {
       "playlist-modify-public",
     ],
     usePKCE: false,
-    redirectUri: "exp://10.91.116.3:8082/--/spotify-auth-callback",
+    redirectUri: "exp://10.91.116.1:8081/--/spotify-auth-callback",
   };
 
   function generateCodeVerifier(length: number) {
@@ -47,22 +46,18 @@ export const useGetToken = () => {
     return text;
   }
 
-  const [request, response, promptAsync] = useAuthRequest(config, discovery);
-
-  const accessToken = async (): Promise<void> => {
+  const accessToken = async () => {
     try {
       let codeVerifer = generateCodeVerifier(128);
-      setCodeVerifer(codeVerifer);
+  
       const data = {
         grant_type: "authorization_code",
         code: codeHash,
-        redirect_uri: "exp://10.91.116.3:8082/--/spotify-auth-callback",
+        redirect_uri: "exp://10.91.116.1:8081/--/spotify-auth-callback",
         client_id: clientId,
         code_verifier: codeVerifer,
         client_secret: "bef869040446454d9ce21a75fb34c297",
       };
-
-      console.log(data);
 
       const result = await axios("https://accounts.spotify.com/api/token", {
         method: "POST",
@@ -82,13 +77,12 @@ export const useGetToken = () => {
     }
   };
 
+  const [request, response, promptAsync] = useAuthRequest(config, discovery);
+
   useEffect(() => {
     if (response?.type === "success") {
       const { code } = response.params;
-      // console.log({ code });
-      //   console.log(response.params);
       setCode(code);
-      //   console.log("este e o code" + code);
     }
   }, [response]);
 

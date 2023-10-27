@@ -121,14 +121,14 @@ export const Play = ({ route, navigation }) => {
 
               <Box>
                 <Center>
-                  <Text color="#FFFFFF" fontSize="md">
+                  <Text color="#FFFFFF" fontSize="sm">
                     {`TOCANDO DO ${route.params.album.type.toUpperCase()}`}
                   </Text>
 
                   <Text
                     color="#FFFFFF"
                     fontWeight="bold"
-                    fontSize={["xs", "md", "md"]}
+                    fontSize={["sm", "md", "md"]}
                     marginBottom={["8", "18", "24"]}
                   >
                     {route.params.album.name}

@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import api from "../api/index";
-import qs from "qs";
 import axios from "axios";
 import {
   ResponseType,
@@ -46,13 +44,17 @@ export const useGetToken = () => {
     return text;
   }
 
+  const [request, response, promptAsync] = useAuthRequest(config, discovery);
+
   const accessToken = async () => {
     try {
+      const resulPromptAsync = await promptAsync();
+
       let codeVerifer = generateCodeVerifier(128);
-  
+
       const data = {
         grant_type: "authorization_code",
-        code: codeHash,
+        code: resulPromptAsync.params.code,
         redirect_uri: "exp://10.91.116.1:8081/--/spotify-auth-callback",
         client_id: clientId,
         code_verifier: codeVerifer,
@@ -76,15 +78,6 @@ export const useGetToken = () => {
       console.log(error);
     }
   };
-
-  const [request, response, promptAsync] = useAuthRequest(config, discovery);
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { code } = response.params;
-      setCode(code);
-    }
-  }, [response]);
 
   return {
     accessToken,

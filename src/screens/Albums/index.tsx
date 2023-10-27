@@ -19,6 +19,7 @@ import {
 
 import { useGetArtist } from "./hooks";
 import { LinearGradient } from "expo-linear-gradient";
+import { Loading } from "../../../components/Loading";
 
 type PropsAlbums = {
   route: object;
@@ -31,7 +32,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
   const { album } = route.params;
 
   const {
-    data: profile,
+    data: artists,
     isFetching,
     isLoading,
   } = useGetArtist({ id: album?.artists[0].id });
@@ -43,11 +44,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
   };
 
   if (isFetching || isLoading) {
-    return (
-      <Center marginTop="4/5">
-        <Spinner size="xl" />
-      </Center>
-    );
+    return <Loading />;
   }
 
   return (
@@ -80,7 +77,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 bg="green.500"
                 size="sm"
                 source={{
-                  uri: profile?.images[0].url,
+                  uri: artists?.images[0].url,
                 }}
               ></Avatar>
               <Text
@@ -94,7 +91,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
             </HStack>
             <FlatList
               data={album.tracks.items}
-              keyExtractor={({ item, idx }) => String(idx)}
+              keyExtractor={(item) => item?.id}
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() =>

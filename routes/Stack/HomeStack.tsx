@@ -26,10 +26,9 @@ export default function HomeScreen() {
         headerStyle: {
           backgroundColor: "rgb(145, 174, 198)",
         },
-        
       }}
     >
-      <Stack.Screen name="Bom" component={Home} />
+      <Stack.Screen name="Seja bem-vindo(a)" component={Home} />
       <Stack.Screen name="albums" component={Albums} />
     </Stack.Navigator>
   );

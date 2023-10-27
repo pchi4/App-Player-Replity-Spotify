@@ -1,23 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, ScrollView, View } from "react-native";
-import {
-  HStack,
-  Box,
-  Divider,
-  Center,
-  Image,
-  Text,
-  VStack,
-  Icon,
-  Button,
-  Spinner,
-  FlatList,
-} from "native-base";
+import { HStack, Box, Text, FlatList } from "native-base";
 
 import { CardHome } from "../../../components/CardHome";
 import { CardAlbum } from "../../../components/CardAlbum";
-import { CardPlaylist } from "../../../components/CardPlaylist";
 import { CardNewsReleases } from "../../../components/CardNewsReleases";
+import { Loading } from "../../../components/Loading";
+
 import { useGetProfile, useGetAlbums, useGetNewsReleases } from "./hooks";
 import { itemsMusics } from "../../../models/recentsMusics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -53,13 +42,7 @@ export const Home = ({ navigation }: object) => {
     newReleasesIsLoading ||
     newReleasesIsFetching
   ) {
-    return (
-      <Center marginTop="4/5">
-        <Box bg="rgb(24, 26, 27)">
-          <Spinner size="xl" />
-        </Box>
-      </Center>
-    );
+    return <Loading />;
   }
 
   return (

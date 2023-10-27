@@ -24,7 +24,6 @@ export const Auth = ({ navigation }: object) => {
   }, [token]);
 
   const requestAuthSpotify = async () => {
-    await promptAsync();
     await accessToken();
   };
 

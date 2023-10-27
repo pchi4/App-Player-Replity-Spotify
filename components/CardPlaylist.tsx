@@ -20,14 +20,19 @@ export const CardPlaylist = ({
   height,
 }: PropsCardPlaylist) => {
   return (
-    <Box style={{flex: 1}} paddingRight="4"  justifyContent="center" alignItems="center">
+    <Box
+      style={{ flex: 1 }}
+      paddingBottom="4"
+      justifyContent="center"
+      alignItems="center"
+    >
       <Pressable onPress={handleClick}>
         <Box shadow={3}>
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={width / 1}
-            height={width / 1}
+            width={width / 1.5}
+            height={width / 1.5}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,
@@ -40,13 +45,15 @@ export const CardPlaylist = ({
             fontWeight="bold"
             color="white"
             isTruncated
-            width="200"
+            width={width / 1.5}
           >
             {items.name}
           </Text>
-          <Text fontSize="md" color="white" isTruncated width="200">
+          <Text fontSize="md" color="white" isTruncated width={width / 1.5}>
             {items.type[0].toUpperCase() +
-        items.type.slice(1) + " " + items?.owner?.display_name}
+              items.type.slice(1) +
+              " ° " +
+              items?.owner?.display_name}
           </Text>
         </Box>
       </Pressable>

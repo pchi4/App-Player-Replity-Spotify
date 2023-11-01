@@ -16,8 +16,8 @@ export const CardPlaylist = ({
   items,
   navigation,
   handleClick,
-  width,
-  height,
+  widthProps,
+  heightProps,
 }: PropsCardPlaylist) => {
   return (
     <Box
@@ -25,14 +25,15 @@ export const CardPlaylist = ({
       paddingBottom="4"
       justifyContent="center"
       alignItems="center"
+      paddingRight="4"
     >
       <Pressable onPress={handleClick}>
         <Box shadow={3}>
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={width / 1.5}
-            height={width / 1.5}
+            width={widthProps ? widthProps : width / 1.5}
+            height={heightProps ? heightProps : width / 1.5}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,
@@ -45,11 +46,11 @@ export const CardPlaylist = ({
             fontWeight="bold"
             color="white"
             isTruncated
-            width={width / 1.5}
+            width={200}
           >
             {items.name}
           </Text>
-          <Text fontSize="md" color="white" isTruncated width={width / 1.5}>
+          <Text fontSize="md" color="white" isTruncated width={250}>
             {items.type[0].toUpperCase() +
               items.type.slice(1) +
               " ° " +

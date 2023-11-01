@@ -15,11 +15,13 @@ import {
   ScrollView,
   Pressable,
   Spinner,
+  Flex,
 } from "native-base";
 
 import { useGetArtist } from "./hooks";
 import { LinearGradient } from "expo-linear-gradient";
 import { Loading } from "../../../components/Loading";
+import { Feather } from "@expo/vector-icons";
 
 type PropsAlbums = {
   route: object;
@@ -46,6 +48,10 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
   if (isFetching || isLoading) {
     return <Loading />;
   }
+
+  const IconsPressed = ({ name, color }) => {
+    return <Feather name={name} size={35 % 100} color={color} />;
+  };
 
   return (
     <SafeAreaView>
@@ -89,14 +95,65 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 {album?.artists[0].name}
               </Text>
             </HStack>
+            <Box>
+              <Text
+                fontSize={["sm", "sm", "md"]}
+                fontWeight="bold"
+                paddingBottom="2"
+                color="coolGray.300"
+              >
+                {album?.type[0].toUpperCase() +
+                  album?.type.slice(1) +
+                  " ° " +
+                  new Date(album.release_date).getFullYear()}
+              </Text>
+            </Box>
+            <Box>
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                direction="row"
+                paddingY="4"
+              >
+                <Box flexDirection="row">
+                  <Pressable marginRight="4">
+                    <Feather name={"heart"} size={20 % 100} color="#FFFFFF" />
+                  </Pressable>
+
+                  <Pressable marginRight="4">
+                    <Feather
+                      name={"arrow-down-circle"}
+                      size={20 % 100}
+                      color="#FFFFFF"
+                    />
+                  </Pressable>
+                  <Pressable marginRight="4">
+                    <Feather
+                      name={"more-vertical"}
+                      size={20 % 100}
+                      color="#FFFFFF"
+                    />
+                  </Pressable>
+                </Box>
+
+                <Box flexDirection="row">
+                  <Pressable marginRight="4">
+                    <Feather name="shuffle" size={35 % 100} color="#FFFFFF" />
+                  </Pressable>
+                  <Pressable>
+                    <Feather name={"play"} size={35 % 100} color="#FFFFFF" />
+                  </Pressable>
+                </Box>
+              </Flex>
+            </Box>
             <FlatList
               data={album.tracks.items}
               keyExtractor={(item) => item?.id}
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() =>
-                    navigation.navigate("playMusic", {
-                      screen: "player",
+                    navigation.navigate("home", {
+                      screen: "playMusic",
                       params: { item, album },
                     })
                   }

@@ -1,10 +1,12 @@
 import * as React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
 import HomeScreen from "../Stack/HomeStack";
-import PlayScreen from "../Stack/PlayStack";
 import PlaylistScreen from "../Stack/PlaylistStack";
 import AuthScreen from "../Stack/AuthStack";
 
@@ -38,19 +40,18 @@ export default function TabsRoutes() {
         <Tab.Screen
           name="home"
           component={HomeScreen}
-          options={{
+          options={({ route }) => ({
             tabBarIcon: ({ color, size }) => (
               <Feather name="home" color={color} size={size} />
             ),
-          }}
-        />
-        <Tab.Screen
-          name="playMusic"
-          component={PlayScreen}
-          options={{
-            tabBarStyle: { display: "none" },
-            tabBarButton: () => null,
-          }}
+            tabBarStyle: ((route) => {
+              const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+              if (routeName === "playMusic") {
+                return { display: "none" };
+              }
+              return;
+            })(route),
+          })}
         />
         <Tab.Screen
           name="playlist"

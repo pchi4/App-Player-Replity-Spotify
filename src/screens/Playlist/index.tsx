@@ -18,10 +18,11 @@ import {
   Button,
   Spinner,
   Pressable,
+  Heading,
 } from "native-base";
 
 import { CardPlaylist } from "../../../components/CardPlaylist";
-import { useGetPlatlist } from "./hooks/useGetPlatlist";
+import { useGetPlaytlist } from "./hooks/useGetPlaytlist";
 import { Loading } from "../../../components/Loading";
 import { Feather } from "@expo/vector-icons";
 
@@ -41,7 +42,7 @@ const HeaderList = () => {
 };
 
 export const Playlist = ({ navigation }) => {
-  const { data, isError, isLoading, isFetching } = useGetPlatlist();
+  const { data, isError, isLoading, isFetching } = useGetPlaytlist();
 
   if (isLoading || isFetching) {
     return <Loading />;

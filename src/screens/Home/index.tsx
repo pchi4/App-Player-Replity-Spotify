@@ -6,8 +6,15 @@ import { CardHome } from "../../../components/CardHome";
 import { CardAlbum } from "../../../components/CardAlbum";
 import { CardNewsReleases } from "../../../components/CardNewsReleases";
 import { Loading } from "../../../components/Loading";
+import { CardTopArtist } from "../../../components/CardTopArtist";
+import { CardPlaylist } from "../../../components/CardPlaylist";
 
-import { useGetProfile, useGetAlbums, useGetNewsReleases } from "./hooks";
+import {
+  useGetProfile,
+  useGetAlbums,
+  useGetNewsReleases,
+  useGetPlatlist,
+} from "./hooks";
 import { itemsMusics } from "../../../models/recentsMusics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -26,6 +33,12 @@ export const Home = ({ navigation }: object) => {
     isFetching: newReleasesIsFetching,
   } = useGetNewsReleases();
 
+  const {
+    data: playlist,
+    isLoading: playlistLoading,
+    isFetching: playlistFetching,
+  } = useGetPlatlist();
+
   const setProfileStore = async () => {
     await AsyncStorage.setItem("profile", JSON.stringify(profile));
   };
@@ -40,7 +53,9 @@ export const Home = ({ navigation }: object) => {
     profileIsFetching ||
     profileIsLoading ||
     newReleasesIsLoading ||
-    newReleasesIsFetching
+    newReleasesIsFetching ||
+    playlistFetching ||
+    playlistLoading
   ) {
     return <Loading />;
   }
@@ -61,7 +76,7 @@ export const Home = ({ navigation }: object) => {
             )}
           />
 
-          <Box>
+          <Box paddingTop="6">
             <Text fontSize="2xl" fontWeight="bold" color="white">
               Feito para {profile?.display_name}
             </Text>
@@ -85,7 +100,7 @@ export const Home = ({ navigation }: object) => {
             )}
           />
 
-          <Box paddingTop="4">
+          <Box paddingTop="6">
             <Text fontSize="2xl" fontWeight="bold" color="white">
               Novidades na área
             </Text>
@@ -108,6 +123,32 @@ export const Home = ({ navigation }: object) => {
               />
             )}
           />
+
+          <Box paddingTop="6">
+            <Text fontSize="2xl" fontWeight="bold" color="white">
+              Suas playlists
+            </Text>
+          </Box>
+
+          <FlatList
+            style={{ paddingTop: StatusBar.currentHeight }}
+            data={playlist.items}
+            keyExtractor={(item) => item?.id}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            renderItem={({ item }) => (
+              <CardPlaylist
+                widthProps={250}
+                heightProps={250}
+                items={item}
+                navigation={navigation}
+                handleClick={() => navigation.navigate("albums", item)}
+              />
+            )}
+          />
+
+          <CardTopArtist />
         </ScrollView>
       </Box>
     </SafeAreaView>

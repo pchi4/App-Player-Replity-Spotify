@@ -48,13 +48,13 @@ export const useGetToken = () => {
 
   const accessToken = async () => {
     try {
-      const resulPromptAsync = await promptAsync();
+      const resultPromptAsync = await promptAsync();
 
       let codeVerifer = generateCodeVerifier(128);
 
       const data = {
         grant_type: "authorization_code",
-        code: resulPromptAsync.params.code,
+        code: resultPromptAsync.params.code,
         redirect_uri: "exp://10.91.116.1:8081/--/spotify-auth-callback",
         client_id: clientId,
         code_verifier: codeVerifer,

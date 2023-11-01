@@ -15,6 +15,7 @@ const HeaderPlaylistLeft = ({ person }) => {
     if (person) {
       const profileFormatter = JSON.parse(person);
       setProfileObject(profileFormatter);
+      console.log(profileObject);
     }
   };
 

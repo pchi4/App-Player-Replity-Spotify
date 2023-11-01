@@ -21,7 +21,7 @@ export const CardHome = ({ navigation, items }) => {
           />
         </Box>
         <Box
-          style={{ flex: 1.5 }}
+          style={{ flex: 1.8 }}
           h="100%"
           bg="dark.300"
           padding="2"

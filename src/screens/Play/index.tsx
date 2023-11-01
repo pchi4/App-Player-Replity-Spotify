@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 
 import { Audio, AVPlaybackTolerance } from "expo-av";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Sound } from "expo-av/build/Audio";
 
@@ -25,9 +25,19 @@ const { width, height } = Dimensions.get("screen");
 export const Play = ({ route, navigation }) => {
   const [sound, setSound] = useState<Audio.Sound>();
   const [statusSound, setStatusSound] = useState<Sound | null>();
+  // const [currentTrack, setCurrentTrack] = useState();
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const value = useRef(0);
+
+  const [currentTrack, setCurrentTrack] = useState({
+    name: null,
+    duration: null,
+    numberTrack: null,
+    uriTrack: null,
+    artWork: null,
+  });
 
   const handlePlayAudio = async () => {
     try {
@@ -39,7 +49,7 @@ export const Play = ({ route, navigation }) => {
       });
 
       const { sound, status } = await Audio.Sound.createAsync(
-        { uri: route.params.item.preview_url },
+        { uri: route.params.item.preview_url ?? nextMusic?.uriTrack },
 
         {
           shouldPlay: true,
@@ -48,7 +58,7 @@ export const Play = ({ route, navigation }) => {
         onPlaybackStatusUpdate
       );
 
-      onPlaybackStatusUpdate(status);
+      sound.onPlaybackStatusUpdate(status);
 
       setSound(sound);
 
@@ -58,11 +68,37 @@ export const Play = ({ route, navigation }) => {
     }
   };
 
+  const playNextTrack = async () => {
+    if (sound) {
+      await sound.stopAsync();
+      setSound(null);
+    }
+    value.current += 1;
+    if (value.current < route.params.album.tracks.items.length) {
+      const nextTrack = route.params.album.tracks.items[value.current];
+      setCurrentTrack({
+        name: nextTrack.name,
+        numberTrack: nextTrack.track_number,
+        uriTrack: nextTrack.preview_url,
+        duration: nextTrack.duration_ms,
+        artWork: route.params.album.images[0].url,
+      });
+      console.log(nextTrack);
+      // setCurrentTrack(nextTrack);
+      console.log(currentTrack);
+      // extractColors();
+      // await play(nextTrack);
+    } else {
+      console.log("end of playlist");
+    }
+    // console.log(route.params.album.tracks);
+  };
+
   const onPlaybackStatusUpdate = async (status: object) => {
     setStatusSound(status);
     if (status.isLoaded && status.isPlaying) {
       setCurrentTime(status.positionMillis);
-      setTotalDuration(status.durationMillis);
+      setTotalDuration(status.durationMillis ?? nextMusic.duration);
     }
     if (status.didJustFinish === true) {
       setSound(null);
@@ -115,7 +151,7 @@ export const Play = ({ route, navigation }) => {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Pressable onPress={() => navigation.navigate("home")}>
+              <Pressable onPress={() => navigation.goBack()}>
                 <Feather name={"arrow-left"} size={25 % 100} color="#FFFFFF" />
               </Pressable>
 
@@ -146,11 +182,10 @@ export const Play = ({ route, navigation }) => {
             </HStack>
 
             <Image
-              shadow="4"
               marginTop="10%"
               borderRadius={10}
               source={
-                { uri: route.params.album.images[0].url } ??
+                { uri: currentTrack.artWork } ??
                 "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
               }
               alt="ArtWork albuns"
@@ -169,7 +204,7 @@ export const Play = ({ route, navigation }) => {
           >
             <Box>
               <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
-                {route.params.item.name}
+                {currentTrack?.name}
               </Text>
 
               <Text color="#FFFFFF" fontSize="md">
@@ -230,7 +265,12 @@ export const Play = ({ route, navigation }) => {
             )}
 
             <Pressable>
-              <Feather name="skip-forward" size={35 % 100} color="#FFFFFF" />
+              <Feather
+                onPress={playNextTrack}
+                name="skip-forward"
+                size={35 % 100}
+                color="#FFFFFF"
+              />
             </Pressable>
           </HStack>
         </Box>

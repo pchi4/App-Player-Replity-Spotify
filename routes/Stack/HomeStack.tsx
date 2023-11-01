@@ -6,6 +6,7 @@ const Stack = createStackNavigator();
 
 import { Home } from "../../src/screens/Home";
 import { Albums } from "../../src/screens/Albums";
+import { Play } from "../../src/screens/Play";
 
 export default function HomeScreen() {
   const [token, setToken] = useState(null);
@@ -30,6 +31,13 @@ export default function HomeScreen() {
     >
       <Stack.Screen name="Seja bem-vindo(a)" component={Home} />
       <Stack.Screen name="albums" component={Albums} />
+      <Stack.Screen
+        name="playMusic"
+        options={{
+          headerShown: false,
+        }}
+        component={Play}
+      />
     </Stack.Navigator>
   );
 }

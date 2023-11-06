@@ -70,7 +70,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
           </Box>
           <Box paddingX="4">
             <Text
-              fontSize={["2xl", "3xl", "4xl"]}
+              fontSize={["xl", "3xl", "4xl"]}
               fontWeight="bold"
               paddingBottom="2"
               color="white"

@@ -29,7 +29,8 @@ export const Play = ({ route, navigation }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const value = useRef(0);
+  const [numberTrack, setNumberTrack] = useState();
+  const value = useRef(route.params.item.track_number);
 
   const [currentTrack, setCurrentTrack] = useState({
     name: null,
@@ -49,7 +50,7 @@ export const Play = ({ route, navigation }) => {
       });
 
       const { sound, status } = await Audio.Sound.createAsync(
-        { uri: route.params.item.preview_url ?? nextMusic?.uriTrack },
+        { uri: currentTrack.uriTrack },
 
         {
           shouldPlay: true,
@@ -58,24 +59,28 @@ export const Play = ({ route, navigation }) => {
         onPlaybackStatusUpdate
       );
 
-      sound.onPlaybackStatusUpdate(status);
-
-      setSound(sound);
-
       setIsPlaying(status.isLoaded);
+      setSound(sound);
+      sound.onPlaybackStatusUpdate(status);
     } catch (error) {
       // console.log(error);
     }
   };
 
+  useEffect(() => {
+    setCurrentTrack({
+      name: route.params.item.name,
+      numberTrack: route.params.item.track_number,
+      uriTrack: route.params.item.preview_url,
+      duration: route.params.item.duration_ms,
+      artWork: route.params.album.images[0].url,
+    });
+  }, []);
+
   const playNextTrack = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      setSound(null);
-    }
-    value.current += 1;
     if (value.current < route.params.album.tracks.items.length) {
       const nextTrack = route.params.album.tracks.items[value.current];
+      value.current += 1;
       setCurrentTrack({
         name: nextTrack.name,
         numberTrack: nextTrack.track_number,
@@ -83,13 +88,21 @@ export const Play = ({ route, navigation }) => {
         duration: nextTrack.duration_ms,
         artWork: route.params.album.images[0].url,
       });
+
+      if (sound) {
+        await sound.stopAsync();
+        /* await handlePlayPause(); */
+        await sound.playAsync();
+      }
       console.log(nextTrack);
       // setCurrentTrack(nextTrack);
       console.log(currentTrack);
-      // extractColors();
-      // await play(nextTrack);
-    } else {
+    }
+    // extractColors();
+    // await play(nextTrack);
+    else {
       console.log("end of playlist");
+      return;
     }
     // console.log(route.params.album.tracks);
   };
@@ -98,7 +111,7 @@ export const Play = ({ route, navigation }) => {
     setStatusSound(status);
     if (status.isLoaded && status.isPlaying) {
       setCurrentTime(status.positionMillis);
-      setTotalDuration(status.durationMillis ?? nextMusic.duration);
+      setTotalDuration(status.durationMillis);
     }
     if (status.didJustFinish === true) {
       setSound(null);
@@ -113,9 +126,7 @@ export const Play = ({ route, navigation }) => {
   const handlePlayPause = async () => {
     if (!sound) {
       handlePlayAudio();
-    }
-
-    if (isPlaying) {
+    } else if (isPlaying) {
       await sound?.pauseAsync();
     } else {
       await sound?.playFromPositionAsync(currentTime);

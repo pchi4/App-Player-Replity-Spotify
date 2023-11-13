@@ -6,9 +6,9 @@ import {
 } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
-import HomeScreen from "../Stack/HomeStack";
-import PlaylistScreen from "../Stack/PlaylistStack";
-import AuthScreen from "../Stack/AuthStack";
+import HomeScreen from "./Stack/Home";
+import PlaylistScreen from "./Stack/Playlist";
+import AuthScreen from "./Stack/Auth";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +45,8 @@ export default function TabsRoutes() {
               <Feather name="home" color={color} size={size} />
             ),
             tabBarStyle: ((route) => {
-              const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+              console.log(route);
+              const routeName = getFocusedRouteNameFromRoute(route) ?? null;
               if (routeName === "playMusic") {
                 return { display: "none" };
               }

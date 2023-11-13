@@ -9,7 +9,7 @@ import {
   VStack,
   Avatar,
 } from "native-base";
-import { Pressable, Dimensions } from "react-native";
+import { Pressable, Dimensions, TouchableOpacity } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -23,13 +23,14 @@ import { Sound } from "expo-av/build/Audio";
 const { width, height } = Dimensions.get("screen");
 
 export const Play = ({ route, navigation }) => {
-  const [sound, setSound] = useState<Audio.Sound>();
+  const [currentSound, setCurrentSound] = useState<Audio.Sound | null>();
+  const [currentStatus, setCurrentStatus] = useState(null);
   const [statusSound, setStatusSound] = useState<Sound | null>();
   // const [currentTrack, setCurrentTrack] = useState();
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [numberTrack, setNumberTrack] = useState();
+  const [numberTrack, setNumberTrack] = useState(null);
   const value = useRef(route.params.item.track_number);
 
   const [currentTrack, setCurrentTrack] = useState({
@@ -42,6 +43,10 @@ export const Play = ({ route, navigation }) => {
 
   const handlePlayAudio = async () => {
     try {
+      if (currentSound) {
+        await currentSound.unloadAsync();
+      }
+
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
@@ -50,7 +55,7 @@ export const Play = ({ route, navigation }) => {
       });
 
       const { sound, status } = await Audio.Sound.createAsync(
-        { uri: currentTrack.uriTrack },
+        { uri: currentTrack?.uriTrack },
 
         {
           shouldPlay: true,
@@ -59,8 +64,10 @@ export const Play = ({ route, navigation }) => {
         onPlaybackStatusUpdate
       );
 
+      setCurrentStatus(status);
       setIsPlaying(status.isLoaded);
-      setSound(sound);
+
+      setCurrentSound(sound);
       sound.onPlaybackStatusUpdate(status);
     } catch (error) {
       // console.log(error);
@@ -68,43 +75,66 @@ export const Play = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    setCurrentTrack({
-      name: route.params.item.name,
-      numberTrack: route.params.item.track_number,
-      uriTrack: route.params.item.preview_url,
-      duration: route.params.item.duration_ms,
-      artWork: route.params.album.images[0].url,
-    });
-  }, []);
-
-  const playNextTrack = async () => {
-    if (value.current < route.params.album.tracks.items.length) {
-      const nextTrack = route.params.album.tracks.items[value.current];
-      value.current += 1;
-      setCurrentTrack({
-        name: nextTrack.name,
-        numberTrack: nextTrack.track_number,
-        uriTrack: nextTrack.preview_url,
-        duration: nextTrack.duration_ms,
-        artWork: route.params.album.images[0].url,
-      });
-
-      if (sound) {
-        await sound.stopAsync();
-        /* await handlePlayPause(); */
-        await sound.playAsync();
-      }
-      console.log(nextTrack);
-      // setCurrentTrack(nextTrack);
-      console.log(currentTrack);
-    }
-    // extractColors();
-    // await play(nextTrack);
-    else {
-      console.log("end of playlist");
+    if (value.current === 1) {
+      verifyIsFirstTrack();
       return;
     }
-    // console.log(route.params.album.tracks);
+
+    const nextTrack = route.params.album.tracks.items[value.current];
+
+    setCurrentTrack({
+      name: nextTrack.name,
+      numberTrack: nextTrack.track_number,
+      uriTrack: nextTrack.preview_url,
+      duration: nextTrack.duration_ms,
+      artWork: route.params.album.images[0].url,
+    });
+
+    handlePlayAudio();
+  }, [value.current]);
+
+  const verifyIsFirstTrack = async () => {
+    const nextTrack = route.params.album.tracks.items[value.current - 1];
+
+    setCurrentTrack({
+      name: nextTrack.name,
+      numberTrack: nextTrack.track_number,
+      uriTrack: nextTrack.preview_url,
+      duration: nextTrack.duration_ms,
+      artWork: route.params.album.images[0].url,
+    });
+
+    await handlePlayAudio();
+  };
+
+  const playNextTrack = async () => {
+    if (value.current > route.params.album.tracks.items.length) return;
+    value.current += 1;
+
+    const nextTrack = route.params.album.tracks.items[value.current];
+
+    setCurrentTrack({
+      name: nextTrack.name,
+      numberTrack: nextTrack.track_number,
+      uriTrack: nextTrack.preview_url,
+      duration: nextTrack.duration_ms,
+      artWork: route.params.album.images[0].url,
+    });
+  };
+
+  const playPeviousTrack = async () => {
+    if (value.current <= 0) return;
+    value.current -= 1;
+
+    const nextTrack = route.params.album.tracks.items[value.current];
+
+    setCurrentTrack({
+      name: nextTrack.name,
+      numberTrack: nextTrack.track_number,
+      uriTrack: nextTrack.preview_url,
+      duration: nextTrack.duration_ms,
+      artWork: route.params.album.images[0].url,
+    });
   };
 
   const onPlaybackStatusUpdate = async (status: object) => {
@@ -124,24 +154,22 @@ export const Play = ({ route, navigation }) => {
   };
 
   const handlePlayPause = async () => {
-    if (!sound) {
+    if (!currentSound) {
       handlePlayAudio();
-    } else if (isPlaying) {
-      await sound?.pauseAsync();
+    }
+
+    if (isPlaying) {
+      await currentSound?.pauseAsync();
     } else {
-      await sound?.playFromPositionAsync(currentTime);
+      await currentSound?.playFromPositionAsync(currentTime);
     }
     setIsPlaying(!isPlaying);
   };
 
   const onChangeSlider = async (time: number) => {
-    await sound?.playFromPositionAsync(time * 1000);
+    await currentSound?.playFromPositionAsync(time * 1000);
     setIsPlaying(true);
   };
-
-  // useEffect(()=>{
-  //   handlePlayPause()
-  // },[])
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
@@ -162,20 +190,20 @@ export const Play = ({ route, navigation }) => {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Pressable onPress={() => navigation.goBack()}>
-                <Feather name={"arrow-left"} size={25 % 100} color="#FFFFFF" />
-              </Pressable>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
 
               <Box>
                 <Center>
-                  <Text color="#FFFFFF" fontSize="sm">
+                  <Text color="#FFFFFF" fontSize="xs">
                     {`TOCANDO DO ${route.params.album.type.toUpperCase()}`}
                   </Text>
 
                   <Text
                     color="#FFFFFF"
                     fontWeight="bold"
-                    fontSize={["sm", "md", "md"]}
+                    fontSize={["xs", "xs", "md"]}
                     marginBottom={["8", "18", "24"]}
                   >
                     {route.params.album.name}
@@ -183,13 +211,13 @@ export const Play = ({ route, navigation }) => {
                 </Center>
               </Box>
 
-              <Pressable>
+              <TouchableOpacity>
                 <Feather
                   name={"more-vertical"}
-                  size={20 % 100}
+                  size={30 % 100}
                   color="#FFFFFF"
                 />
-              </Pressable>
+              </TouchableOpacity>
             </HStack>
 
             <Image
@@ -206,7 +234,7 @@ export const Play = ({ route, navigation }) => {
           </Center>
         </Box>
 
-        <Box style={{ flex: 1 }} marginTop={["20%", "26%", "30%"]} paddingX="8">
+        <Box style={{ flex: 1 }} marginTop={["20%", "24%", "26%"]} paddingX="8">
           <HStack
             space={1}
             justifyContent="space-between"
@@ -223,13 +251,15 @@ export const Play = ({ route, navigation }) => {
               </Text>
             </Box>
 
-            <Pressable>
-              <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
-            </Pressable>
+            <Box alignItems="center" justifyContent="center">
+              <TouchableOpacity>
+                <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+            </Box>
           </HStack>
 
           <Slider
-            style={{ height: 40 }}
+            style={{ height: 40, width: "100%" }}
             value={currentTime / 1000}
             maximumValue={totalDuration / 1000}
             minimumTrackTintColor="#FFFFFF"
@@ -256,33 +286,46 @@ export const Play = ({ route, navigation }) => {
 
           <HStack
             space={8}
-            justifyContent="center"
+            justifyContent="space-evenly"
             alignContent="center"
             alignItems="center"
             marginTop={["0", "4", "6"]}
           >
-            <Pressable>
-              <Feather name="skip-back" size={35 % 100} color="#FFFFFF" />
-            </Pressable>
+            <Box justifyContent="start" alignItems="start" alignContent="start">
+              <TouchableOpacity>
+                <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+            </Box>
+            <TouchableOpacity>
+              <Feather
+                name="skip-back"
+                size={40 % 100}
+                color="#FFFFFF"
+                onPress={playPeviousTrack}
+              />
+            </TouchableOpacity>
 
             {isPlaying ? (
-              <Pressable onPress={handlePlayPause}>
-                <Feather name={"pause"} size={50 % 100} color="#FFFFFF" />
-              </Pressable>
+              <TouchableOpacity onPress={handlePlayPause}>
+                <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
             ) : (
-              <Pressable onPress={handlePlayPause}>
-                <Feather name={"play"} size={50 % 100} color="#FFFFFF" />
-              </Pressable>
+              <TouchableOpacity onPress={handlePlayPause}>
+                <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
             )}
 
-            <Pressable>
+            <TouchableOpacity>
               <Feather
                 onPress={playNextTrack}
                 name="skip-forward"
-                size={35 % 100}
+                size={40 % 100}
                 color="#FFFFFF"
               />
-            </Pressable>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
+            </TouchableOpacity>
           </HStack>
         </Box>
       </LinearGradient>

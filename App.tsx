@@ -1,7 +1,7 @@
 import "react-native-gesture-handler";
 import { NativeBaseProvider, StorageManager, ColorMode } from "native-base";
 import { StatusBar } from "native-base";
-import Routes from "./routes";
+import Routes from "./src/routes";
 import * as Linking from "expo-linking";
 import {
   useQuery,

@@ -1,5 +1,10 @@
 import React from "react";
-import { SafeAreaView, SectionList, Dimensions } from "react-native";
+import {
+  SafeAreaView,
+  SectionList,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import {
   View,
   Image,
@@ -16,11 +21,12 @@ import {
   Pressable,
   Spinner,
   Flex,
+  Select,
 } from "native-base";
 
 import { useGetArtist } from "./hooks";
 import { LinearGradient } from "expo-linear-gradient";
-import { Loading } from "../../../components/Loading";
+import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
 
 type PropsAlbums = {
@@ -51,6 +57,13 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
 
   const IconsPressed = ({ name, color }) => {
     return <Feather name={name} size={35 % 100} color={color} />;
+  };
+
+  const randomTrackPlay = () => {
+    navigation.navigate("home", {
+      screen: "playMusic",
+      params: { album },
+    });
   };
 
   return (
@@ -105,7 +118,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 {album?.type[0].toUpperCase() +
                   album?.type.slice(1) +
                   " ° " +
-                  new Date(album.release_date).getFullYear()}
+                  new Date(album?.release_date).getFullYear()}
               </Text>
             </Box>
             <Box>
@@ -116,33 +129,38 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 paddingY="4"
               >
                 <Box flexDirection="row">
-                  <Pressable marginRight="4">
-                    <Feather name={"heart"} size={20 % 100} color="#FFFFFF" />
-                  </Pressable>
+                  <TouchableOpacity style={{ marginRight: 10 }}>
+                    <Feather name={"heart"} size={26 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
 
-                  <Pressable marginRight="4">
+                  <TouchableOpacity style={{ marginRight: 10 }}>
                     <Feather
                       name={"arrow-down-circle"}
-                      size={20 % 100}
+                      size={26 % 100}
                       color="#FFFFFF"
                     />
-                  </Pressable>
-                  <Pressable marginRight="4">
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ marginRight: 10 }}>
                     <Feather
                       name={"more-vertical"}
-                      size={20 % 100}
+                      size={26 % 100}
                       color="#FFFFFF"
                     />
-                  </Pressable>
+                  </TouchableOpacity>
                 </Box>
 
                 <Box flexDirection="row">
-                  <Pressable marginRight="4">
-                    <Feather name="shuffle" size={35 % 100} color="#FFFFFF" />
-                  </Pressable>
-                  <Pressable>
-                    <Feather name={"play"} size={35 % 100} color="#FFFFFF" />
-                  </Pressable>
+                  <TouchableOpacity style={{ marginRight: 10 }}>
+                    <Feather
+                      name="shuffle"
+                      onPress={randomTrackPlay}
+                      size={38 % 100}
+                      color="#FFFFFF"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Feather name={"play"} size={38 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
                 </Box>
               </Flex>
             </Box>
@@ -150,20 +168,20 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
               data={album.tracks.items}
               keyExtractor={(item) => item?.id}
               renderItem={({ item }) => (
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("home", {
-                      screen: "playMusic",
-                      params: { item, album },
-                    })
-                  }
+                <Box
+                  _dark={{
+                    borderColor: "muted.50",
+                  }}
+                  borderColor="muted.800"
+                  py="2"
                 >
-                  <Box
-                    _dark={{
-                      borderColor: "muted.50",
-                    }}
-                    borderColor="muted.800"
-                    py="2"
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("home", {
+                        screen: "playMusic",
+                        params: { item, album },
+                      })
+                    }
                   >
                     <HStack space={[2, 3]} justifyContent="space-between">
                       <VStack>
@@ -198,8 +216,8 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                         {formatTime(item.duration_ms)}
                       </Text>
                     </HStack>
-                  </Box>
-                </Pressable>
+                  </TouchableOpacity>
+                </Box>
               )}
             />
           </Box>

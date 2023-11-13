@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, ScrollView, View } from "react-native";
 import { HStack, Box, Text, FlatList } from "native-base";
 
-import { CardHome } from "../../../components/CardHome";
-import { CardAlbum } from "../../../components/CardAlbum";
-import { CardNewsReleases } from "../../../components/CardNewsReleases";
-import { Loading } from "../../../components/Loading";
-import { CardTopArtist } from "../../../components/CardTopArtist";
-import { CardPlaylist } from "../../../components/CardPlaylist";
+import {
+  CardAlbum,
+  CardHome,
+  CardNewsReleases,
+  CardPlaylist,
+  CardTopArtist,
+} from "../../components/Cards/index";
+
+import { Loading } from "../../components/Loading";
 
 import {
   useGetProfile,

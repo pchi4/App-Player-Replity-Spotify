@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 
-import { Playlist } from "../../src/screens/Playlist";
+import { Playlist } from "../../screens/Playlist";
 import { useEffect, useState } from "react";
 
 const HeaderPlaylistLeft = ({ person }) => {

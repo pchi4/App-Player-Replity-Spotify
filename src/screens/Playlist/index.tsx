@@ -21,9 +21,9 @@ import {
   Heading,
 } from "native-base";
 
-import { CardPlaylist } from "../../../components/CardPlaylist";
+import { CardPlaylist } from "../../components/Cards/Playlist";
 import { useGetPlaytlist } from "./hooks/useGetPlaytlist";
-import { Loading } from "../../../components/Loading";
+import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
 
 const HeaderList = () => {

@@ -9,13 +9,13 @@ import {
   Text,
   Image,
 } from "native-base";
-import { useGetToken } from "../../../hooks/useGetToken";
+import { useGetToken } from "../../hooks/useGetToken";
 import { useEffect } from "react";
 
 const { width, height } = Dimensions.get("screen");
 
 export const Auth = ({ navigation }: object) => {
-  const { promptAsync, token, accessToken } = useGetToken();
+  const { token, accessToken } = useGetToken();
 
   useEffect(() => {
     if (token) {

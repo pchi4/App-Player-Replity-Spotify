@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 const Stack = createStackNavigator();
 
-import { Home } from "../../src/screens/Home";
-import { Albums } from "../../src/screens/Albums";
-import { Play } from "../../src/screens/Play";
+import { Home } from "../../screens/Home";
+import { Albums } from "../../screens/Albums";
+import { Play } from "../../screens/Play";
 
 export default function HomeScreen() {
   const [token, setToken] = useState(null);

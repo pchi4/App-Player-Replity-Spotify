@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Dimensions } from "react-native";
+import { View, Dimensions, TouchableOpacity } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
 
 type PropsCardPlaylist = {
@@ -27,7 +27,7 @@ export const CardPlaylist = ({
       alignItems="center"
       paddingRight="4"
     >
-      <Pressable onPress={handleClick}>
+      <TouchableOpacity onPress={handleClick}>
         <Box shadow={3}>
           <Image
             alt="Art wor"
@@ -57,7 +57,7 @@ export const CardPlaylist = ({
               items?.owner?.display_name}
           </Text>
         </Box>
-      </Pressable>
+      </TouchableOpacity>
     </Box>
   );
 };

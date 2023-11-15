@@ -146,7 +146,7 @@ export const Home = ({ navigation }: object) => {
                 heightProps={250}
                 items={item}
                 navigation={navigation}
-                handleClick={() => navigation.navigate("albums", item)}
+                handleClick={() => navigation.navigate("playlists", { item })}
               />
             )}
           />

@@ -7,7 +7,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import HomeScreen from "./Stack/Home";
-import PlaylistScreen from "./Stack/Playlist";
+import Library from "./Stack/Library";
 import AuthScreen from "./Stack/Auth";
 
 const Tab = createBottomTabNavigator();
@@ -55,14 +55,21 @@ export default function TabsRoutes() {
           })}
         />
         <Tab.Screen
-          name="playlist"
-          component={PlaylistScreen}
-          options={{
+          name="library"
+          component={Library}
+          options={({ route }) => ({
             tabBarIcon: ({ color, size }) => (
-              <Feather name="disc" color={color} size={size} />
+              <Feather name="home" color={color} size={size} />
             ),
-            tabBarBadge: 3,
-          }}
+            tabBarStyle: ((route) => {
+              console.log(route);
+              const routeName = getFocusedRouteNameFromRoute(route) ?? null;
+              if (routeName === "playlist") {
+                return { display: "none" };
+              }
+              return;
+            })(route),
+          })}
         />
       </Tab.Navigator>
     </NavigationContainer>

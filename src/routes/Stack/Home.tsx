@@ -7,6 +7,7 @@ const Stack = createStackNavigator();
 import { Home } from "../../screens/Home";
 import { Albums } from "../../screens/Albums";
 import { Play } from "../../screens/Play";
+import { Playlist } from "../../screens/Playlist";
 
 export default function HomeScreen() {
   const [token, setToken] = useState(null);
@@ -37,6 +38,13 @@ export default function HomeScreen() {
           headerShown: false,
         }}
         component={Play}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="playlists"
+        component={Playlist}
       />
     </Stack.Navigator>
   );

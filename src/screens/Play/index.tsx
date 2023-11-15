@@ -16,9 +16,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 
 import { Audio, AVPlaybackTolerance } from "expo-av";
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Feather } from "@expo/vector-icons";
 import { Sound } from "expo-av/build/Audio";
+import { usePlayRandom } from "./hooks/usePlayRandom";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -39,6 +46,13 @@ export const Play = ({ route, navigation }) => {
     numberTrack: null,
     uriTrack: null,
     artWork: null,
+  });
+
+  console.log(route.params.album);
+
+  const { randomTrack } = usePlayRandom({
+    item: route.params.item,
+    album: route.params.album,
   });
 
   const handlePlayAudio = async () => {
@@ -177,158 +191,163 @@ export const Play = ({ route, navigation }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  const randomTrackPlay = () => {};
+
   return (
-    <Box style={{ flex: 1 }}>
-      <LinearGradient
-        style={{ height: "100%" }}
-        colors={["#4c669f", "#3b5998", "#192f6a"]}
-      >
-        <Box style={{ flex: 1 }} marginTop="10%" padding="4">
-          <Center>
-            <HStack
-              width="90%"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
-              </TouchableOpacity>
-
-              <Box>
-                <Center>
-                  <Text color="#FFFFFF" fontSize="xs">
-                    {`TOCANDO DO ${route.params.album.type.toUpperCase()}`}
-                  </Text>
-
-                  <Text
-                    color="#FFFFFF"
-                    fontWeight="bold"
-                    fontSize={["xs", "xs", "md"]}
-                    marginBottom={["8", "18", "24"]}
-                  >
-                    {route.params.album.name}
-                  </Text>
-                </Center>
-              </Box>
-
-              <TouchableOpacity>
-                <Feather
-                  name={"more-vertical"}
-                  size={30 % 100}
-                  color="#FFFFFF"
-                />
-              </TouchableOpacity>
-            </HStack>
-
-            <Image
-              marginTop="10%"
-              borderRadius={10}
-              source={
-                { uri: currentTrack.artWork } ??
-                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-              }
-              alt="ArtWork albuns"
-              width={width / 1.2}
-              height={width / 1.2}
-            />
-          </Center>
-        </Box>
-
-        <Box style={{ flex: 1 }} marginTop={["20%", "24%", "26%"]} paddingX="8">
-          <HStack
-            space={1}
-            justifyContent="space-between"
-            marginTop={["18%", "20%", "24%"]}
-            marginBottom={["4", "6", "8"]}
-          >
-            <Box>
-              <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
-                {currentTrack?.name}
-              </Text>
-
-              <Text color="#FFFFFF" fontSize="md">
-                {route.params.item.artists[0].name}
-              </Text>
-            </Box>
-
-            <Box alignItems="center" justifyContent="center">
-              <TouchableOpacity>
-                <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
-              </TouchableOpacity>
-            </Box>
-          </HStack>
-
-          <Slider
-            style={{ height: 40, width: "100%" }}
-            value={currentTime / 1000}
-            maximumValue={totalDuration / 1000}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#FFFFFF"
-            onValueChange={(value) => onChangeSlider(value)}
-          />
-
-          <HStack space="4/6" justifyContent="space-between" marginBottom="5%">
-            <Text
-              color="#FFFFFF"
-              fontWeight="bold"
-              fontSize={["md", "md", "lg"]}
-            >
-              {formatTime(currentTime)}
-            </Text>
-            <Text
-              color="#FFFFFF"
-              fontWeight="bold"
-              fontSize={["md", "md", "lg"]}
-            >
-              {formatTime(totalDuration)}
-            </Text>
-          </HStack>
-
-          <HStack
-            space={8}
-            justifyContent="space-evenly"
-            alignContent="center"
-            alignItems="center"
-            marginTop={["0", "4", "6"]}
-          >
-            <Box justifyContent="start" alignItems="start" alignContent="start">
-              <TouchableOpacity>
-                <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
-              </TouchableOpacity>
-            </Box>
-            <TouchableOpacity>
-              <Feather
-                name="skip-back"
-                size={40 % 100}
-                color="#FFFFFF"
-                onPress={playPeviousTrack}
-              />
-            </TouchableOpacity>
-
-            {isPlaying ? (
-              <TouchableOpacity onPress={handlePlayPause}>
-                <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={handlePlayPause}>
-                <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity>
-              <Feather
-                onPress={playNextTrack}
-                name="skip-forward"
-                size={40 % 100}
-                color="#FFFFFF"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
-            </TouchableOpacity>
-          </HStack>
-        </Box>
-      </LinearGradient>
+    <Box>
+      <Text>Tasdasd</Text>
     </Box>
+    // <Box style={{ flex: 1 }}>
+    //   <LinearGradient
+    //     style={{ height: "100%" }}
+    //     colors={["#4c669f", "#3b5998", "#192f6a"]}
+    //   >
+    //     <Box style={{ flex: 1 }} marginTop="10%" padding="4">
+    //       <Center>
+    //         <HStack
+    //           width="100%"
+    //           justifyContent="space-between"
+    //           alignItems="center"
+    //         >
+    //           <TouchableOpacity onPress={() => navigation.goBack()}>
+    //             <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
+    //           </TouchableOpacity>
+
+    //           <Box>
+    //             <Center>
+    //               <Text color="#FFFFFF" fontSize="xs">
+    //                 {`TOCANDO DO ${route.params.album.type.toUpperCase()}`}
+    //               </Text>
+
+    //               <Text
+    //                 color="#FFFFFF"
+    //                 fontWeight="bold"
+    //                 fontSize={["xs", "xs", "md"]}
+    //                 marginBottom={["8", "18", "24"]}
+    //               >
+    //                 {route.params.album.name}
+    //               </Text>
+    //             </Center>
+    //           </Box>
+
+    //           <TouchableOpacity>
+    //             <Feather
+    //               name={"more-vertical"}
+    //               size={30 % 100}
+    //               color="#FFFFFF"
+    //             />
+    //           </TouchableOpacity>
+    //         </HStack>
+
+    //         <Image
+    //           marginTop="10%"
+    //           borderRadius={10}
+    //           source={
+    //             { uri: currentTrack.artWork } ??
+    //             "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+    //           }
+    //           alt="ArtWork albuns"
+    //           width={width / 1.2}
+    //           height={width / 1.2}
+    //         />
+    //       </Center>
+    //     </Box>
+
+    //     <Box style={{ flex: 1 }} marginTop={["20%", "24%", "26%"]} paddingX="8">
+    //       <HStack
+    //         space={1}
+    //         justifyContent="space-between"
+    //         marginTop={["18%", "20%", "24%"]}
+    //         marginBottom={["4", "6", "8"]}
+    //       >
+    //         <Box>
+    //           <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
+    //             {currentTrack?.name}
+    //           </Text>
+
+    //           <Text color="#FFFFFF" fontSize="md">
+    //             {route.params.item.artists[0].name}
+    //           </Text>
+    //         </Box>
+
+    //         <Box alignItems="center" justifyContent="center">
+    //           <TouchableOpacity>
+    //             <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
+    //           </TouchableOpacity>
+    //         </Box>
+    //       </HStack>
+
+    //       <Slider
+    //         style={{ height: 40, width: "100%" }}
+    //         value={currentTime / 1000}
+    //         maximumValue={totalDuration / 1000}
+    //         minimumTrackTintColor="#FFFFFF"
+    //         maximumTrackTintColor="#FFFFFF"
+    //         onValueChange={(value) => onChangeSlider(value)}
+    //       />
+
+    //       <HStack space="4/6" justifyContent="space-between" marginBottom="5%">
+    //         <Text
+    //           color="#FFFFFF"
+    //           fontWeight="bold"
+    //           fontSize={["md", "md", "lg"]}
+    //         >
+    //           {formatTime(currentTime)}
+    //         </Text>
+    //         <Text
+    //           color="#FFFFFF"
+    //           fontWeight="bold"
+    //           fontSize={["md", "md", "lg"]}
+    //         >
+    //           {formatTime(totalDuration)}
+    //         </Text>
+    //       </HStack>
+
+    //       <HStack
+    //         space={8}
+    //         justifyContent="space-evenly"
+    //         alignContent="center"
+    //         alignItems="center"
+    //         marginTop={["0", "4", "6"]}
+    //       >
+    //         <Box justifyContent="start" alignItems="start" alignContent="start">
+    //           <TouchableOpacity>
+    //             <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
+    //           </TouchableOpacity>
+    //         </Box>
+    //         <TouchableOpacity>
+    //           <Feather
+    //             name="skip-back"
+    //             size={40 % 100}
+    //             color="#FFFFFF"
+    //             onPress={playPeviousTrack}
+    //           />
+    //         </TouchableOpacity>
+
+    //         {isPlaying ? (
+    //           <TouchableOpacity onPress={handlePlayPause}>
+    //             <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
+    //           </TouchableOpacity>
+    //         ) : (
+    //           <TouchableOpacity onPress={handlePlayPause}>
+    //             <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
+    //           </TouchableOpacity>
+    //         )}
+
+    //         <TouchableOpacity>
+    //           <Feather
+    //             onPress={playNextTrack}
+    //             name="skip-forward"
+    //             size={40 % 100}
+    //             color="#FFFFFF"
+    //           />
+    //         </TouchableOpacity>
+    //         <TouchableOpacity>
+    //           <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
+    //         </TouchableOpacity>
+    //       </HStack>
+    //     </Box>
+    //   </LinearGradient>
+    // </Box>
   );
 };

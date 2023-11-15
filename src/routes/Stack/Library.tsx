@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 
+import { Library } from "../../screens/Library";
 import { Playlist } from "../../screens/Playlist";
 import { useEffect, useState } from "react";
 
@@ -72,7 +73,7 @@ export default function PlaylistScreen() {
     >
       <Stack.Screen
         name="Sua Biblioteca"
-        component={Playlist}
+        component={Library}
         options={{
           headerTitleStyle: {
             color: "white",
@@ -80,6 +81,13 @@ export default function PlaylistScreen() {
           headerLeft: () => <HeaderPlaylistLeft person={personProfle} />,
           headerRight: () => <HeaderPLaylistRigth />,
         }}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="playlistCard"
+        component={Playlist}
       />
     </Stack.Navigator>
   );

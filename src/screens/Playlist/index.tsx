@@ -5,7 +5,10 @@ import {
   StatusBar,
   ScrollView,
   View,
+  Dimensions,
+  TouchableOpacity,
 } from "react-native";
+
 import {
   HStack,
   Box,
@@ -19,61 +22,232 @@ import {
   Spinner,
   Pressable,
   Heading,
+  Avatar,
+  Flex,
+  Spacer,
 } from "native-base";
 
-import { CardPlaylist } from "../../components/Cards/Playlist";
-import { useGetPlaytlist } from "./hooks/useGetPlaytlist";
+import { useGetTracksPlaylist, useGetProfile } from "./hooks";
 import { Loading } from "../../components/Loading";
+import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 
-const HeaderList = () => {
-  return (
-    <Box>
-      <HStack justifyContent="space-between" marginRight="4" space="8">
-        <Text marginLeft="4" fontSize="md" fontWeight="bold" color="white">
-          Adicionado recentemente
-        </Text>
-        <Pressable>
-          <Feather name={"align-justify"} size={25 % 100} color="#FFFFFF" />
-        </Pressable>
-      </HStack>
-    </Box>
-  );
-};
+const { width, height } = Dimensions.get("screen");
 
-export const Playlist = ({ navigation }) => {
-  const { data, isError, isLoading, isFetching } = useGetPlaytlist();
+export const Playlist = ({ navigation, route }) => {
+  const {
+    data: tracksPlaylist,
+    isLoading,
+    isFetching,
+  } = useGetTracksPlaylist({
+    id: route.params.item.id,
+    totalTracks: route.params.item.tracks.total,
+  });
 
-  if (isLoading || isFetching) {
+  const {
+    data: profile,
+    isLoading: profileIsLoading,
+    isFetching: profileIsFetching,
+  } = useGetProfile({ id: route.params.item.owner.id });
+
+  if (isLoading || isFetching || profileIsLoading || profileIsFetching) {
     return <Loading />;
   }
 
   return (
     <SafeAreaView>
-      <Box bg="rgb(24, 26, 27)">
-        <Box
-          paddingBottom={StatusBar.currentHeight}
-          paddingTop={StatusBar.currentHeight}
-        >
-          <FlatList
-            data={data?.items}
-            numColumns={2}
-            ListHeaderComponent={() => <HeaderList />}
-            keyExtractor={(item) => String(item?.id)}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <CardPlaylist
-                width={200}
-                height={200}
-                items={item}
-                navigation={navigation}
-                handleClick={() => navigation.navigate("albums", item)}
+      <ScrollView>
+        <LinearGradient colors={["#304566", "#243653", "#16263e"]}>
+          <Box style={{ paddingTop: StatusBar.currentHeight }} padding="4">
+            <HStack
+              width="100%"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <Feather
+                  name={"more-vertical"}
+                  size={30 % 100}
+                  color="#FFFFFF"
+                />
+              </TouchableOpacity>
+            </HStack>
+          </Box>
+
+          <Box paddingY="4">
+            <Center>
+              <Image
+                alt="art work"
+                width={width / 1.5}
+                height={width / 1.5}
+                rounded="md"
+                source={{ uri: route.params.item?.images[0].url }}
               />
-            )}
-          />
-        </Box>
-      </Box>
+            </Center>
+          </Box>
+          <Box paddingX="4">
+            <Text
+              fontSize={["xl", "3xl", "4xl"]}
+              fontWeight="bold"
+              paddingBottom="2"
+              color="white"
+            >
+              {route?.params.item.name}
+            </Text>
+
+            <HStack justifyContent="start" paddingY="4">
+              <Avatar
+                bg="green.500"
+                size="sm"
+                source={{
+                  uri: profile?.images[0].url,
+                }}
+              ></Avatar>
+              <Text
+                fontSize="lg"
+                marginLeft="2"
+                fontWeight="bold"
+                color="white"
+              >
+                {route.params.item.owner.display_name}
+              </Text>
+            </HStack>
+            <Box>
+              {/* <Text
+                fontSize={["sm", "sm", "md"]}
+                fontWeight="bold"
+                paddingBottom="2"
+                color="coolGray.300"
+              >
+                {album?.type[0].toUpperCase() +
+                  album?.type.slice(1) +
+                  " ° " +
+                  new Date(album?.release_date).getFullYear()}
+              </Text> */}
+            </Box>
+            <Box>
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                direction="row"
+                paddingY="4"
+              >
+                <Box flexDirection="row">
+                  <TouchableOpacity style={{ marginRight: 10 }}>
+                    <Feather name={"heart"} size={26 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={{ marginRight: 10 }}>
+                    <Feather
+                      name={"arrow-down-circle"}
+                      size={26 % 100}
+                      color="#FFFFFF"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ marginRight: 10 }}>
+                    <Feather
+                      name={"more-vertical"}
+                      size={26 % 100}
+                      color="#FFFFFF"
+                    />
+                  </TouchableOpacity>
+                </Box>
+
+                <Box flexDirection="row">
+                  <TouchableOpacity style={{ marginRight: 10 }}>
+                    <Feather name="shuffle" size={38 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Feather name={"play"} size={38 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
+                </Box>
+              </Flex>
+
+              <FlatList
+                data={tracksPlaylist.items}
+                keyExtractor={(item) => item?.id}
+                renderItem={({ item }) => (
+                  <Box
+                    _dark={{
+                      borderColor: "muted.50",
+                    }}
+                    borderColor="muted.800"
+                    py="2"
+                  >
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("home", {
+                          screen: "playMusic",
+                          params: {
+                            item,
+                            album: {
+                              ...tracksPlaylist.items[0],
+                              items: [tracksPlaylist.items[0].track.album],
+                            },
+                          },
+                        })
+                      }
+                    >
+                      <HStack space={[2, 3]} justifyContent="space-between">
+                        <Image
+                          alt="art work"
+                          width={width / 9}
+                          height={width / 9}
+                          rounded="md"
+                          source={{
+                            uri: item.track.album.images[0].url,
+                          }}
+                        />
+                        <VStack alignContent="start" alignItems="start">
+                          <Text
+                            _dark={{
+                              color: "warmGray.50",
+                            }}
+                            color="white"
+                            bold
+                            fontSize="md"
+                          >
+                            {item.track.name}
+                          </Text>
+                          <Text
+                            color="white"
+                            _dark={{
+                              color: "warmGray.200",
+                            }}
+                          >
+                            {item.track.album.artists[0].name}
+                          </Text>
+                        </VStack>
+                        <Spacer />
+                        <Text
+                          fontSize="xs"
+                          _dark={{
+                            color: "warmGray.50",
+                          }}
+                          color="white"
+                          alignSelf="flex-start"
+                          alignItems="center"
+                        >
+                          <Feather
+                            name={"more-vertical"}
+                            size={26 % 100}
+                            color="#FFFFFF"
+                          />
+                          {/* {formatTime(item.duration_ms)} */}
+                        </Text>
+                      </HStack>
+                    </TouchableOpacity>
+                  </Box>
+                )}
+              />
+            </Box>
+          </Box>
+        </LinearGradient>
+      </ScrollView>
     </SafeAreaView>
   );
 };

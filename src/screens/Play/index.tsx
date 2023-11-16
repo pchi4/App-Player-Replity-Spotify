@@ -39,6 +39,7 @@ export const Play = ({ route, navigation }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [numberTrack, setNumberTrack] = useState(null);
   const value = useRef(route.params.item.track_number);
+  const numberTrackPlaylist = useRef(route.params.album.tracks.index);
 
   const [currentTrack, setCurrentTrack] = useState({
     name: null,
@@ -48,7 +49,8 @@ export const Play = ({ route, navigation }) => {
     artWork: null,
   });
 
-  console.log(route.params.album);
+  // console.log(route.params.album.tracks.items);
+  // console.log(route.params.item);
 
   const { randomTrack } = usePlayRandom({
     item: route.params.item,
@@ -94,28 +96,43 @@ export const Play = ({ route, navigation }) => {
       return;
     }
 
-    const nextTrack = route.params.album.tracks.items[value.current];
+    // const idx = route.params.album.tracks.index;
 
+    // const findObjt = route.params.tracks.items.find((e)=>{
+    //   return
+    // })
+
+    const nextTrack =
+      route.params.album.tracks.items[
+        value.current ?? numberTrackPlaylist.current
+      ];
+
+    console.log(route.params.album.tracks.items);
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork: route.params.album.images[0].url,
+      artWork: route.params.album.images[0].url ?? nextTrack.images[0].url,
     });
 
     handlePlayAudio();
-  }, [value.current]);
+  }, [value.current ?? numberTrackPlaylist.current]);
 
   const verifyIsFirstTrack = async () => {
-    const nextTrack = route.params.album.tracks.items[value.current - 1];
+    const nextTrack =
+      route.params.album.tracks.items[
+        value.current - 1 ?? numberTrackPlaylist.current - 1
+      ];
+
+    console.log(route.params.album.tracks.items);
 
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork: route.params.album.images[0].url,
+      artWork: route.params.album.images[0].url ?? nextTrack.images[0].url,
     });
 
     await handlePlayAudio();
@@ -125,14 +142,19 @@ export const Play = ({ route, navigation }) => {
     if (value.current > route.params.album.tracks.items.length) return;
     value.current += 1;
 
-    const nextTrack = route.params.album.tracks.items[value.current];
+    const nextTrack =
+      route.params.album.tracks.items[
+        value.current ?? numberTrackPlaylist.current
+      ];
 
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork: route.params.album.images[0].url,
+      artWork:
+        route.params.album.images[0].url ??
+        route.params.album.tracks.items[0].images[0].url,
     });
   };
 
@@ -140,14 +162,19 @@ export const Play = ({ route, navigation }) => {
     if (value.current <= 0) return;
     value.current -= 1;
 
-    const nextTrack = route.params.album.tracks.items[value.current];
+    const nextTrack =
+      route.params.album.tracks.items[
+        value.current ?? numberTrackPlaylist.current
+      ];
 
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork: route.params.album.images[0].url,
+      artWork:
+        route.params.album.images[0].url ??
+        route.params.album.tracks.items.images[0].url,
     });
   };
 

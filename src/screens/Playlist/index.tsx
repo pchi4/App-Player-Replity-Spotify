@@ -71,6 +71,8 @@ export const Playlist = ({ navigation, route }) => {
               <TouchableOpacity>
                 <Feather
                   name={"more-vertical"}
+                  desce
+                  lico
                   size={30 % 100}
                   color="#FFFFFF"
                 />
@@ -170,7 +172,7 @@ export const Playlist = ({ navigation, route }) => {
               <FlatList
                 data={tracksPlaylist.items}
                 keyExtractor={(item) => item?.id}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                   <Box
                     _dark={{
                       borderColor: "muted.50",
@@ -185,8 +187,12 @@ export const Playlist = ({ navigation, route }) => {
                           params: {
                             item,
                             album: {
-                              ...tracksPlaylist.items[0],
-                              items: [tracksPlaylist.items[0].track.album],
+                              tracks: {
+                                index,
+                                items: tracksPlaylist.items.map((value) => {
+                                  return value.track.album;
+                                }),
+                              },
                             },
                           },
                         })

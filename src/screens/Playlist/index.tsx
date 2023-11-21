@@ -44,6 +44,8 @@ export const Playlist = ({ navigation, route }) => {
     totalTracks: route.params.item.tracks.total,
   });
 
+  console.log(route.params);
+
   const {
     data: profile,
     isLoading: profileIsLoading,
@@ -53,6 +55,21 @@ export const Playlist = ({ navigation, route }) => {
   if (isLoading || isFetching || profileIsLoading || profileIsFetching) {
     return <Loading />;
   }
+
+  const formatedParams = (params: object): object => {
+    return {
+      preview_url: params.track.preview_url,
+      duration_ms: params.track.duration_ms,
+      name: params.track.name,
+      images: params.track.album.images,
+      track_number: params.track.track_number,
+      album: {
+        name: params.track.album.name,
+        type: params.track.album.type,
+      },
+      artists: params.track.album.artists,
+    };
+  };
 
   return (
     <SafeAreaView>
@@ -170,8 +187,8 @@ export const Playlist = ({ navigation, route }) => {
               </Flex>
 
               <FlatList
-                data={tracksPlaylist.items}
-                keyExtractor={(item) => item?.id}
+                data={tracksPlaylist?.items}
+                keyExtractor={(item) => item?.track.id}
                 renderItem={({ item, index }) => (
                   <Box
                     _dark={{
@@ -190,7 +207,7 @@ export const Playlist = ({ navigation, route }) => {
                               tracks: {
                                 index,
                                 items: tracksPlaylist.items.map((value) => {
-                                  return value.track.album;
+                                  return formatedParams(value);
                                 }),
                               },
                             },

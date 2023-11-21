@@ -45,8 +45,10 @@ export const Play = ({ route, navigation }) => {
     name: null,
     duration: null,
     numberTrack: null,
-    uriTrack: null,
+    uriTrack: "",
     artWork: null,
+    artists: null,
+    album: null,
   });
 
   // console.log(route.params.album.tracks.items);
@@ -96,24 +98,20 @@ export const Play = ({ route, navigation }) => {
       return;
     }
 
-    // const idx = route.params.album.tracks.index;
-
-    // const findObjt = route.params.tracks.items.find((e)=>{
-    //   return
-    // })
-
     const nextTrack =
       route.params.album.tracks.items[
         value.current ?? numberTrackPlaylist.current
       ];
 
-    console.log(route.params.album.tracks.items);
+    console.log(nextTrack);
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork: route.params.album.images[0].url ?? nextTrack.images[0].url,
+      artWork: nextTrack.images[0].url,
+      nameArtist: nextTrack.artists[0].name,
+      nameAlbum: nextTrack.album.name,
     });
 
     handlePlayAudio();
@@ -125,22 +123,33 @@ export const Play = ({ route, navigation }) => {
         value.current - 1 ?? numberTrackPlaylist.current - 1
       ];
 
-    console.log(route.params.album.tracks.items);
+    console.log(nextTrack);
 
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork: route.params.album.images[0].url ?? nextTrack.images[0].url,
+      artWork: nextTrack.images[0].url,
+      nameArtist: nextTrack.artists[0].name,
+      nameAlbum: nextTrack.album.name,
     });
 
     await handlePlayAudio();
   };
 
   const playNextTrack = async () => {
-    if (value.current > route.params.album.tracks.items.length) return;
-    value.current += 1;
+    if (
+      value.current ||
+      numberTrackPlaylist.current > route.params.album.tracks.items.length
+    )
+      return;
+    if (value.current) {
+      value.current += 1;
+    } else {
+      numberTrackPlaylist.current += 1;
+    }
+    // if (numberTrackPlaylist.current)
 
     const nextTrack =
       route.params.album.tracks.items[
@@ -152,15 +161,19 @@ export const Play = ({ route, navigation }) => {
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork:
-        route.params.album.images[0].url ??
-        route.params.album.tracks.items[0].images[0].url,
+      artWork: nextTrack.images[0].url,
+      nameArtist: nextTrack.artists[0].name,
+      nameAlbum: nextTrack.album.name,
     });
   };
 
   const playPeviousTrack = async () => {
     if (value.current <= 0) return;
-    value.current -= 1;
+    if (value.current) {
+      value.current += 1;
+    } else {
+      numberTrackPlaylist.current += 1;
+    }
 
     const nextTrack =
       route.params.album.tracks.items[
@@ -172,9 +185,9 @@ export const Play = ({ route, navigation }) => {
       numberTrack: nextTrack.track_number,
       uriTrack: nextTrack.preview_url,
       duration: nextTrack.duration_ms,
-      artWork:
-        route.params.album.images[0].url ??
-        route.params.album.tracks.items.images[0].url,
+      artWork: nextTrack.images[0].url,
+      nameArtist: nextTrack.artists[0].name,
+      nameAlbum: nextTrack.album.name,
     });
   };
 
@@ -221,160 +234,157 @@ export const Play = ({ route, navigation }) => {
   const randomTrackPlay = () => {};
 
   return (
-    <Box>
-      <Text>Tasdasd</Text>
+    <Box style={{ flex: 1 }}>
+      <LinearGradient
+        style={{ height: "100%" }}
+        colors={["#4c669f", "#3b5998", "#192f6a"]}
+      >
+        <Box style={{ flex: 1 }} marginTop="10%" padding="4">
+          <Center>
+            <HStack
+              width="100%"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+
+              <Box>
+                <Center>
+                  <Text color="#FFFFFF" fontSize="xs">
+                    {`TOCANDO DO ALBUM`}
+                  </Text>
+
+                  <Text
+                    color="#FFFFFF"
+                    fontWeight="bold"
+                    fontSize={["xs", "xs", "md"]}
+                    marginBottom={["8", "18", "24"]}
+                  >
+                    {currentTrack?.nameAlbum}
+                  </Text>
+                </Center>
+              </Box>
+
+              <TouchableOpacity>
+                <Feather
+                  name={"more-vertical"}
+                  size={30 % 100}
+                  color="#FFFFFF"
+                />
+              </TouchableOpacity>
+            </HStack>
+
+            <Image
+              marginTop="10%"
+              borderRadius={10}
+              source={
+                { uri: currentTrack?.artWork } ??
+                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+              }
+              alt="ArtWork albuns"
+              width={width / 1.2}
+              height={width / 1.2}
+            />
+          </Center>
+        </Box>
+
+        <Box style={{ flex: 1 }} marginTop={["20%", "24%", "26%"]} paddingX="8">
+          <HStack
+            space={1}
+            justifyContent="space-between"
+            marginTop={["18%", "20%", "24%"]}
+            marginBottom={["4", "6", "8"]}
+          >
+            <Box>
+              <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
+                {currentTrack?.name}
+              </Text>
+
+              <Text color="#FFFFFF" fontSize="md">
+                {currentTrack?.nameArtist}
+              </Text>
+            </Box>
+
+            <Box alignItems="center" justifyContent="center">
+              <TouchableOpacity>
+                <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+            </Box>
+          </HStack>
+
+          <Slider
+            style={{ height: 40, width: "100%" }}
+            value={currentTime / 1000}
+            maximumValue={totalDuration / 1000}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#FFFFFF"
+            onValueChange={(value) => onChangeSlider(value)}
+          />
+
+          <HStack space="4/6" justifyContent="space-between" marginBottom="5%">
+            <Text
+              color="#FFFFFF"
+              fontWeight="bold"
+              fontSize={["md", "md", "lg"]}
+            >
+              {formatTime(currentTime)}
+            </Text>
+            <Text
+              color="#FFFFFF"
+              fontWeight="bold"
+              fontSize={["md", "md", "lg"]}
+            >
+              {formatTime(totalDuration)}
+            </Text>
+          </HStack>
+
+          <HStack
+            space={8}
+            justifyContent="space-evenly"
+            alignContent="center"
+            alignItems="center"
+            marginTop={["0", "4", "6"]}
+          >
+            <Box justifyContent="start" alignItems="start" alignContent="start">
+              <TouchableOpacity>
+                <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+            </Box>
+            <TouchableOpacity>
+              <Feather
+                name="skip-back"
+                size={40 % 100}
+                color="#FFFFFF"
+                onPress={playPeviousTrack}
+              />
+            </TouchableOpacity>
+
+            {isPlaying ? (
+              <TouchableOpacity onPress={handlePlayPause}>
+                <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={handlePlayPause}>
+                <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity>
+              <Feather
+                onPress={playNextTrack}
+                name="skip-forward"
+                size={40 % 100}
+                color="#FFFFFF"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
+            </TouchableOpacity>
+          </HStack>
+        </Box>
+      </LinearGradient>
     </Box>
-    // <Box style={{ flex: 1 }}>
-    //   <LinearGradient
-    //     style={{ height: "100%" }}
-    //     colors={["#4c669f", "#3b5998", "#192f6a"]}
-    //   >
-    //     <Box style={{ flex: 1 }} marginTop="10%" padding="4">
-    //       <Center>
-    //         <HStack
-    //           width="100%"
-    //           justifyContent="space-between"
-    //           alignItems="center"
-    //         >
-    //           <TouchableOpacity onPress={() => navigation.goBack()}>
-    //             <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
-    //           </TouchableOpacity>
-
-    //           <Box>
-    //             <Center>
-    //               <Text color="#FFFFFF" fontSize="xs">
-    //                 {`TOCANDO DO ${route.params.album.type.toUpperCase()}`}
-    //               </Text>
-
-    //               <Text
-    //                 color="#FFFFFF"
-    //                 fontWeight="bold"
-    //                 fontSize={["xs", "xs", "md"]}
-    //                 marginBottom={["8", "18", "24"]}
-    //               >
-    //                 {route.params.album.name}
-    //               </Text>
-    //             </Center>
-    //           </Box>
-
-    //           <TouchableOpacity>
-    //             <Feather
-    //               name={"more-vertical"}
-    //               size={30 % 100}
-    //               color="#FFFFFF"
-    //             />
-    //           </TouchableOpacity>
-    //         </HStack>
-
-    //         <Image
-    //           marginTop="10%"
-    //           borderRadius={10}
-    //           source={
-    //             { uri: currentTrack.artWork } ??
-    //             "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-    //           }
-    //           alt="ArtWork albuns"
-    //           width={width / 1.2}
-    //           height={width / 1.2}
-    //         />
-    //       </Center>
-    //     </Box>
-
-    //     <Box style={{ flex: 1 }} marginTop={["20%", "24%", "26%"]} paddingX="8">
-    //       <HStack
-    //         space={1}
-    //         justifyContent="space-between"
-    //         marginTop={["18%", "20%", "24%"]}
-    //         marginBottom={["4", "6", "8"]}
-    //       >
-    //         <Box>
-    //           <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
-    //             {currentTrack?.name}
-    //           </Text>
-
-    //           <Text color="#FFFFFF" fontSize="md">
-    //             {route.params.item.artists[0].name}
-    //           </Text>
-    //         </Box>
-
-    //         <Box alignItems="center" justifyContent="center">
-    //           <TouchableOpacity>
-    //             <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
-    //           </TouchableOpacity>
-    //         </Box>
-    //       </HStack>
-
-    //       <Slider
-    //         style={{ height: 40, width: "100%" }}
-    //         value={currentTime / 1000}
-    //         maximumValue={totalDuration / 1000}
-    //         minimumTrackTintColor="#FFFFFF"
-    //         maximumTrackTintColor="#FFFFFF"
-    //         onValueChange={(value) => onChangeSlider(value)}
-    //       />
-
-    //       <HStack space="4/6" justifyContent="space-between" marginBottom="5%">
-    //         <Text
-    //           color="#FFFFFF"
-    //           fontWeight="bold"
-    //           fontSize={["md", "md", "lg"]}
-    //         >
-    //           {formatTime(currentTime)}
-    //         </Text>
-    //         <Text
-    //           color="#FFFFFF"
-    //           fontWeight="bold"
-    //           fontSize={["md", "md", "lg"]}
-    //         >
-    //           {formatTime(totalDuration)}
-    //         </Text>
-    //       </HStack>
-
-    //       <HStack
-    //         space={8}
-    //         justifyContent="space-evenly"
-    //         alignContent="center"
-    //         alignItems="center"
-    //         marginTop={["0", "4", "6"]}
-    //       >
-    //         <Box justifyContent="start" alignItems="start" alignContent="start">
-    //           <TouchableOpacity>
-    //             <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
-    //           </TouchableOpacity>
-    //         </Box>
-    //         <TouchableOpacity>
-    //           <Feather
-    //             name="skip-back"
-    //             size={40 % 100}
-    //             color="#FFFFFF"
-    //             onPress={playPeviousTrack}
-    //           />
-    //         </TouchableOpacity>
-
-    //         {isPlaying ? (
-    //           <TouchableOpacity onPress={handlePlayPause}>
-    //             <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
-    //           </TouchableOpacity>
-    //         ) : (
-    //           <TouchableOpacity onPress={handlePlayPause}>
-    //             <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
-    //           </TouchableOpacity>
-    //         )}
-
-    //         <TouchableOpacity>
-    //           <Feather
-    //             onPress={playNextTrack}
-    //             name="skip-forward"
-    //             size={40 % 100}
-    //             color="#FFFFFF"
-    //           />
-    //         </TouchableOpacity>
-    //         <TouchableOpacity>
-    //           <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
-    //         </TouchableOpacity>
-    //       </HStack>
-    //     </Box>
-    //   </LinearGradient>
-    // </Box>
   );
 };

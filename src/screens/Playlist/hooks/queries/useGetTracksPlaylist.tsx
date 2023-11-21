@@ -25,9 +25,9 @@ export const useGetTracksPlaylist = ({ id, totalTracks }) => {
     enabled: !!id,
     refetchOnWindowFocus: false,
     onError: (error) => {
-      // Object.keys(error).forEach((k) => {
-      //   console.log(k, error[k]);
-      // });
+      Object.keys(error).forEach((k) => {
+        console.log(k, error[k]);
+      });
     },
   });
 };

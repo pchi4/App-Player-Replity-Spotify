@@ -136,7 +136,7 @@ export const Home = ({ navigation }: object) => {
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
             data={playlist.items}
-            keyExtractor={(item) => item?.id}
+            keyExtractor={(item) => String(item?.id)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             horizontal

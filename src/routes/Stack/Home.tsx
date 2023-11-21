@@ -31,7 +31,13 @@ export default function HomeScreen() {
       }}
     >
       <Stack.Screen name="Seja bem-vindo(a)" component={Home} />
-      <Stack.Screen name="albums" component={Albums} />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="albums"
+        component={Albums}
+      />
       <Stack.Screen
         name="playMusic"
         options={{

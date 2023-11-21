@@ -4,6 +4,7 @@ import {
   SectionList,
   Dimensions,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import {
   View,
@@ -37,13 +38,13 @@ type PropsAlbums = {
 const { width, height } = Dimensions.get("screen");
 
 export const Albums = ({ route, navigation }: PropsAlbums) => {
-  const { album } = route.params;
+  console.log(route.params);
 
   const {
     data: artists,
     isFetching,
     isLoading,
-  } = useGetArtist({ id: album?.artists[0].id });
+  } = useGetArtist({ id: route.params.album?.artists[0].id });
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
@@ -66,29 +67,64 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     });
   };
 
+  const formatedParams = (params: object): object => {
+    return {
+      preview_url: params.track.preview_url,
+      duration_ms: params.track.duration_ms,
+      name: params.track.name,
+      images: params.track.album.images,
+      track_number: params.track.track_number,
+      album: {
+        name: params.track.album.name,
+        type: params.track.album.type,
+      },
+      artists: params.track.album.artists,
+    };
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
-        <LinearGradient colors={["#304566", "#243653", "#16263e"]}>
-          <Box paddingY="4">
+        <LinearGradient colors={["#a3a5a8", "#212224", "#212224"]}>
+          <Box style={{ paddingTop: StatusBar.currentHeight }}>
+            <HStack
+              width="100%"
+              justifyContent="space-between"
+              alignItems="center"
+              paddingX="4"
+            >
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Feather name={"arrow-left"} size={30 % 100} color="#FFFFFF" />
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <Feather
+                  name={"more-vertical"}
+                  desce
+                  lico
+                  size={30 % 100}
+                  color="#FFFFFF"
+                />
+              </TouchableOpacity>
+            </HStack>
             <Center>
               <Image
                 alt="art work"
                 width={width / 1.5}
                 height={width / 1.5}
                 rounded="md"
-                source={{ uri: album?.images[0].url }}
+                source={{ uri: route.params.album?.images[0].url }}
               />
             </Center>
           </Box>
           <Box paddingX="4">
             <Text
-              fontSize={["xl", "3xl", "4xl"]}
+              fontSize={["xl", "2xl", "3xl"]}
               fontWeight="bold"
-              paddingBottom="2"
+              paddingY="2"
               color="white"
             >
-              {album?.name}
+              {route.params.album?.name}
             </Text>
 
             <HStack justifyContent="start" paddingY="4">
@@ -96,7 +132,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 bg="green.500"
                 size="sm"
                 source={{
-                  uri: artists?.images[0].url,
+                  uri: route.params.artists?.images[0].url,
                 }}
               ></Avatar>
               <Text
@@ -105,7 +141,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 fontWeight="bold"
                 color="white"
               >
-                {album?.artists[0].name}
+                {route.params.album?.artists[0].name}
               </Text>
             </HStack>
             <Box>
@@ -115,10 +151,10 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 paddingBottom="2"
                 color="coolGray.300"
               >
-                {album?.type[0].toUpperCase() +
-                  album?.type.slice(1) +
+                {route.params.album?.type[0].toUpperCase() +
+                  route.params.album?.type.slice(1) +
                   " ° " +
-                  new Date(album?.release_date).getFullYear()}
+                  new Date(route.params.album?.release_date).getFullYear()}
               </Text>
             </Box>
             <Box>
@@ -151,12 +187,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
 
                 <Box flexDirection="row">
                   <TouchableOpacity style={{ marginRight: 10 }}>
-                    <Feather
-                      name="shuffle"
-                      onPress={randomTrackPlay}
-                      size={38 % 100}
-                      color="#FFFFFF"
-                    />
+                    <Feather name="shuffle" size={38 % 100} color="#FFFFFF" />
                   </TouchableOpacity>
                   <TouchableOpacity>
                     <Feather name={"play"} size={38 % 100} color="#FFFFFF" />
@@ -165,9 +196,9 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
               </Flex>
             </Box>
             <FlatList
-              data={album.tracks.items}
+              data={route.params.album.tracks.items}
               keyExtractor={(item) => item?.id}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <Box
                   _dark={{
                     borderColor: "muted.50",
@@ -179,7 +210,30 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                     onPress={() =>
                       navigation.navigate("home", {
                         screen: "playMusic",
-                        params: { item, album },
+                        params: {
+                          item,
+                          album: {
+                            tracks: {
+                              index,
+                              items: route.params.album.tracks.items.map(
+                                (value) => {
+                                  return {
+                                    preview_url: value.preview_url,
+                                    duration_ms: value.duration_ms,
+                                    name: value.name,
+                                    images: route.params.album.images,
+                                    track_number: value.track_number,
+                                    album: {
+                                      name: route.params.album.name,
+                                      type: route.params.album.type,
+                                    },
+                                    artists: route.params.album.artists,
+                                  };
+                                }
+                              ),
+                            },
+                          },
+                        },
                       })
                     }
                   >
@@ -201,7 +255,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                             color: "warmGray.200",
                           }}
                         >
-                          {album?.artists[0].name}
+                          {route.params.album?.artists[0].name}
                         </Text>
                       </VStack>
                       <Spacer />

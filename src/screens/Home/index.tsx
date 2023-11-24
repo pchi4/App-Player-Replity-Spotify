@@ -105,6 +105,35 @@ export const Home = ({ navigation }: object) => {
 
           <Box paddingTop="6">
             <Text fontSize="2xl" fontWeight="bold" color="white">
+              Suas playlists
+            </Text>
+          </Box>
+
+          <FlatList
+            style={{ paddingTop: StatusBar.currentHeight }}
+            data={playlist.items}
+            keyExtractor={(item) => String(item?.id)}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            renderItem={({ item }) => (
+              <CardPlaylist
+                widthProps={250}
+                heightProps={250}
+                items={item}
+                navigation={navigation}
+                handleClick={() =>
+                  navigation.navigate("playlists", {
+                    item,
+                    limit: item.tracks.total,
+                  })
+                }
+              />
+            )}
+          />
+
+          <Box paddingTop="6">
+            <Text fontSize="2xl" fontWeight="bold" color="white">
               Novidades na área
             </Text>
           </Box>
@@ -123,30 +152,6 @@ export const Home = ({ navigation }: object) => {
                 items={item}
                 navigation={navigation}
                 handleClick={() => navigation.navigate("albums", item)}
-              />
-            )}
-          />
-
-          <Box paddingTop="6">
-            <Text fontSize="2xl" fontWeight="bold" color="white">
-              Suas playlists
-            </Text>
-          </Box>
-
-          <FlatList
-            style={{ paddingTop: StatusBar.currentHeight }}
-            data={playlist.items}
-            keyExtractor={(item) => String(item?.id)}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            renderItem={({ item }) => (
-              <CardPlaylist
-                widthProps={250}
-                heightProps={250}
-                items={item}
-                navigation={navigation}
-                handleClick={() => navigation.navigate("playlists", { item })}
               />
             )}
           />

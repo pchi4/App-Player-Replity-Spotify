@@ -24,7 +24,7 @@ export default function TabsRoutes() {
             borderTopWidth: 0,
             elevation: 0,
           },
-          tabBarActiveTintColor: "#FFFFFF",
+          tabBarActiveTintColor: "#000000",
           tabBarInactiveTintColor: "rgb(111 109 213)",
         }}
       >
@@ -41,11 +41,11 @@ export default function TabsRoutes() {
           name="home"
           component={HomeScreen}
           options={({ route }) => ({
+            title: "Inicio",
             tabBarIcon: ({ color, size }) => (
               <Feather name="home" color={color} size={size} />
             ),
             tabBarStyle: ((route) => {
-              console.log(route);
               const routeName = getFocusedRouteNameFromRoute(route) ?? null;
               if (routeName === "playMusic") {
                 return { display: "none" };
@@ -58,15 +58,17 @@ export default function TabsRoutes() {
           name="library"
           component={Library}
           options={({ route }) => ({
+            title: "Sua Biblioteca",
             tabBarIcon: ({ color, size }) => (
-              <Feather name="home" color={color} size={size} />
+              <Feather name="disc" color={color} size={size} />
             ),
+
             tabBarStyle: ((route) => {
-              console.log(route);
               const routeName = getFocusedRouteNameFromRoute(route) ?? null;
               if (routeName === "playlist") {
                 return { display: "none" };
               }
+
               return;
             })(route),
           })}

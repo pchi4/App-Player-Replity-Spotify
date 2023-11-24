@@ -35,16 +35,21 @@ import { Feather } from "@expo/vector-icons";
 const { width, height } = Dimensions.get("screen");
 
 export const Playlist = ({ navigation, route }) => {
+  const verifyLimitMax100 = (value: number): number => {
+    if (value >= 100) {
+      return 100;
+    }
+    return value;
+  };
+
   const {
     data: tracksPlaylist,
     isLoading,
     isFetching,
   } = useGetTracksPlaylist({
     id: route.params.item.id,
-    totalTracks: route.params.item.tracks.total,
+    totalTracks: verifyLimitMax100(route.params.limit),
   });
-
-  console.log(route.params);
 
   const {
     data: profile,
@@ -233,6 +238,8 @@ export const Playlist = ({ navigation, route }) => {
                             color="white"
                             bold
                             fontSize="md"
+                            isTruncated
+                            maxWidth="sm"
                           >
                             {item.track.name}
                           </Text>

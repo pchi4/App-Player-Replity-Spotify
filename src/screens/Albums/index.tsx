@@ -245,11 +245,14 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                           }}
                           color="white"
                           bold
+                          isTruncated
+                          maxWidth="sm"
                           fontSize="md"
                         >
                           {item.name}
                         </Text>
                         <Text
+                          fontSize="xs"
                           color="white"
                           _dark={{
                             color: "warmGray.200",

@@ -5,6 +5,7 @@ import {
   StatusBar,
   ScrollView,
   View,
+  Dimensions,
 } from "react-native";
 import {
   HStack,
@@ -21,6 +22,8 @@ import {
   Heading,
 } from "native-base";
 
+const { width, height } = Dimensions.get("screen");
+
 import { CardPlaylist } from "../../components/Cards/index";
 import { useGetPlaytlist } from "./hooks/useGetPlaytlist";
 import { Loading } from "../../components/Loading";
@@ -29,7 +32,12 @@ import { Feather } from "@expo/vector-icons";
 const HeaderList = () => {
   return (
     <Box>
-      <HStack justifyContent="space-between" marginRight="4" space="8">
+      <HStack
+        justifyContent="space-between"
+        marginRight="4"
+        paddingY="2"
+        space="8"
+      >
         <Text marginLeft="4" fontSize="md" fontWeight="bold" color="white">
           Adicionado recentemente
         </Text>
@@ -54,6 +62,7 @@ export const Library = ({ navigation }) => {
         <Box
           paddingBottom={StatusBar.currentHeight}
           paddingTop={StatusBar.currentHeight}
+          justifyContent="space-between"
         >
           <FlatList
             data={data?.items}
@@ -63,13 +72,15 @@ export const Library = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <CardPlaylist
-                width={200}
-                height={200}
-                items={item}
-                navigation={navigation}
-                handleClick={() => navigation.navigate("playlist", item)}
-              />
+              <View>
+                <CardPlaylist
+                  width={150}
+                  height={150}
+                  items={item}
+                  navigation={navigation}
+                  handleClick={() => navigation.navigate("playlists", { item })}
+                />
+              </View>
             )}
           />
         </Box>

@@ -1,5 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { Avatar, HStack, Box, Text, Pressable } from "native-base";
+import { TouchableOpacity } from "react-native";
+import { Avatar, HStack, Box, Text, Pressable, FlatList } from "native-base";
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -38,16 +39,43 @@ const HeaderPlaylistLeft = ({ person }) => {
   );
 };
 
+const Tags = ({ item }) => {
+  return (
+    <TouchableOpacity>
+      <Box rounded="xl">
+        <Text color="white">{item.title}</Text>
+      </Box>
+    </TouchableOpacity>
+  );
+};
+
 const HeaderPLaylistRigth = () => {
   return (
     <HStack justifyContent="space-between" marginRight="4" space="8">
       <Pressable>
-        <Feather name={"search"} size={25 % 100} color="#FFFFFF" />
+        <Feather name={"search"} size={28 % 100} color="#FFFFFF" />
       </Pressable>
       <Pressable>
-        <Feather name={"plus"} size={25 % 100} color="#FFFFFF" />
+        <Feather name={"plus"} size={28 % 100} color="#FFFFFF" />
       </Pressable>
     </HStack>
+  );
+};
+
+const CarouselOptions = () => {
+  const a = [
+    { title: "Playlist", id: 0 },
+    { title: "Albuns", id: 1 },
+  ];
+  return (
+    <FlatList
+      data={a}
+      keyExtractor={(item) => String(item?.id)}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      horizontal
+      renderItem={({ item }) => <Tags item={item} />}
+    />
   );
 };
 
@@ -67,7 +95,7 @@ export default function PlaylistScreen() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: "rgb(145, 174, 198)",
+          backgroundColor: "rgb(24, 26, 27)",
         },
       }}
     >

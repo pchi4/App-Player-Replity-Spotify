@@ -38,7 +38,7 @@ export const Play = ({ route, navigation }) => {
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [numberTrack, setNumberTrack] = useState(null);
-  const value = useRef(route.params.item.track_number);
+  const value = useRef(route.params.album.tracks.index);
   const numberTrackPlaylist = useRef(route.params.album.tracks.index);
 
   const [currentTrack, setCurrentTrack] = useState({
@@ -50,9 +50,6 @@ export const Play = ({ route, navigation }) => {
     artists: null,
     album: null,
   });
-
-  // console.log(route.params.album.tracks.items);
-  // console.log(route.params.item);
 
   const { randomTrack } = usePlayRandom({
     item: route.params.item,
@@ -93,10 +90,10 @@ export const Play = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (value.current === 1) {
-      verifyIsFirstTrack();
-      return;
-    }
+    // if (value.current === 1 || numberTrackPlaylist.current === 1) {
+    //   verifyIsFirstTrack();
+    //   return;
+    // }
 
     const nextTrack =
       route.params.album.tracks.items[
@@ -123,8 +120,6 @@ export const Play = ({ route, navigation }) => {
         value.current - 1 ?? numberTrackPlaylist.current - 1
       ];
 
-    console.log(nextTrack);
-
     setCurrentTrack({
       name: nextTrack.name,
       numberTrack: nextTrack.track_number,
@@ -140,10 +135,13 @@ export const Play = ({ route, navigation }) => {
 
   const playNextTrack = async () => {
     if (
-      value.current ||
+      value.current > route.params.album.tracks.items.length ||
       numberTrackPlaylist.current > route.params.album.tracks.items.length
     )
       return;
+
+    console.log(route.params.album.tracks.items);
+    console.log(numberTrackPlaylist.current);
     if (value.current) {
       value.current += 1;
     } else {
@@ -155,6 +153,8 @@ export const Play = ({ route, navigation }) => {
       route.params.album.tracks.items[
         value.current ?? numberTrackPlaylist.current
       ];
+
+    console.log(nextTrack);
 
     setCurrentTrack({
       name: nextTrack.name,
@@ -198,10 +198,11 @@ export const Play = ({ route, navigation }) => {
       setTotalDuration(status.durationMillis);
     }
     if (status.didJustFinish === true) {
-      setSound(null);
+      setCurrentSound(null);
       const timeFinish = formatTime(0);
+      console.log(timeFinish);
 
-      setCurrentTime(timeFinish);
+      setCurrentTime(0);
       setIsPlaying(false);
       /*       playNextTrack(); */
     }
@@ -209,7 +210,7 @@ export const Play = ({ route, navigation }) => {
 
   const handlePlayPause = async () => {
     if (!currentSound) {
-      handlePlayAudio();
+      await handlePlayAudio();
     }
 
     if (isPlaying) {
@@ -290,7 +291,7 @@ export const Play = ({ route, navigation }) => {
           </Center>
         </Box>
 
-        <Box style={{ flex: 1 }} marginTop={["20%", "24%", "26%"]} paddingX="8">
+        <Box style={{ flex: 1 }} marginTop={["14%", "18%", "20%"]} paddingX="8">
           <HStack
             space={1}
             justifyContent="space-between"

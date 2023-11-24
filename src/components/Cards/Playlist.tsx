@@ -21,19 +21,19 @@ export const CardPlaylist = ({
 }: PropsCardPlaylist) => {
   return (
     <Box
-      style={{ flex: 1 }}
+      style={{ flexBasis: 0 }}
       paddingBottom="4"
       justifyContent="center"
       alignItems="center"
-      paddingRight="4"
+      paddingX="2"
     >
       <TouchableOpacity onPress={handleClick}>
         <Box shadow={3}>
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={widthProps ? widthProps : width / 1.5}
-            height={heightProps ? heightProps : width / 1.5}
+            width={widthProps ? widthProps : width / 2.5}
+            height={heightProps ? heightProps : width / 2.5}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,

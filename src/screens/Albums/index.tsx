@@ -24,11 +24,14 @@ import {
   Flex,
   Select,
 } from "native-base";
+import { format } from "date-fns";
+import { eoLocale } from "date-fns/locale/eo";
 
-import { useGetArtist } from "./hooks";
+import { useGetArtist, useGetSeveralArtist } from "./hooks";
 import { LinearGradient } from "expo-linear-gradient";
 import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
+import { CardArtist } from "../../components/Cards/Artist";
 
 type PropsAlbums = {
   route: object;
@@ -45,6 +48,12 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     isFetching,
     isLoading,
   } = useGetArtist({ id: route.params.album?.artists[0].id });
+
+  const {
+    data: releatedArtist,
+    isLoading: isReleatedArtistLoading,
+    isFetching: isReleatedFetching,
+  } = useGetSeveralArtist({ id: route.params.album?.artists[0].id });
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
@@ -277,6 +286,77 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                 </Box>
               )}
             />
+          </Box>
+
+          <Box padding="4">
+            <Text color="white" fontSize="md" fontWeight="bold">
+              {format(
+                new Date(route.params.album.release_date),
+                "do 'de' MMMM yyyy",
+                {
+                  locale: eoLocale,
+                }
+              )}
+            </Text>
+            <Text color="white" fontSize="md" fontWeight="bold">
+              {route.params.album.total_tracks + " músicas"}
+            </Text>
+          </Box>
+
+          <Box paddingX="4">
+            <HStack justifyContent="start" paddingY="4">
+              <Avatar
+                bg="green.500"
+                size="sm"
+                source={{
+                  uri: route.params.artists?.images[0].url,
+                }}
+              ></Avatar>
+              <Text
+                fontSize="lg"
+                marginLeft="2"
+                fontWeight="bold"
+                color="white"
+              >
+                {route.params.album?.artists[0].name}
+              </Text>
+            </HStack>
+          </Box>
+
+          <Box padding="4">
+            <Text fontSize="lg" fontWeight="bold" color="white">
+              Mais que talvez você goste
+            </Text>
+
+            <FlatList
+              style={{ paddingTop: StatusBar.currentHeight }}
+              data={releatedArtist?.artists}
+              keyExtractor={(item) => String(item?.id)}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              renderItem={({ item }) => (
+                <CardArtist
+                  width={180}
+                  height={180}
+                  items={item}
+                  navigation={navigation}
+                  handleClick={() =>
+                    navigation.navigate("playlists", {
+                      item,
+                    })
+                  }
+                />
+              )}
+            />
+
+            <Box paddingTop="4">
+              {route.params.album?.copyrights.map((value) => (
+                <Text fontSize="md" fontWeight="bold" color="white">
+                  {value.text}
+                </Text>
+              ))}
+            </Box>
           </Box>
         </LinearGradient>
       </ScrollView>

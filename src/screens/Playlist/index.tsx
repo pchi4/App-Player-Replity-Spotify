@@ -253,22 +253,23 @@ export const Playlist = ({ navigation, route }) => {
                           </Text>
                         </VStack>
                         <Spacer />
-                        <Text
-                          fontSize="xs"
-                          _dark={{
-                            color: "warmGray.50",
-                          }}
-                          color="white"
-                          alignSelf="flex-start"
-                          alignItems="center"
-                        >
-                          <Feather
-                            name={"more-vertical"}
-                            size={26 % 100}
-                            color="#FFFFFF"
-                          />
-                          {/* {formatTime(item.duration_ms)} */}
-                        </Text>
+                        <TouchableOpacity>
+                          <Text
+                            fontSize="xs"
+                            _dark={{
+                              color: "warmGray.50",
+                            }}
+                            color="white"
+                            alignSelf="flex-start"
+                            alignItems="center"
+                          >
+                            <Feather
+                              name={"more-vertical"}
+                              size={26 % 100}
+                              color="#FFFFFF"
+                            />
+                          </Text>
+                        </TouchableOpacity>
                       </HStack>
                     </TouchableOpacity>
                   </Box>

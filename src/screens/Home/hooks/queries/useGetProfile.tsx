@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
 
-const fetchProfile = async (): Promise<any> => {
+const fetchProfile = async (): Promise<Array<any> | undefined> => {
   try {
     const token = await AsyncStorage.getItem("token");
 
@@ -29,9 +29,9 @@ export const useGetProfile = () => {
 
     refetchOnWindowFocus: false,
     onError: (error) => {
-      // Object.keys(error).forEach((k) => {
-      //   console.log(k, error[k]);
-      // });
+      Object.keys(error instanceof Error).forEach((k) => {
+        console.log(k, error[k]);
+      });
     },
   });
 };

@@ -10,7 +10,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const useGetToken = () => {
   const [clientId] = useState<string>("0e7989953adc4c5cba284909c50fe613");
   const [token, setToken] = useState<string>();
-  const [codeHash, setCode] = useState<string | null>("");
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -33,7 +32,7 @@ export const useGetToken = () => {
     redirectUri: "exp://10.91.116.1:8081/--/spotify-auth-callback",
   };
 
-  function generateCodeVerifier(length: number) {
+  function generateCodeVerifier(length: number): string {
     let text = "";
     let possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

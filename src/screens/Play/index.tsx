@@ -42,7 +42,6 @@ export const Play = ({ route, navigation }) => {
   const [currentSound, setCurrentSound] = useState<Audio.Sound | null>();
   const [currentStatus, setCurrentStatus] = useState(null);
   const [statusSound, setStatusSound] = useState<Sound | null>();
-  // const [currentTrack, setCurrentTrack] = useState();
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -102,7 +101,7 @@ export const Play = ({ route, navigation }) => {
       setCurrentSound(sound);
       sound.onPlaybackStatusUpdate(status);
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -160,21 +159,16 @@ export const Play = ({ route, navigation }) => {
     )
       return;
 
-    console.log(route.params.album.tracks.items);
-    console.log(numberTrackPlaylist.current);
     if (value.current) {
       value.current += 1;
     } else {
       numberTrackPlaylist.current += 1;
     }
-    // if (numberTrackPlaylist.current)
 
     const nextTrack =
       route.params.album.tracks.items[
         value.current ?? numberTrackPlaylist.current
       ];
-
-    console.log(nextTrack);
 
     setCurrentTrack({
       name: nextTrack.name,
@@ -251,8 +245,6 @@ export const Play = ({ route, navigation }) => {
     const seconds = Math.floor((time % 60000) / 1000);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
-  const randomTrackPlay = () => {};
 
   return (
     <Box style={{ flex: 1 }}>

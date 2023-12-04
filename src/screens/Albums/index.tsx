@@ -41,8 +41,6 @@ type PropsAlbums = {
 const { width, height } = Dimensions.get("screen");
 
 export const Albums = ({ route, navigation }: PropsAlbums) => {
-  console.log(route.params);
-
   const {
     data: artists,
     isFetching,
@@ -64,32 +62,6 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
   if (isFetching || isLoading) {
     return <Loading />;
   }
-
-  const IconsPressed = ({ name, color }) => {
-    return <Feather name={name} size={35 % 100} color={color} />;
-  };
-
-  const randomTrackPlay = () => {
-    navigation.navigate("home", {
-      screen: "playMusic",
-      params: { album },
-    });
-  };
-
-  const formatedParams = (params: object): object => {
-    return {
-      preview_url: params.track.preview_url,
-      duration_ms: params.track.duration_ms,
-      name: params.track.name,
-      images: params.track.album.images,
-      track_number: params.track.track_number,
-      album: {
-        name: params.track.album.name,
-        type: params.track.album.type,
-      },
-      artists: params.track.album.artists,
-    };
-  };
 
   return (
     <SafeAreaView>

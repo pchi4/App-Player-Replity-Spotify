@@ -72,15 +72,13 @@ export const Library = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <View>
-                <CardPlaylist
-                  width={150}
-                  height={150}
-                  items={item}
-                  navigation={navigation}
-                  handleClick={() => navigation.navigate("playlists", { item })}
-                />
-              </View>
+              <CardPlaylist
+                width={150}
+                height={150}
+                items={item}
+                navigation={navigation}
+                handleClick={() => navigation.navigate("playlists", { item })}
+              />
             )}
           />
         </Box>

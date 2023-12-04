@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
 
-const getNewsReleases = async () => {
+const getNewsReleases = async (): Promise<Array<any>> => {
   const token = await AsyncStorage.getItem("token");
 
   const response = await axios.get(
@@ -25,9 +25,9 @@ export const useGetNewsReleases = () => {
 
     refetchOnWindowFocus: false,
     onError: (error) => {
-      // Object.keys(error).forEach((k) => {
-      //   console.log(k, error[k]);
-      // });
+      Object.keys(error instanceof Error).forEach((k) => {
+        console.log(k, error[k]);
+      });
     },
   });
 };

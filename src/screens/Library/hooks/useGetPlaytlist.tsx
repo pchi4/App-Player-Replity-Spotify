@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
 
-const getPlaylist = async () => {
+const getPlaylist = async (): Promise<Array<any>> => {
   const token = await AsyncStorage.getItem("token");
 
   const response = await axios.get("https://api.spotify.com/v1/me/playlists", {
@@ -22,9 +22,9 @@ export const useGetPlaytlist = () => {
 
     refetchOnWindowFocus: false,
     onError: (error) => {
-      // Object.keys(error).forEach((k) => {
-      //   console.log(k, error[k]);
-      // });
+      Object.keys(error instanceof Error).forEach((k) => {
+        console.log(k, error[k]);
+      });
     },
   });
 };

@@ -22,9 +22,7 @@ export const useGetAlbums = () => {
 
     refetchOnWindowFocus: false,
     onError: (error) => {
-      // Object.keys(error).forEach((k) => {
-      //   console.log(k, error[k]);
-      // });
+      console.log(error);
     },
   });
 };

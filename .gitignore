@@ -33,3 +33,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+git rm -r --cached ios
+
+git rm -r --cached android

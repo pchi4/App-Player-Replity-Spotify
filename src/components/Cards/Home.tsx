@@ -1,6 +1,8 @@
 import React from "react";
 import { HStack, Box, Divider, Center, Image, Text } from "native-base";
-export const CardHome = ({ navigation, items }) => {
+import { CardType } from "../../types/Home/propsCardHome";
+
+export const CardHome = ({ navigation, items }: CardType) => {
   return (
     <Box style={{ flex: 1 }} marginRight="2">
       <HStack paddingBottom="4" alignItems="center" alignContent="center">

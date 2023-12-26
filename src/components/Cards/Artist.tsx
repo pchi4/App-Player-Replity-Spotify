@@ -1,14 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
-
-type PropsCardAlbum = {
-  items: Array<any>;
-  navigation: object;
-  handleClick: () => void;
-  width: number | string;
-  height: number | string;
-};
+import { PropsCardAlbum } from "../../types/Artists/propsCardArtists";
 
 export const CardArtist = ({
   items,

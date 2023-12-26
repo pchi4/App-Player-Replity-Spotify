@@ -2,6 +2,10 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
 
+type Parameter = {
+  id: string;
+};
+
 const getArtist = async (id: string): Promise<Array<any>> => {
   const token = await AsyncStorage.getItem("token");
 
@@ -15,16 +19,14 @@ const getArtist = async (id: string): Promise<Array<any>> => {
   return response.data;
 };
 
-export const useGetArtist = ({ id }) => {
+export const useGetArtist = ({ id }: Parameter) => {
   return useQuery({
     queryKey: ["getArtist", { id }],
     queryFn: async () => await getArtist(id),
     enabled: !!id,
     refetchOnWindowFocus: false,
     onError: (error) => {
-      // Object.keys(error).forEach((k) => {
-      //   console.log(k, error[k]);
-      // });
+      console.log(error);
     },
   });
 };

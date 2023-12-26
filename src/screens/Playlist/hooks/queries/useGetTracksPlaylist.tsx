@@ -2,6 +2,11 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
 
+type Parameter = {
+  id: string;
+  totalTracks: number;
+};
+
 const getTracks = async (
   id: string,
   totalTracks: number
@@ -21,16 +26,14 @@ const getTracks = async (
   return response.data;
 };
 
-export const useGetTracksPlaylist = ({ id, totalTracks }) => {
+export const useGetTracksPlaylist = ({ id, totalTracks }: Parameter) => {
   return useQuery({
     queryKey: ["getTracks", { id }],
     queryFn: async () => await getTracks(id, totalTracks),
     enabled: !!id,
     refetchOnWindowFocus: false,
     onError: (error) => {
-      Object.keys(error instanceof Error).forEach((k) => {
-        console.log(k, error[k]);
-      });
+      console.log(error);
     },
   });
 };

@@ -1,14 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
-
-type PropsCardAlbum = {
-  items: Array<any>;
-  navigation: object;
-  handleClick: () => void;
-  width: number | string;
-  height: number | string;
-};
+import { PropsCardAlbum } from "../../types/Album/propsCardAlbum";
 
 export const CardAlbum = ({
   items,
@@ -28,7 +21,7 @@ export const CardAlbum = ({
             height={height}
             rounded="6"
             source={{
-              uri: items.album.images[0].url,
+              uri: items?.album?.images[0].url,
             }}
           />
         </Box>
@@ -40,11 +33,13 @@ export const CardAlbum = ({
             isTruncated
             width="200"
           >
-            {items.album.name}
+            {items.album?.name}
           </Text>
           <Text fontSize="md" color="white">
-            {items.album.type[0].toUpperCase() +
-        items.album.type.slice(1) + " ° " + items.album.artists[0].name}
+            {items.album?.type[0].toUpperCase() +
+              items.album?.type.slice(1) +
+              " ° " +
+              items.album?.artists[0].name}
           </Text>
         </Box>
       </Pressable>

@@ -29,9 +29,7 @@ export const useGetProfile = () => {
 
     refetchOnWindowFocus: false,
     onError: (error) => {
-      Object.keys(error instanceof Error).forEach((k) => {
-        console.log(k, error[k]);
-      });
+      console.log(error);
     },
   });
 };

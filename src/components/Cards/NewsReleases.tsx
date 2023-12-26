@@ -1,14 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
-
-type PropsCardNewsReleases = {
-  items: Array<any>;
-  navigation: object;
-  handleClick: () => void;
-  width: number | string;
-  height: number | string;
-};
+import { PropsCardNewsReleases } from "../../types/NewRealeases/propsNewRealeases";
 
 export const CardNewsReleases = ({
   items,
@@ -44,7 +37,9 @@ export const CardNewsReleases = ({
           </Text>
           <Text fontSize="md" color="white" isTruncated width="200">
             {items.type[0].toUpperCase() +
-        items.type.slice(1) + " ° " + items.artists[0].name}
+              items.type.slice(1) +
+              " ° " +
+              items.artists[0].name}
           </Text>
         </Box>
       </Pressable>

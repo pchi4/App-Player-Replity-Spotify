@@ -1,14 +1,7 @@
 import React from "react";
 import { View, Dimensions, TouchableOpacity } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
-
-type PropsCardPlaylist = {
-  items: Array<any>;
-  navigation: object;
-  handleClick: () => void;
-  width: number | string;
-  height: number | string;
-};
+import { PropsCardPlaylist } from "../../types/Playlist/propsCardPlaylist";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -16,8 +9,8 @@ export const CardPlaylist = ({
   items,
   navigation,
   handleClick,
-  widthProps,
-  heightProps,
+  width,
+  height,
 }: PropsCardPlaylist) => {
   return (
     <Box
@@ -32,8 +25,8 @@ export const CardPlaylist = ({
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={widthProps ? widthProps : width / 2.5}
-            height={heightProps ? heightProps : width / 2.5}
+            width={width ? width : width / 2.5}
+            height={height ? height : width / 2.5}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,

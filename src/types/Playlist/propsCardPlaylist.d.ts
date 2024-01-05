@@ -7,8 +7,8 @@ export type PropsCardPlaylist = {
   items: Playlist;
   navigation: object;
   handleClick: () => void;
-  width: number | string | null;
-  height: number | string | null;
+  Width: number | string | null;
+  Height: number | string | null;
 };
 
 type Playlist = {

@@ -29,9 +29,9 @@ export const Auth = ({ navigation }: object) => {
 
   return (
     <Box style={{ flex: 1 }}>
-      <Box style={{ flex: 1 }} padding="4" bg="orange.400">
+      <Box style={{ flex: 1.6 }} padding="4" bg="orange.400">
         {" "}
-        <Center>
+        <Center marginTop="1/3">
           <Image
             rounded="6"
             width={width / 1}

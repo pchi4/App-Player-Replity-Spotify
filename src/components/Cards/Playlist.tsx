@@ -9,8 +9,8 @@ export const CardPlaylist = ({
   items,
   navigation,
   handleClick,
-  width,
-  height,
+  Width,
+  Height,
 }: PropsCardPlaylist) => {
   return (
     <Box
@@ -25,8 +25,8 @@ export const CardPlaylist = ({
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={width ? width : width / 2.5}
-            height={height ? height : width / 2.5}
+            width={Width ?? width / 2.5}
+            height={Height ?? width / 2.5}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,

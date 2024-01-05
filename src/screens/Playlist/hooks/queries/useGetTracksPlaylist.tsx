@@ -11,19 +11,21 @@ const getTracks = async (
   id: string,
   totalTracks: number
 ): Promise<Array<any> | undefined> => {
-  const token = await AsyncStorage.getItem("token");
+  try {
+    const token = await AsyncStorage.getItem("token");
 
-  const response = await axios.get(
-    `https://api.spotify.com/v1/playlists/${id}/tracks?offset=0&limit=${totalTracks}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  return response.data;
+    const response = await axios.get(
+      `https://api.spotify.com/v1/playlists/${id}/tracks?offset=0&limit=${totalTracks}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {}
 };
 
 export const useGetTracksPlaylist = ({ id, totalTracks }: Parameter) => {
@@ -32,8 +34,8 @@ export const useGetTracksPlaylist = ({ id, totalTracks }: Parameter) => {
     queryFn: async () => await getTracks(id, totalTracks),
     enabled: !!id,
     refetchOnWindowFocus: false,
-    onError: (error) => {
-      console.log(error);
-    },
+    // onError: (error) => {
+    //   // console.log(error);
+    // },
   });
 };

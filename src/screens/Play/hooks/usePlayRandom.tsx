@@ -9,7 +9,7 @@ type AlbumProps = {
 
 export const usePlayRandom = ({ item, album }: ItemProps) => {
   const randomTrack = () => {
-    console.log(album?.length);
+    // console.log(album?.length);
   };
 
   return {

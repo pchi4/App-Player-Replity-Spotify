@@ -16,7 +16,7 @@ import {
   useGetProfile,
   useGetAlbums,
   useGetNewsReleases,
-  useGetPlatlist,
+  useGetPlaytlist,
 } from "./hooks";
 import { itemsMusics } from "../../../models/recentsMusics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,7 +40,7 @@ export const Home = ({ navigation }: object) => {
     data: playlist,
     isLoading: playlistLoading,
     isFetching: playlistFetching,
-  } = useGetPlatlist();
+  } = useGetPlaytlist();
 
   const setProfileStore = async () => {
     await AsyncStorage.setItem("profile", JSON.stringify(profile));
@@ -118,8 +118,8 @@ export const Home = ({ navigation }: object) => {
             horizontal
             renderItem={({ item }) => (
               <CardPlaylist
-                widthProps={250}
-                heightProps={250}
+                Width={250}
+                Height={250}
                 items={item}
                 navigation={navigation}
                 handleClick={() =>
@@ -156,7 +156,7 @@ export const Home = ({ navigation }: object) => {
             )}
           />
 
-          <CardTopArtist />
+          {/* <CardTopArtist /> */}
         </ScrollView>
       </Box>
     </SafeAreaView>

@@ -28,8 +28,8 @@ export const useGetProfile = () => {
     queryFn: async () => await fetchProfile(),
 
     refetchOnWindowFocus: false,
-    onError: (error) => {
-      console.log(error);
-    },
+    // onError: (error) => {
+    //   // console.log(error);
+    // },
   });
 };

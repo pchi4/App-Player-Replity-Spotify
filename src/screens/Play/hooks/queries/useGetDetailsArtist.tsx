@@ -22,7 +22,7 @@ const fetchDetailsArtist = async (
 
     return result.data;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -32,8 +32,8 @@ export const useGetDetailsArtist = ({ id }: Parameter) => {
     queryFn: async () => await fetchDetailsArtist(id),
 
     refetchOnWindowFocus: false,
-    onError: (error) => {
-      console.log(error);
-    },
+    // onError: (error) => {
+    //   // console.log(error);
+    // },
   });
 };

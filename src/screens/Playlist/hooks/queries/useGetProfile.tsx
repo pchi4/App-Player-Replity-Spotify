@@ -20,7 +20,7 @@ const fetchProfile = async (id: string): Promise<Array<any> | undefined> => {
 
     return result.data;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -30,8 +30,8 @@ export const useGetProfile = ({ id }: Parameter) => {
     queryFn: async () => await fetchProfile(id),
 
     refetchOnWindowFocus: false,
-    onError: (error) => {
-      console.log(error);
-    },
+    // onError: (error) => {
+    //   // console.log(error);
+    // },
   });
 };

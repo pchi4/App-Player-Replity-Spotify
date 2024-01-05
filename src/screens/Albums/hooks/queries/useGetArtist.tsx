@@ -6,17 +6,22 @@ type Parameter = {
   id: string;
 };
 
-const getArtist = async (id: string): Promise<Array<any>> => {
-  const token = await AsyncStorage.getItem("token");
+const getArtist = async (id: string): Promise<Array<any> | undefined> => {
+  try {
+    const token = await AsyncStorage.getItem("token");
 
-  const response = await axios.get(`https://api.spotify.com/v1/artists/${id}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  return response.data;
+    const response = await axios.get(
+      `https://api.spotify.com/v1/artists/${id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {}
 };
 
 export const useGetArtist = ({ id }: Parameter) => {
@@ -25,8 +30,8 @@ export const useGetArtist = ({ id }: Parameter) => {
     queryFn: async () => await getArtist(id),
     enabled: !!id,
     refetchOnWindowFocus: false,
-    onError: (error) => {
-      console.log(error);
-    },
+    // onError: (error) => {
+    //   // console.log(error);
+    // },
   });
 };

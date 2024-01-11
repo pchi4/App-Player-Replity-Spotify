@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   NavigationContainer,
@@ -24,7 +25,7 @@ export default function TabsRoutes() {
             borderTopWidth: 0,
             elevation: 0,
           },
-          tabBarActiveTintColor: "#000000",
+          tabBarActiveTintColor: "white",
           tabBarInactiveTintColor: "rgb(111 109 213)",
         }}
       >
@@ -50,7 +51,7 @@ export default function TabsRoutes() {
               if (routeName === "playMusic") {
                 return { display: "none" };
               }
-              return;
+              return { backgroundColor: "rgb(24, 26, 27)" };
             })(route),
           })}
         />
@@ -62,15 +63,6 @@ export default function TabsRoutes() {
             tabBarIcon: ({ color, size }) => (
               <Feather name="disc" color={color} size={size} />
             ),
-
-            tabBarStyle: ((route) => {
-              const routeName = getFocusedRouteNameFromRoute(route) ?? null;
-              if (routeName === "playlist") {
-                return { display: "none" };
-              }
-
-              return;
-            })(route),
           })}
         />
       </Tab.Navigator>

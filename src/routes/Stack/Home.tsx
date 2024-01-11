@@ -1,6 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
+import { Text } from "native-base";
 
 const Stack = createStackNavigator();
 
@@ -21,16 +22,33 @@ export default function HomeScreen() {
     isToken();
   }, [token]);
 
+  const Title = () => {
+    return (
+      <Text fontSize="md" fontWeight="bold" color="white" marginLeft="2">
+        Seja bem-vindo(a)
+      </Text>
+    );
+  };
+
   return (
     <Stack.Navigator
       initialRouteName={token ? "home" : "auth"}
       screenOptions={{
         headerStyle: {
-          backgroundColor: "rgb(145, 174, 198)",
+          backgroundColor: "rgb(24, 26, 27)",
         },
       }}
     >
-      <Stack.Screen name="Seja bem-vindo(a)" component={Home} />
+      <Stack.Screen
+        name=" "
+        component={Home}
+        options={{
+          headerTitleStyle: {
+            color: "white",
+          },
+          headerLeft: () => <Title />,
+        }}
+      />
       <Stack.Screen
         options={{
           headerShown: false,

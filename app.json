@@ -17,7 +17,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pchia.player"
+      "bundleIdentifier": "com.pchia.player",
+        "associatedDomains": ["applinks:expo.dev"]
     },
     "android": {
       "adaptiveIcon": {

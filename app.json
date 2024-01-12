@@ -18,7 +18,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.pchia.player",
-        "associatedDomains": ["applinks:expo.dev"]
+      "associatedDomains": [
+        "applinks:expo.dev"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +36,10 @@
       "eas": {
         "projectId": "ceab26a2-0c77-4139-8357-8b074fc3ee82"
       }
-    }
+    },
+    "plugins": [
+      "expo-build-properties"
+    ]
   },
   "name": "player"
 }

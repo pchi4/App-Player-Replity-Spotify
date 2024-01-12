@@ -83,7 +83,6 @@ android {
 
     namespace 'com.pchia.player'
     defaultConfig {
-        manifestPlaceholders = [appAuthRedirectScheme: 'myapp']
         applicationId 'com.pchia.player'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion

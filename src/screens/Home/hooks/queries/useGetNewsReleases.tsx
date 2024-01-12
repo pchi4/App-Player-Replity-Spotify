@@ -6,7 +6,7 @@ const getNewsReleases = async (): Promise<Array<any> | undefined> => {
   try {
     const token = await AsyncStorage.getItem("token");
 
-    const response = await axios.get(
+    const response = await axios(
       "https://api.spotify.com/v1/browse/new-releases",
       {
         method: "GET",

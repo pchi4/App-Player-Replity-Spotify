@@ -14,7 +14,7 @@ const getTracks = async (
   try {
     const token = await AsyncStorage.getItem("token");
 
-    const response = await axios.get(
+    const response = await axios(
       `https://api.spotify.com/v1/playlists/${id}/tracks?offset=0&limit=${totalTracks}`,
       {
         method: "GET",

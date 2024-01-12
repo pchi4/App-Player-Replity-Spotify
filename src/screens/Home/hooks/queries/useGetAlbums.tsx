@@ -6,7 +6,7 @@ const getAlbums = async (): Promise<Array<any> | undefined> => {
   try {
     const token = await AsyncStorage.getItem("token");
 
-    const response = await axios.get("https://api.spotify.com/v1/me/albums", {
+    const response = await axios("https://api.spotify.com/v1/me/albums", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

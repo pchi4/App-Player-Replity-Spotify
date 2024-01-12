@@ -45,10 +45,14 @@ export const useGetToken = () => {
 
   const [request, response, promptAsync] = useAuthRequest(config, discovery);
 
+  console.log(response);
+
   const accessToken = async () => {
     try {
       const resultPromptAsync = await promptAsync();
-      await AsyncStorage.clear()
+      await AsyncStorage.clear();
+
+      console.log(resultPromptAsync);
 
       let codeVerifer = generateCodeVerifier(128);
 

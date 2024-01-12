@@ -15,8 +15,8 @@ export const CardHome = ({ navigation, items }: CardType) => {
           <Image
             source={{ uri: items.img }}
             alt="ArtWork albuns"
-            width="100%"
-            resizeMode="contain"
+            width="full"
+            resizeMode="cover"
             size="md"
             roundedTopLeft="md"
             roundedBottomLeft="md"

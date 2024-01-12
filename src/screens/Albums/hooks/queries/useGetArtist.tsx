@@ -10,16 +10,13 @@ const getArtist = async (id: string): Promise<Array<any> | undefined> => {
   try {
     const token = await AsyncStorage.getItem("token");
 
-    const response = await axios.get(
-      `https://api.spotify.com/v1/artists/${id}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios(`https://api.spotify.com/v1/artists/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {}
 };

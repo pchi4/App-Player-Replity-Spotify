@@ -9,6 +9,7 @@ import { Home } from "../../screens/Home";
 import { Albums } from "../../screens/Albums";
 import { Play } from "../../screens/Play";
 import { Playlist } from "../../screens/Playlist";
+import { Artist } from "../../screens/Artist";
 
 export default function HomeScreen() {
   const [token, setToken] = useState(null);
@@ -69,6 +70,16 @@ export default function HomeScreen() {
         }}
         name="playlists"
         component={Playlist}
+      />
+      <Stack.Screen
+        name="art"
+        options={{
+          headerTitleStyle: {
+            color: "white",
+          },
+          headerTitle: "Sobre o artista",
+        }}
+        component={Artist}
       />
     </Stack.Navigator>
   );

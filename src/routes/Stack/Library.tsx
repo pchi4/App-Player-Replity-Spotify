@@ -10,31 +10,32 @@ import { Library } from "../../screens/Library";
 import { Playlist } from "../../screens/Playlist";
 import { useEffect, useState } from "react";
 
-const HeaderPlaylistLeft = ({ person }) => {
+const HeaderPlaylistLeft = () => {
   const [profileObject, setProfileObject] = useState();
+  const [personProfle, setPersonProfile] = useState();
 
-  const verifyObject = () => {
-    if (person) {
-      const profileFormatter = JSON.parse(person);
-      setProfileObject(profileFormatter);
-      console.log(profileObject);
-    }
-  };
+  // const getProfile = async () => {
+  //   const profile = await AsyncStorage.getItem("profile");
+  //   const profileFormatter = JSON.parse(profile);
+  //   setPersonProfile(profileFormatter);
+  // };
 
-  useEffect(() => {
-    verifyObject();
-  }, []);
+  // useEffect(() => {
+  //   getProfile();
+  // }, [personProfle]);
+
+  console.log(personProfle);
 
   return (
     <HStack justifyContent="space-between" paddingY="4">
-      <Avatar
+      {/* <Avatar
         marginLeft="4"
         bg="green.500"
         size="sm"
         source={{
-          uri: profileObject?.images[0].url,
+          uri: personProfle?.images[0].url,
         }}
-      ></Avatar>
+      ></Avatar> */}
     </HStack>
   );
 };
@@ -80,17 +81,6 @@ const CarouselOptions = () => {
 };
 
 export default function PlaylistScreen() {
-  const [personProfle, setPersonProfile] = useState();
-
-  const getProfile = async () => {
-    const profile = await AsyncStorage.getItem("profile");
-    setPersonProfile(profile);
-  };
-
-  useEffect(() => {
-    getProfile();
-  }, []);
-
   return (
     <Stack.Navigator
       screenOptions={{
@@ -106,7 +96,7 @@ export default function PlaylistScreen() {
           headerTitleStyle: {
             color: "white",
           },
-          headerLeft: () => <HeaderPlaylistLeft person={personProfle} />,
+          headerLeft: () => <HeaderPlaylistLeft />,
           headerRight: () => <HeaderPLaylistRigth />,
         }}
       />

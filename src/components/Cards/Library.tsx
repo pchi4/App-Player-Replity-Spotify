@@ -3,16 +3,15 @@ import { View, Dimensions, TouchableOpacity } from "react-native";
 import { Box, Image, Text, VStack, Pressable } from "native-base";
 import { PropsCardPlaylist } from "../../types/Playlist/propsCardPlaylist";
 
-export const CardPlaylist = ({
+const { width, height } = Dimensions.get("screen");
+
+export const CardLibrary = ({
   items,
   navigation,
   handleClick,
-  Width,
-  Height,
 }: PropsCardPlaylist) => {
   return (
     <Box
-      style={{ flexBasis: 0 }}
       paddingBottom="4"
       justifyContent="center"
       alignItems="center"
@@ -23,8 +22,8 @@ export const CardPlaylist = ({
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={Width}
-            height={Height}
+            width={width / 4}
+            height={width / 4}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,
@@ -33,15 +32,15 @@ export const CardPlaylist = ({
         </Box>
         <Box>
           <Text
-            fontSize="xl"
+            fontSize="md"
             fontWeight="bold"
             color="white"
             isTruncated
-            width={200}
+            width={width / 4}
           >
             {items.name}
           </Text>
-          <Text fontSize="md" color="white" isTruncated width={250}>
+          <Text fontSize="sm" color="white" isTruncated width={width / 4}>
             {items.type[0].toUpperCase() +
               items.type.slice(1) +
               " ° " +

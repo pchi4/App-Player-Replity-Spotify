@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, ScrollView, View } from "react-native";
 import { HStack, Box, Text, FlatList } from "native-base";
+import { CarouselAutoScroll } from "./Carrousel";
 
 import {
   CardAlbum,
@@ -67,11 +68,19 @@ export const Home = ({ navigation }: object) => {
     <SafeAreaView>
       <Box padding="4" bg="rgb(24, 26, 27)">
         <ScrollView>
+          <Box paddingTop="4">
+            <Text fontSize="2xl" fontWeight="bold" color="white">
+              Tocados recentes
+            </Text>
+          </Box>
+
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
-            data={itemsMusics}
+            data={data?.items.filter((_, idx) => {
+              return idx <= 7;
+            })}
             numColumns={2}
-            keyExtractor={(item) => String(item.id)}
+            keyExtractor={(item, idx) => String(item.album.id + idx)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
@@ -87,8 +96,10 @@ export const Home = ({ navigation }: object) => {
 
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
-            data={data?.items}
-            keyExtractor={(item) => String(item?.album.id)}
+            data={data?.items.filter((_, idx) => {
+              return idx > 7;
+            })}
+            keyExtractor={(item, idx) => String(idx)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             horizontal
@@ -112,7 +123,7 @@ export const Home = ({ navigation }: object) => {
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
             data={playlist.items}
-            keyExtractor={(item) => String(item?.id)}
+            keyExtractor={(item, idx) => String(idx)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             horizontal
@@ -141,7 +152,7 @@ export const Home = ({ navigation }: object) => {
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
             data={newsRealeases?.albums?.items}
-            keyExtractor={(item) => item?.id}
+            keyExtractor={(item, idx) => String(idx)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             horizontal
@@ -155,8 +166,6 @@ export const Home = ({ navigation }: object) => {
               />
             )}
           />
-
-          {/* <CardTopArtist /> */}
         </ScrollView>
       </Box>
     </SafeAreaView>

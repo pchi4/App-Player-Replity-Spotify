@@ -78,7 +78,7 @@ export const Playlist = ({ navigation, route }) => {
 
   return (
     <ScrollView>
-      <LinearGradient colors={["#304566", "#243653", "#16263e"]}>
+      <LinearGradient colors={["#a3a5a8", "#212224", "#212224"]}>
         <SafeAreaView>
           <Box style={{ paddingTop: StatusBar.currentHeight }} padding="4">
             <HStack

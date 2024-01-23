@@ -24,7 +24,7 @@ import {
 
 const { width, height } = Dimensions.get("screen");
 
-import { CardPlaylist } from "../../components/Cards/index";
+import { CardLibrary } from "../../components/Cards/index";
 import { useGetPlaytlist } from "./hooks/useGetPlaytlist";
 import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
@@ -66,18 +66,20 @@ export const Library = ({ navigation }) => {
         >
           <FlatList
             data={data?.items}
-            numColumns={2}
+            numColumns={3}
             ListHeaderComponent={() => <HeaderList />}
             keyExtractor={(item) => String(item?.id)}
             showsVerticalScrollIndicator={false}
+            ccontentContainerStyle={{ gap: 5 }}
+            columnWrapperStyle={{ gap: 5 }}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <CardPlaylist
-                width={150}
-                height={150}
+              <CardLibrary
                 items={item}
                 navigation={navigation}
                 handleClick={() => navigation.navigate("playlists", { item })}
+                Width={null}
+                Height={null}
               />
             )}
           />

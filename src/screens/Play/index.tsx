@@ -36,6 +36,7 @@ import { Sound } from "expo-av/build/Audio";
 import { usePlayRandom } from "./hooks/usePlayRandom";
 import { useGetDetailsArtist } from "./hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CarouselAutoScroll } from "./../../components/Carrousel";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -43,10 +44,15 @@ export const Play = ({ route, navigation }) => {
   const [currentSound, setCurrentSound] = useState<Audio.Sound | null>();
   const [currentStatus, setCurrentStatus] = useState(null);
   const [statusSound, setStatusSound] = useState<Sound | null>();
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState<number>(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isReapeat, setIsRepeat] = useState<boolean>(false);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [isRandom, setIsRandom] = useState<boolean>(false);
   const [numberTrack, setNumberTrack] = useState(null);
+  const [randomTrack, setRandomTrack] = useState<number>(0);
+  const [totalTracks, setTotalTracks] = useState<number>(0);
   const value = useRef(route.params.album.tracks.index);
   const numberTrackPlaylist = useRef(route.params.album.tracks.index);
 
@@ -64,18 +70,14 @@ export const Play = ({ route, navigation }) => {
     album: null,
   });
 
-  const { randomTrack } = usePlayRandom({
-    item: route.params.item,
-    album: route.params.album,
-  });
-
   useEffect(() => {
-    console.log(detailsArtist);
+    // console.log(detailsArtist);
   }, [detailsArtist]);
 
   const handlePlayAudio = async () => {
     try {
       if (currentSound) {
+        setCurrentSound(null);
         await currentSound.unloadAsync();
       }
 
@@ -100,13 +102,13 @@ export const Play = ({ route, navigation }) => {
       setIsPlaying(status.isLoaded);
 
       setCurrentSound(sound);
-      sound.onPlaybackStatusUpdate(status);
+      sound._onPlaybackStatusUpdate(status);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const formatingFollowers = (num) => {
+  const formatingFollowers = (num: number) => {
     var units = ["M", "B", "T", "Q"];
     var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
     var r = unit % 3;
@@ -115,107 +117,68 @@ export const Play = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    const nextTrack =
-      route.params.album.tracks.items[
-        value.current ?? numberTrackPlaylist.current
-      ];
+    let nextTrack =
+      route.params.album.tracks.items[numberTrackPlaylist.current];
 
-    console.log(route.params.album.tracks.items[0].artists);
+    // if (isRandom) {
+    //   playRandomTrack();
+    //   handlePlayAudio();
+    //   return;
+    // }
+
     setCurrentTrack({
-      name: nextTrack.name,
-      numberTrack: nextTrack.track_number,
-      uriTrack: nextTrack.preview_url,
-      duration: nextTrack.duration_ms,
-      artWork: nextTrack.images[0].url,
-      nameArtist: nextTrack.artists[0].name,
-      nameAlbum: nextTrack.album.name,
+      name: nextTrack?.name,
+      numberTrack: nextTrack?.track_number,
+      uriTrack: nextTrack?.preview_url,
+      duration: nextTrack?.duration_ms,
+      artWork: nextTrack?.images[0].url,
+      nameArtist: nextTrack?.artists[0].name,
+      nameAlbum: nextTrack?.album.name,
     });
 
     handlePlayAudio();
-  }, [value.current ?? numberTrackPlaylist.current]);
+  }, []);
 
-  const verifyIsFirstTrack = async () => {
-    const nextTrack =
-      route.params.album.tracks.items[
-        value.current - 1 ?? numberTrackPlaylist.current - 1
-      ];
+  // useEffect(() => {
+  //   if (currentSound) {
+  //     currentSound?.stopAsync();
+  //     setCurrentSound(null);
+  //     currentSound?.unloadAsync();
+  //   }
+  // }, [currentSound]);
 
-    setCurrentTrack({
-      name: nextTrack.name,
-      numberTrack: nextTrack.track_number,
-      uriTrack: nextTrack.preview_url,
-      duration: nextTrack.duration_ms,
-      artWork: nextTrack.images[0].url,
-      nameArtist: nextTrack.artists[0].name,
-      nameAlbum: nextTrack.album.name,
-    });
-
-    await handlePlayAudio();
-  };
-
-  const playNextTrack = async () => {
-    if (
-      value.current > route.params.album.tracks.items.length ||
-      numberTrackPlaylist.current > route.params.album.tracks.items.length
-    )
-      return;
-
-    if (value.current) {
-      value.current += 1;
-    } else {
-      numberTrackPlaylist.current += 1;
-    }
-
-    const nextTrack =
-      route.params.album.tracks.items[
-        value.current ?? numberTrackPlaylist.current
-      ];
-
-    setCurrentTrack({
-      name: nextTrack.name,
-      numberTrack: nextTrack.track_number,
-      uriTrack: nextTrack.preview_url,
-      duration: nextTrack.duration_ms,
-      artWork: nextTrack.images[0].url,
-      nameArtist: nextTrack.artists[0].name,
-      nameAlbum: nextTrack.album.name,
-    });
-  };
-
-  const playPeviousTrack = async () => {
-    if (value.current <= 0) return;
-    if (value.current) {
-      value.current += 1;
-    } else {
-      numberTrackPlaylist.current += 1;
-    }
-
-    const nextTrack =
-      route.params.album.tracks.items[
-        value.current ?? numberTrackPlaylist.current
-      ];
-
-    setCurrentTrack({
-      name: nextTrack.name,
-      numberTrack: nextTrack.track_number,
-      uriTrack: nextTrack.preview_url,
-      duration: nextTrack.duration_ms,
-      artWork: nextTrack.images[0].url,
-      nameArtist: nextTrack.artists[0].name,
-      nameAlbum: nextTrack.album.name,
-    });
-  };
+  // useEffect(() => {
+  //   return currentSound
+  //     ? () => {
+  //         console.log("Unloading currentSound");
+  //         currentSound.unloadAsync();
+  //       }
+  //     : undefined;
+  // }, [currentSound]);
 
   const onPlaybackStatusUpdate = async (status: object) => {
     setStatusSound(status);
+    // console.log({ status });
     if (status.isLoaded && status.isPlaying) {
       setCurrentTime(status.positionMillis);
       setTotalDuration(status.durationMillis);
     }
-    if (status.didJustFinish === true) {
+    if (isReapeat) {
+      if (status.didJustFinish) {
+        setCurrentSound(null);
+        handlePlayAudio();
+      }
+      return;
+      // await currentSound?.replayAsync();
+    }
+
+    if (isRandom) {
+      let randomTracks = createRandomTracks();
+      // console.log(randomTracks);
+      return;
+    }
+    if (status.didJustFinish) {
       setCurrentSound(null);
-      const timeFinish = formatTime(0);
-      console.log(timeFinish);
 
       setCurrentTime(0);
       setIsPlaying(false);
@@ -223,17 +186,138 @@ export const Play = ({ route, navigation }) => {
     }
   };
 
-  const handlePlayPause = async () => {
-    if (!currentSound) {
-      await handlePlayAudio();
+  const playNextTrack = async () => {
+    try {
+      numberTrackPlaylist.current += 1;
+
+      let nextTrack =
+        route.params.album.tracks.items[numberTrackPlaylist.current];
+      if (isRandom) {
+        await playRandomTrack();
+        await handlePlayAudio();
+        return;
+      }
+      setCurrentTrack({
+        name: nextTrack?.name,
+        numberTrack: nextTrack?.track_number,
+        uriTrack: nextTrack?.preview_url,
+        duration: nextTrack?.duration_ms,
+        artWork: nextTrack?.images[0].url,
+        nameArtist: nextTrack?.artists[0].name,
+        nameAlbum: nextTrack?.album.name,
+      });
+
+      const currentStatus = await currentSound?.getStatusAsync();
+      if (currentStatus?.isLoaded) {
+        if (currentStatus?.isPlaying) {
+          await currentSound?.stopAsync();
+          await currentSound?.unloadAsync();
+          await handlePlayAudio();
+        }
+      }
+    } catch (error) {}
+  };
+
+  const generationShuffleNumber = (array: Array<any>) => {
+    let currentIndex = array.length,
+      randomIndex;
+
+    while (currentIndex > 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
     }
 
-    if (isPlaying) {
-      await currentSound?.pauseAsync();
-    } else {
-      await currentSound?.playFromPositionAsync(currentTime);
-    }
-    setIsPlaying(!isPlaying);
+    return array;
+  };
+
+  const PlayAudio = async () => {
+    try {
+      setIsPlaying(true);
+      const currentStatus = await currentSound?.getStatusAsync();
+      if (currentStatus?.isLoaded) {
+        if (currentStatus?.isPlaying === false) {
+          currentSound?.playAsync();
+        }
+      }
+    } catch (error) {}
+  };
+
+  const PauseAudio = async () => {
+    try {
+      setIsPlaying(false);
+      const currentStatus = await currentSound?.getStatusAsync();
+      if (currentStatus?.isLoaded) {
+        if (currentStatus?.isPlaying === true) {
+          currentSound?.pauseAsync();
+        }
+      }
+    } catch (error) {}
+  };
+
+  const playPeviousTrack = async () => {
+    try {
+      if (randomTrack < 0) return;
+      setRandomTrack(randomTrack - 1);
+
+      let nextTrack = route.params.album.tracks.items[randomTrack];
+
+      setCurrentTrack({
+        name: nextTrack?.name,
+        numberTrack: nextTrack?.track_number,
+        uriTrack: nextTrack?.preview_url,
+        duration: nextTrack?.duration_ms,
+        artWork: nextTrack?.images[0].url,
+        nameArtist: nextTrack?.artists[0].name,
+        nameAlbum: nextTrack?.album.name,
+      });
+
+      const currentStatus = await currentSound?.getStatusAsync();
+      if (currentStatus?.isLoaded) {
+        if (currentStatus?.isPlaying) {
+          await currentSound?.stopAsync();
+          await currentSound?.unloadAsync();
+          await handlePlayAudio();
+        }
+      }
+    } catch (error) {}
+  };
+
+  const playRandomTrack = async () => {
+    try {
+      let max = route.params.album.tracks.items.length;
+      setTotalTracks(max);
+
+      let newArray = [];
+
+      for (let i = 0; i <= max; i++) {
+        newArray.push(i);
+      }
+
+      let total = generationShuffleNumber(newArray);
+
+      console.log(total);
+
+      total.shift();
+      console.log(total);
+
+      let nextTrack = route.params.album.tracks.items[total[0]];
+      setRandomTrack(Number(total[0]));
+
+      setCurrentTrack({
+        name: nextTrack?.name,
+        numberTrack: nextTrack?.track_number,
+        uriTrack: nextTrack?.preview_url,
+        duration: nextTrack?.duration_ms,
+        artWork: nextTrack?.images[0].url,
+        nameArtist: nextTrack?.artists[0].name,
+        nameAlbum: nextTrack?.album.name,
+      });
+    } catch (error) {}
   };
 
   const onChangeSlider = async (time: number) => {
@@ -247,12 +331,18 @@ export const Play = ({ route, navigation }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  const createRandomTracks = (): number => {
+    return Math.floor(
+      Math.random() * route.params.album.tracks.items.length + 1
+    );
+  };
+
   return (
     <Box style={{ flex: 1 }}>
       <ScrollView>
         <LinearGradient
           style={{ height: "100%" }}
-          colors={["#4c669f", "#3b5998", "#192f6a"]}
+          colors={["#a3a5a8", "#212224", "#212224"]}
         >
           <SafeAreaView>
             <Box style={{ flex: 1 }} padding="4">
@@ -325,7 +415,13 @@ export const Play = ({ route, navigation }) => {
                 marginBottom={["4", "6", "8"]}
               >
                 <Box>
-                  <Text color="#FFFFFF" fontWeight="bold" fontSize="lg">
+                  <Text
+                    color="#FFFFFF"
+                    fontWeight="bold"
+                    fontSize="lg"
+                    isTruncated
+                    maxW={270}
+                  >
                     {currentTrack?.name}
                   </Text>
 
@@ -335,9 +431,19 @@ export const Play = ({ route, navigation }) => {
                 </Box>
 
                 <Box alignItems="center" justifyContent="center">
-                  <TouchableOpacity>
-                    <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
-                  </TouchableOpacity>
+                  {isFavorite ? (
+                    <TouchableOpacity
+                      onPress={() => setIsFavorite(!isFavorite)}
+                    >
+                      <Feather name={"heart"} size={35 % 100} color="green" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => setIsFavorite(!isFavorite)}
+                    >
+                      <Feather name={"heart"} size={35 % 100} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  )}
                 </Box>
               </HStack>
 
@@ -383,9 +489,15 @@ export const Play = ({ route, navigation }) => {
                   alignItems="start"
                   alignContent="start"
                 >
-                  <TouchableOpacity>
-                    <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
-                  </TouchableOpacity>
+                  {isRandom ? (
+                    <TouchableOpacity onPress={() => setIsRandom(!isRandom)}>
+                      <Feather name="shuffle" size={20 % 100} color="green" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={() => setIsRandom(!isRandom)}>
+                      <Feather name="shuffle" size={20 % 100} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  )}
                 </Box>
                 <TouchableOpacity>
                   <Feather
@@ -397,11 +509,11 @@ export const Play = ({ route, navigation }) => {
                 </TouchableOpacity>
 
                 {isPlaying ? (
-                  <TouchableOpacity onPress={handlePlayPause}>
+                  <TouchableOpacity onPress={PauseAudio}>
                     <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity onPress={handlePlayPause}>
+                  <TouchableOpacity onPress={PlayAudio}>
                     <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
                   </TouchableOpacity>
                 )}
@@ -414,82 +526,98 @@ export const Play = ({ route, navigation }) => {
                     color="#FFFFFF"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity>
-                  <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
-                </TouchableOpacity>
+                {isReapeat ? (
+                  <TouchableOpacity onPress={() => setIsRepeat(!isReapeat)}>
+                    <Feather name="repeat" size={20 % 100} color="green" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={() => setIsRepeat(!isReapeat)}>
+                    <Feather name="repeat" size={20 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
+                )}
               </HStack>
             </Box>
 
-            <Box
-              style={{ flex: 1 }}
-              marginTop={["10%", "18%", "20%"]}
-              paddingX="8"
-              paddingBottom="4"
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("home", {
+                  screen: "art",
+
+                  params: detailsArtist,
+                })
+              }
             >
-              <Box>
-                <Box
-                  rounded="lg"
-                  overflow="hidden"
-                  _dark={{
-                    borderColor: "coolGray.600",
-                    backgroundColor: "gray.700",
-                  }}
-                  _web={{
-                    shadow: 2,
-                    borderWidth: 0,
-                  }}
-                  _light={{
-                    backgroundColor: "gray.50",
-                  }}
-                >
-                  <Box>
-                    <AspectRatio w="100%" ratio={16 / 9}>
-                      <Image
-                        source={{
-                          uri: detailsArtist?.images[0].url,
+              <Box
+                style={{ flex: 1 }}
+                marginTop={["10%", "18%", "20%"]}
+                paddingX="8"
+                paddingBottom="4"
+              >
+                <Box>
+                  <Box
+                    rounded="lg"
+                    overflow="hidden"
+                    _dark={{
+                      borderColor: "coolGray.600",
+                      backgroundColor: "gray.700",
+                    }}
+                    _web={{
+                      shadow: 2,
+                      borderWidth: 0,
+                    }}
+                    _light={{
+                      backgroundColor: "gray.50",
+                    }}
+                  >
+                    <Box>
+                      <AspectRatio w="100%" ratio={16 / 12}>
+                        <Image
+                          source={{
+                            uri: detailsArtist?.images[0].url,
+                          }}
+                          alt="image"
+                        />
+                      </AspectRatio>
+                      <Center
+                        _text={{
+                          color: "warmGray.50",
+                          fontWeight: "700",
+                          fontSize: "md",
                         }}
-                        alt="image"
-                      />
-                    </AspectRatio>
-                    <Center
-                      _text={{
-                        color: "warmGray.50",
-                        fontWeight: "700",
-                        fontSize: "md",
-                      }}
-                      position="absolute"
-                      top="0"
-                      px="3"
-                      py="1.5"
-                    >
-                      Sobre o artista
-                    </Center>
-                  </Box>
-                  <Stack p="4" space={3} bg="gray.600">
-                    <Stack space={2}>
-                      <Heading size="md" ml="-1" color="white">
-                        {detailsArtist?.name}
-                      </Heading>
-                      <Text
-                        fontSize="xs"
-                        color="white"
-                        fontWeight="200"
-                        ml="-0.5"
-                        mt="-1"
+                        position="absolute"
+                        top="0"
+                        px="3"
+                        py="1.5"
                       >
-                        {formatingFollowers(detailsArtist?.followers.total) +
-                          " seguidores"}
+                        Sobre o artista
+                      </Center>
+                    </Box>
+                    <Stack p="4" space={3} maxHeight="40%" bg="gray.600">
+                      <Stack space={2}>
+                        <Heading size="md" ml="-1" color="white">
+                          {detailsArtist?.name}
+                        </Heading>
+                        <Text
+                          fontSize="xs"
+                          color="white"
+                          fontWeight="200"
+                          ml="-0.5"
+                          mt="-1"
+                        >
+                          {formatingFollowers(detailsArtist?.followers.total) +
+                            " seguidores"}
+                        </Text>
+                      </Stack>
+                      <Text fontWeight="200" color="white">
+                        Bengaluru (also called Bangalore) is the center of
+                        India's high-tech industry. The city is also known for
+                        its parks and nightlife.
                       </Text>
                     </Stack>
-                    <Text fontWeight="200" color="white">
-                      Bengaluru (also called Bangalore) is the center of India's
-                      high-tech industry. The city is also known for its parks
-                      and nightlife.
-                    </Text>
-                  </Stack>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+            </TouchableOpacity>
           </SafeAreaView>
         </LinearGradient>
       </ScrollView>

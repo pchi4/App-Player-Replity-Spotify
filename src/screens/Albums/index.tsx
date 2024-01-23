@@ -182,7 +182,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
               </Box>
               <FlatList
                 data={route.params.album.tracks.items}
-                keyExtractor={(item) => item?.id}
+                keyExtractor={(item, idx) => String(idx)}
                 nestedScrollEnabled={true}
                 renderItem={({ item, index }) => (
                   <Box

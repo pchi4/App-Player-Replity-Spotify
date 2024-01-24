@@ -59,7 +59,7 @@ export default function TabsRoutes() {
           name="library"
           component={Library}
           options={({ route }) => ({
-            title: "Sua Biblioteca",
+            title: " ",
             tabBarIcon: ({ color, size }) => (
               <Feather name="disc" color={color} size={size} />
             ),

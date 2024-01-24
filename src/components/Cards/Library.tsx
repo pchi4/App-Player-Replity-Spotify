@@ -22,8 +22,8 @@ export const CardLibrary = ({
           <Image
             alt="Art wor"
             resizeMode="cover"
-            width={width / 4}
-            height={width / 4}
+            width={width / 3.5}
+            height={width / 3.5}
             rounded="6"
             source={{
               uri: items?.images[0]?.url,

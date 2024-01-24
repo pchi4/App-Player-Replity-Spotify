@@ -58,12 +58,17 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  if (isFetching || isLoading) {
+  if (
+    isFetching ||
+    isLoading ||
+    isReleatedArtistLoading ||
+    isReleatedFetching
+  ) {
     return <Loading />;
   }
 
   return (
-    <View>
+    <Box>
       <LinearGradient colors={["#a3a5a8", "#212224", "#212224"]}>
         <ScrollView>
           <SafeAreaView>
@@ -319,8 +324,9 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                     items={item}
                     navigation={navigation}
                     handleClick={() =>
-                      navigation.navigate("playlists", {
-                        item,
+                      navigation.navigate("home", {
+                        screen: "art",
+                        params: item,
                       })
                     }
                   />
@@ -338,6 +344,6 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
           </SafeAreaView>
         </ScrollView>
       </LinearGradient>
-    </View>
+    </Box>
   );
 };

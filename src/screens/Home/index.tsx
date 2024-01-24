@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, ScrollView, View } from "react-native";
 import { HStack, Box, Text, FlatList } from "native-base";
-import { CarouselAutoScroll } from "./Carrousel";
 
 import {
   CardAlbum,
@@ -19,7 +18,6 @@ import {
   useGetNewsReleases,
   useGetPlaytlist,
 } from "./hooks";
-import { itemsMusics } from "../../../models/recentsMusics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Home = ({ navigation }: object) => {
@@ -44,7 +42,9 @@ export const Home = ({ navigation }: object) => {
   } = useGetPlaytlist();
 
   const setProfileStore = async () => {
-    await AsyncStorage.setItem("profile", JSON.stringify(profile));
+    if (profile) {
+      await AsyncStorage.setItem("profile", JSON.stringify(profile));
+    }
   };
 
   useEffect(() => {

@@ -11,31 +11,37 @@ import { Playlist } from "../../screens/Playlist";
 import { useEffect, useState } from "react";
 
 const HeaderPlaylistLeft = () => {
-  const [profileObject, setProfileObject] = useState();
   const [personProfle, setPersonProfile] = useState();
 
-  // const getProfile = async () => {
-  //   const profile = await AsyncStorage.getItem("profile");
-  //   const profileFormatter = JSON.parse(profile);
-  //   setPersonProfile(profileFormatter);
-  // };
+  const getProfile = async () => {
+    const profile = await AsyncStorage.getItem("profile");
+    const profileFormatter = JSON.parse(profile);
+    setPersonProfile(profileFormatter);
+  };
 
-  // useEffect(() => {
-  //   getProfile();
-  // }, [personProfle]);
-
-  console.log(personProfle);
+  useEffect(() => {
+    getProfile();
+  }, [personProfle]);
 
   return (
     <HStack justifyContent="space-between" paddingY="4">
-      {/* <Avatar
+      <Avatar
         marginLeft="4"
         bg="green.500"
         size="sm"
         source={{
           uri: personProfle?.images[0].url,
         }}
-      ></Avatar> */}
+      ></Avatar>
+      <Text
+        color="white"
+        paddingLeft="4"
+        textAlign="center"
+        fontWeight="bold"
+        fontSize="md"
+      >
+        Sua Biblioteca
+      </Text>
     </HStack>
   );
 };
@@ -90,7 +96,7 @@ export default function PlaylistScreen() {
       }}
     >
       <Stack.Screen
-        name="Sua Biblioteca"
+        name=" "
         component={Library}
         options={{
           headerTitleStyle: {

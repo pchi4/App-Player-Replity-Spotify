@@ -8,31 +8,14 @@ import {
   View,
 } from "react-native";
 import { ScrollView, FlatList } from "react-native-gesture-handler";
-import {
-  Image,
-  Center,
-  Box,
-  Text,
-  Avatar,
-  HStack,
-  Heading,
-  VStack,
-  Spacer,
-  Pressable,
-  Spinner,
-  Flex,
-  Select,
-} from "native-base";
-import { LinearGradient } from "expo-linear-gradient";
+import { Image, Center, Box, Text, Avatar, HStack } from "native-base";
 const { width, height } = Dimensions.get("screen");
 
 export const Artist = ({ navigation, route }) => {
-  const formatingFollowers = (num: number) => {
-    var units = ["M", "B", "T", "Q"];
-    var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
-    var r = unit % 3;
-    var x = Math.abs(Number(num)) / Number("1.0e+" + (unit - r)).toFixed(2);
-    return x.toFixed(2) + " " + units[Math.floor(unit / 3) - 2];
+  const formatingFollowers = (followers: any) => {
+    var followers = followers.toFixed(3).split(".");
+    followers[0] = followers[0].split(/(?=(?:...)*$)/).join(".");
+    return followers.join(",");
   };
 
   return (

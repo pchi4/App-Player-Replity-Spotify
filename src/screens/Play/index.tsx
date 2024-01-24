@@ -50,7 +50,6 @@ export const Play = ({ route, navigation }) => {
   const [isReapeat, setIsRepeat] = useState<boolean>(false);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [isRandom, setIsRandom] = useState<boolean>(false);
-  const [numberTrack, setNumberTrack] = useState(null);
   const [randomTrack, setRandomTrack] = useState<number>(0);
   const [totalTracks, setTotalTracks] = useState<number>(0);
   const value = useRef(route.params.album.tracks.index);
@@ -108,14 +107,11 @@ export const Play = ({ route, navigation }) => {
     }
   };
 
-  const formatingFollowers = (num: number) => {
-    var units = ["M", "B", "T", "Q"];
-    var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
-    var r = unit % 3;
-    var x = Math.abs(Number(num)) / Number("1.0e+" + (unit - r)).toFixed(2);
-    return x.toFixed(2) + " " + units[Math.floor(unit / 3) - 2];
+  const formatingFollowers = (followers: any) => {
+    var followers = followers.toFixed(3).split(".");
+    followers[0] = followers[0].split(/(?=(?:...)*$)/).join(".");
+    return followers.join(",");
   };
-
   useEffect(() => {
     let nextTrack =
       route.params.album.tracks.items[numberTrackPlaylist.current];

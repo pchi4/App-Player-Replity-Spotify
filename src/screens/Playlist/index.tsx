@@ -141,19 +141,6 @@ export const Playlist = ({ navigation, route }) => {
               </Text>
             </HStack>
             <Box>
-              {/* <Text
-                fontSize={["sm", "sm", "md"]}
-                fontWeight="bold"
-                paddingBottom="2"
-                color="coolGray.300"
-              >
-                {album?.type[0].toUpperCase() +
-                  album?.type.slice(1) +
-                  " ° " +
-                  new Date(album?.release_date).getFullYear()}
-              </Text> */}
-            </Box>
-            <Box>
               <Flex
                 justifyContent="space-between"
                 alignItems="center"

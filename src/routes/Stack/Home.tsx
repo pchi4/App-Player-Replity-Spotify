@@ -10,19 +10,9 @@ import { Albums } from "../../screens/Albums";
 import { Play } from "../../screens/Play";
 import { Playlist } from "../../screens/Playlist";
 import { Artist } from "../../screens/Artist";
+import { Controller } from "../../components/Controller";
 
 export default function HomeScreen() {
-  const [token, setToken] = useState(null);
-
-  const isToken = async () => {
-    const token = await AsyncStorage.getItem("token");
-    setToken(token);
-  };
-
-  useEffect(() => {
-    isToken();
-  }, [token]);
-
   const Title = () => {
     return (
       <Text fontSize="md" fontWeight="bold" color="white" marginLeft="2">
@@ -33,7 +23,6 @@ export default function HomeScreen() {
 
   return (
     <Stack.Navigator
-      initialRouteName={token ? "home" : "auth"}
       screenOptions={{
         headerStyle: {
           backgroundColor: "rgb(24, 26, 27)",
@@ -80,6 +69,16 @@ export default function HomeScreen() {
           headerTitle: "Sobre o artista",
         }}
         component={Artist}
+      />
+      <Stack.Screen
+        name="controller"
+        options={{
+          headerTitleStyle: {
+            color: "white",
+          },
+          headerTitle: " ",
+        }}
+        component={Controller}
       />
     </Stack.Navigator>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, ScrollView, View } from "react-native";
 import { HStack, Box, Text, FlatList } from "native-base";
+import { useStateValue } from "../../context/State";
 
 import {
   CardAlbum,
@@ -41,6 +42,8 @@ export const Home = ({ navigation }: object) => {
     isFetching: playlistFetching,
   } = useGetPlaytlist();
 
+  // const [context, dispatch] = useStateValue();
+
   const setProfileStore = async () => {
     if (profile) {
       await AsyncStorage.setItem("profile", JSON.stringify(profile));
@@ -73,6 +76,15 @@ export const Home = ({ navigation }: object) => {
               Tocados recentes
             </Text>
           </Box>
+
+          <Text
+            onPress={() => AsyncStorage.clear()}
+            padding={6}
+            color={"white"}
+          >
+            {" "}
+            Apagar Storage
+          </Text>
 
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
@@ -122,7 +134,7 @@ export const Home = ({ navigation }: object) => {
 
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}
-            data={playlist.items}
+            data={playlist?.items}
             keyExtractor={(item, idx) => String(idx)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}

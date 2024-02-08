@@ -6,6 +6,7 @@ import {
   getFocusedRouteNameFromRoute,
 } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
+import { useVerifyToken } from "../hooks/useVerifyToken";
 
 import HomeScreen from "./Stack/Home";
 import Library from "./Stack/Library";
@@ -14,6 +15,8 @@ import AuthScreen from "./Stack/Auth";
 const Tab = createBottomTabNavigator();
 
 export default function TabsRoutes() {
+  const { token } = useVerifyToken();
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -29,42 +32,48 @@ export default function TabsRoutes() {
           tabBarInactiveTintColor: "rgb(111 109 213)",
         }}
       >
-        <Tab.Screen
-          name="auth"
-          component={AuthScreen}
-          options={{
-            tabBarStyle: { display: "none" },
-            tabBarButton: () => null,
-          }}
-        />
+        {token ? (
+          <>
+            <Tab.Screen
+              name="home"
+              component={HomeScreen}
+              options={({ route }) => ({
+                title: "Inicio",
+                tabBarIcon: ({ color, size }) => (
+                  <Feather name="home" color={color} size={size} />
+                ),
+                tabBarVisible: true,
 
-        <Tab.Screen
-          name="home"
-          component={HomeScreen}
-          options={({ route }) => ({
-            title: "Inicio",
-            tabBarIcon: ({ color, size }) => (
-              <Feather name="home" color={color} size={size} />
-            ),
-            tabBarStyle: ((route) => {
-              const routeName = getFocusedRouteNameFromRoute(route) ?? null;
-              if (routeName === "playMusic") {
-                return { display: "none" };
-              }
-              return { backgroundColor: "rgb(24, 26, 27)" };
-            })(route),
-          })}
-        />
-        <Tab.Screen
-          name="library"
-          component={Library}
-          options={({ route }) => ({
-            title: " ",
-            tabBarIcon: ({ color, size }) => (
-              <Feather name="disc" color={color} size={size} />
-            ),
-          })}
-        />
+                tabBarStyle: ((route) => {
+                  const routeName = getFocusedRouteNameFromRoute(route) ?? null;
+                  if (routeName === "playMusic") {
+                    return { display: "none" };
+                  }
+                  return { backgroundColor: "rgb(24, 26, 27)" };
+                })(route),
+              })}
+            />
+            <Tab.Screen
+              name="library"
+              component={Library}
+              options={({ route }) => ({
+                title: "Biblioteca",
+                tabBarIcon: ({ color, size }) => (
+                  <Feather name="disc" color={color} size={size} />
+                ),
+              })}
+            />
+          </>
+        ) : (
+          <Tab.Screen
+            name="auth"
+            component={AuthScreen}
+            options={{
+              tabBarStyle: { display: "none" },
+              tabBarButton: () => null,
+            }}
+          />
+        )}
       </Tab.Navigator>
     </NavigationContainer>
   );

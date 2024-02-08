@@ -8,7 +8,7 @@ import { StateProvider } from "./src/context/State";
 import { Controller } from "./src/components/Controller";
 import { useStateValue } from "./src/context/State";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useVerifyToken, useVerifyAlbum, useRefreshToken } from "./src/hooks/";
+import { useVerifyToken, useVerifyAlbum } from "./src/hooks/";
 
 export default function App() {
   const queryClient = new QueryClient();

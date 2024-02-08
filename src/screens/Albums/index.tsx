@@ -31,6 +31,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
 import { CardArtist } from "../../components/Cards/Artist";
+import { useStateValue } from "../../context/State";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PropsAlbums = {
   route: object;
@@ -51,6 +53,8 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     isLoading: isReleatedArtistLoading,
     isFetching: isReleatedFetching,
   } = useGetSeveralArtist({ id: route.params.album?.artists[0].id });
+
+  const [context, dispatch] = useStateValue();
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
@@ -199,10 +203,9 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                   >
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("home", {
-                          screen: "playMusic",
-                          params: {
-                            item,
+                        dispatch({
+                          type: "setAlbum",
+                          payload: {
                             album: {
                               tracks: {
                                 index,
@@ -223,6 +226,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                                   }
                                 ),
                               },
+                              track: item,
                             },
                           },
                         })

@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CLIENT_SECRET, CLIENT_ID } from "react-native-dotenv";
+import { CLIENT_SECRET, CLIENT_ID } from "@env";
 
 const apiInstance = axios.create({
   headers: {

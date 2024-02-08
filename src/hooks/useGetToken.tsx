@@ -8,7 +8,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStateValue } from "../context/State";
 import apiInstance from "../services/api";
-import { CLIENT_SECRET, CLIENT_ID } from "react-native-dotenv";
+import { CLIENT_SECRET, CLIENT_ID } from "@env";
 
 export const useGetToken = () => {
   const [context, dispatch] = useStateValue();

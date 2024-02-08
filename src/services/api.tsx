@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CLIENT_SECRET, CLIENT_ID } from "react-native-dotenv";
 
 const apiInstance = axios.create({
   headers: {
@@ -22,8 +23,8 @@ const getRefreshToken = async () => {
       data: new URLSearchParams({
         grant_type: "refresh_token",
         refresh_token: refreshToken,
-        client_id: "0e7989953adc4c5cba284909c50fe613",
-        client_secret: "312a384f3123441e9fd22c759dda79ef",
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
       }).toString(),
     });
 

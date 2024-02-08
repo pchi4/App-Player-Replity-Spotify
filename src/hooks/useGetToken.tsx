@@ -8,10 +8,9 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStateValue } from "../context/State";
 import apiInstance from "../services/api";
+import { CLIENT_SECRET, CLIENT_ID } from "react-native-dotenv";
 
 export const useGetToken = () => {
-  const [clientId] = useState<string>("0e7989953adc4c5cba284909c50fe613");
-  const [token, setToken] = useState<string>();
   const [context, dispatch] = useStateValue();
 
   const discovery = {
@@ -20,8 +19,8 @@ export const useGetToken = () => {
   };
 
   const config = {
-    clientId,
-    clientSecret: "312a384f3123441e9fd22c759dda79ef",
+    CLIENT_ID,
+    CLIENT_SECRET,
     scopes: [
       "user-read-email",
       "user-library-read",
@@ -59,9 +58,9 @@ export const useGetToken = () => {
         grant_type: "authorization_code",
         code: resultPromptAsync.params.code,
         redirect_uri: "exp://127.0.0.1:8081/--/spotify-auth-callback",
-        client_id: clientId,
+        client_id: CLIENT_ID,
         code_verifier: codeVerifer,
-        client_secret: "312a384f3123441e9fd22c759dda79ef",
+        client_secret: CLIENT_SECRET,
       };
 
       const result = await apiInstance(
@@ -88,7 +87,6 @@ export const useGetToken = () => {
             },
           },
         });
-        setToken(result.data.access_token);
       }
     } catch (error) {
       // console.log(error);

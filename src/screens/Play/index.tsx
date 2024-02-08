@@ -19,6 +19,7 @@ import {
   ScrollView,
 } from "react-native";
 
+import { useStateValue } from "./../../context/State";
 import { LinearGradient } from "expo-linear-gradient";
 
 import Slider from "@react-native-community/slider";
@@ -31,12 +32,15 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
+import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
 import { Sound } from "expo-av/build/Audio";
 import { usePlayRandom } from "./hooks/usePlayRandom";
 import { useGetDetailsArtist } from "./hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CarouselAutoScroll } from "./../../components/Carrousel";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ja } from "date-fns/locale";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -52,12 +56,17 @@ export const Play = ({ route, navigation }) => {
   const [isRandom, setIsRandom] = useState<boolean>(false);
   const [randomTrack, setRandomTrack] = useState<number>(0);
   const [totalTracks, setTotalTracks] = useState<number>(0);
+  const [, dispatch] = useStateValue();
   const value = useRef(route.params.album.tracks.index);
   const numberTrackPlaylist = useRef(route.params.album.tracks.index);
 
   const { data: detailsArtist, isLoading } = useGetDetailsArtist({
     id: route.params.album.tracks.items[0].artists[0].id,
   });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   const [currentTrack, setCurrentTrack] = useState({
     name: null,
@@ -107,10 +116,27 @@ export const Play = ({ route, navigation }) => {
     }
   };
 
-  const formatingFollowers = (followers: any) => {
-    var followers = followers.toFixed(3).split(".");
-    followers[0] = followers[0].split(/(?=(?:...)*$)/).join(".");
-    return followers.join(",");
+  const formatingFollowers = (follower: any) => {
+    // var followers = follower?.toFixed(3).split(".");c
+    // followers[0] = followers[0]?.split(/(?=(?:...)*$)/).join(".");
+    // return followers.join(",");
+  };
+
+  const executeDispatch = (track: object) => {
+    dispatch({
+      type: "setCurrentSound",
+      payload: {
+        currentSound: {
+          name: track?.name,
+          numberTrack: track?.track_number,
+          uriTrack: track?.preview_url,
+          duration: track?.duration_ms,
+          artWork: track?.images[0].url,
+          nameArtist: track?.artists[0].name,
+          nameAlbum: track?.album.name,
+        },
+      },
+    });
   };
   useEffect(() => {
     let nextTrack =
@@ -121,6 +147,9 @@ export const Play = ({ route, navigation }) => {
     //   handlePlayAudio();
     //   return;
     // }
+
+    executeDispatch(nextTrack);
+    transpileStorageValues();
 
     setCurrentTrack({
       name: nextTrack?.name,
@@ -135,22 +164,12 @@ export const Play = ({ route, navigation }) => {
     handlePlayAudio();
   }, []);
 
-  // useEffect(() => {
-  //   if (currentSound) {
-  //     currentSound?.stopAsync();
-  //     setCurrentSound(null);
-  //     currentSound?.unloadAsync();
-  //   }
-  // }, [currentSound]);
-
-  // useEffect(() => {
-  //   return currentSound
-  //     ? () => {
-  //         console.log("Unloading currentSound");
-  //         currentSound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, [currentSound]);
+  const transpileStorageValues = async () => {
+    try {
+      var sound = await AsyncStorage.getItem("sound");
+      console.log(sound);
+    } catch (error) {}
+  };
 
   const onPlaybackStatusUpdate = async (status: object) => {
     setStatusSound(status);
@@ -158,6 +177,12 @@ export const Play = ({ route, navigation }) => {
     if (status.isLoaded && status.isPlaying) {
       setCurrentTime(status.positionMillis);
       setTotalDuration(status.durationMillis);
+      dispatch({
+        type: "setStatus",
+        payload: {
+          statusSound: status,
+        },
+      });
     }
     if (isReapeat) {
       if (status.didJustFinish) {
@@ -495,13 +520,8 @@ export const Play = ({ route, navigation }) => {
                     </TouchableOpacity>
                   )}
                 </Box>
-                <TouchableOpacity>
-                  <Feather
-                    name="skip-back"
-                    size={40 % 100}
-                    color="#FFFFFF"
-                    onPress={playPeviousTrack}
-                  />
+                <TouchableOpacity onPress={playPeviousTrack}>
+                  <Feather name="skip-back" size={40 % 100} color="#FFFFFF" />
                 </TouchableOpacity>
 
                 {isPlaying ? (
@@ -600,8 +620,8 @@ export const Play = ({ route, navigation }) => {
                           ml="-0.5"
                           mt="-1"
                         >
-                          {formatingFollowers(detailsArtist?.followers.total) +
-                            " seguidores"}
+                          {formatingFollowers(detailsArtist?.followers.total) ??
+                            0 + " seguidores"}
                         </Text>
                       </Stack>
                       <Text fontWeight="200" color="white">

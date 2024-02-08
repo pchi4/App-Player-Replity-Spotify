@@ -10,22 +10,19 @@ import {
   Image,
 } from "native-base";
 import { useGetToken } from "../../hooks/useGetToken";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import { useStateValue } from "../../context/State";
 const { width, height } = Dimensions.get("screen");
+import { useVerifyToken } from "../../hooks/useVerifyToken";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Auth = ({ navigation }: object) => {
-  const { token, accessToken } = useGetToken();
+  const { accessToken } = useGetToken();
+  const { token } = useVerifyToken();
 
-  useEffect(() => {
-    if (token) {
-      navigation.navigate("home");
-    }
-  }, [token]);
-
-  const requestAuthSpotify = async () => {
-    await accessToken();
-  };
+  if (token) {
+    navigation.navigate("home");
+  }
 
   return (
     <Box style={{ flex: 1 }}>
@@ -61,7 +58,7 @@ export const Auth = ({ navigation }: object) => {
           <Button
             width="90%"
             marginTop={["8", "12", "10"]}
-            onPress={requestAuthSpotify}
+            onPress={async () => await accessToken()}
             bg="blue.500"
           >
             Conectar com o Spotify

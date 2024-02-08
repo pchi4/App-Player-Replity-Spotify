@@ -1,18 +1,10 @@
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
+import apiInstance from "../../../../services/api";
 
 const getPlaylist = async (): Promise<Array<any> | undefined> => {
   try {
-    const token = await AsyncStorage.getItem("token");
+    const response = await apiInstance.get("/me/playlists");
 
-    const response = await axios("https://api.spotify.com/v1/me/playlists", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
     return response.data;
   } catch (error) {}
 };

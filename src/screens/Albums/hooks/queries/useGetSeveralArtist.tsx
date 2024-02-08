@@ -1,6 +1,5 @@
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "react-query";
+import apiInstance from "../../../../services/api";
 
 type Parameter = {
   id: string;
@@ -8,18 +7,7 @@ type Parameter = {
 
 const fetchSeveralArtist = async (id: string): Promise<any> => {
   try {
-    const token = await AsyncStorage.getItem("token");
-
-    const result = await axios(
-      `https://api.spotify.com/v1/artists/${id}/related-artists`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const result = await apiInstance.get(`/artists/${id}/related-artists`);
 
     return result.data;
   } catch (error) {

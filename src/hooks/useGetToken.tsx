@@ -6,10 +6,13 @@ import {
   makeRedirectUri,
 } from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useStateValue } from "../context/State";
+import apiInstance from "../services/api";
 
 export const useGetToken = () => {
   const [clientId] = useState<string>("0e7989953adc4c5cba284909c50fe613");
   const [token, setToken] = useState<string>();
+  const [context, dispatch] = useStateValue();
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -45,14 +48,10 @@ export const useGetToken = () => {
 
   const [request, response, promptAsync] = useAuthRequest(config, discovery);
 
-  console.log(response);
-
   const accessToken = async () => {
     try {
       const resultPromptAsync = await promptAsync();
       await AsyncStorage.clear();
-
-      console.log(resultPromptAsync);
 
       let codeVerifer = generateCodeVerifier(128);
 
@@ -65,17 +64,30 @@ export const useGetToken = () => {
         client_secret: "312a384f3123441e9fd22c759dda79ef",
       };
 
-      const result = await axios("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data: new URLSearchParams(data).toString(),
-      });
+      const result = await apiInstance(
+        "https://accounts.spotify.com/api/token",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          data: new URLSearchParams(data).toString(),
+        }
+      );
 
       if (result.data && result.data.access_token) {
         await AsyncStorage.setItem("token", result.data.access_token);
+        await AsyncStorage.setItem("refreshToken", result.data.refresh_token);
+        dispatch({
+          type: "setUser",
+          payload: {
+            user: {
+              ...context.user,
+              token: result.data.access_token,
+            },
+          },
+        });
         setToken(result.data.access_token);
       }
     } catch (error) {
@@ -85,6 +97,5 @@ export const useGetToken = () => {
 
   return {
     accessToken,
-    token,
   };
 };

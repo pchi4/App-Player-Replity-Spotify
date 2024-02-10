@@ -23,6 +23,7 @@ export const initial = {
     track: null,
   },
   statusSound: null,
+  isNotMusic: true,
 };
 
 export default (state = initial, action: { type: string }) => {
@@ -51,6 +52,12 @@ export default (state = initial, action: { type: string }) => {
       );
       return { ...state, statusSound: action.payload.statusSound };
       break;
+
+    case "isNotMusic":
+      AsyncStorage.setItem("isNotMusic", String(action.payload.isNotMusic));
+      return { ...state, isNotMusic: String(action.payload.isNotMusic) };
+      break;
+
     default:
       return state;
   }

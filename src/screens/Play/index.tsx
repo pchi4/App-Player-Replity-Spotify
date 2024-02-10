@@ -56,17 +56,84 @@ export const Play = ({ route, navigation }) => {
   const [isRandom, setIsRandom] = useState<boolean>(false);
   const [randomTrack, setRandomTrack] = useState<number>(0);
   const [totalTracks, setTotalTracks] = useState<number>(0);
-  const [, dispatch] = useStateValue();
-  const value = useRef(route.params.album.tracks.index);
-  const numberTrackPlaylist = useRef(route.params.album.tracks.index);
+  const [context, dispatch] = useStateValue().reducer;
+  // const value = useRef(route.params.album.tracks.index);
+  const numberTrackPlaylist = useRef(JSON.parse(route.params).tracks.index);
 
-  const { data: detailsArtist, isLoading } = useGetDetailsArtist({
-    id: route.params.album.tracks.items[0].artists[0].id,
+  useEffect(() => {
+    let nextTrack = JSON.parse(route.params).tracks.items[
+      numberTrackPlaylist.current
+    ];
+
+    // if (isRandom) {
+    //   playRandomTrack();
+    //   handlePlayAudio();
+    //   return;
+
+    // }
+
+    async function handlePlayAudio() {
+      try {
+        if (currentSound) {
+          setCurrentSound(null);
+          await currentSound.unloadAsync();
+        }
+
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: false,
+          playThroughEarpieceAndroid: true,
+        });
+
+        const { sound, status } = await Audio.Sound.createAsync(
+          { uri: currentTrack?.uriTrack },
+
+          {
+            shouldPlay: true,
+            isLooping: false,
+          },
+          onPlaybackStatusUpdate
+        );
+
+        setCurrentStatus(status);
+        setIsPlaying(status.isLoaded);
+
+        setCurrentSound(sound);
+        sound._onPlaybackStatusUpdate(status);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const executeDispatch = async (track: object) => {
+      dispatch({
+        type: "setCurrentSound",
+        payload: {
+          currentSound: {
+            name: track?.name,
+            numberTrack: track?.track_number,
+            uriTrack: track?.preview_url,
+            duration: track?.duration_ms,
+            artWork: track?.images[0].url,
+            nameArtist: track?.artists[0].name,
+            nameAlbum: track?.album.name,
+          },
+        },
+      });
+      await handlePlayAudio();
+    };
+
+    executeDispatch(nextTrack);
+  }, []);
+
+  const {
+    data: detailsArtist,
+    isLoading,
+    isFetching,
+  } = useGetDetailsArtist({
+    id: context.album?.track.artists[0].id,
   });
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   const [currentTrack, setCurrentTrack] = useState({
     name: null,
@@ -78,97 +145,10 @@ export const Play = ({ route, navigation }) => {
     album: null,
   });
 
-  useEffect(() => {
-    // console.log(detailsArtist);
-  }, [detailsArtist]);
-
-  const handlePlayAudio = async () => {
-    try {
-      if (currentSound) {
-        setCurrentSound(null);
-        await currentSound.unloadAsync();
-      }
-
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: false,
-        playThroughEarpieceAndroid: true,
-      });
-
-      const { sound, status } = await Audio.Sound.createAsync(
-        { uri: currentTrack?.uriTrack },
-
-        {
-          shouldPlay: true,
-          isLooping: false,
-        },
-        onPlaybackStatusUpdate
-      );
-
-      setCurrentStatus(status);
-      setIsPlaying(status.isLoaded);
-
-      setCurrentSound(sound);
-      sound._onPlaybackStatusUpdate(status);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const formatingFollowers = (follower: any) => {
-    // var followers = follower?.toFixed(3).split(".");c
-    // followers[0] = followers[0]?.split(/(?=(?:...)*$)/).join(".");
-    // return followers.join(",");
-  };
-
-  const executeDispatch = (track: object) => {
-    dispatch({
-      type: "setCurrentSound",
-      payload: {
-        currentSound: {
-          name: track?.name,
-          numberTrack: track?.track_number,
-          uriTrack: track?.preview_url,
-          duration: track?.duration_ms,
-          artWork: track?.images[0].url,
-          nameArtist: track?.artists[0].name,
-          nameAlbum: track?.album.name,
-        },
-      },
-    });
-  };
-  useEffect(() => {
-    let nextTrack =
-      route.params.album.tracks.items[numberTrackPlaylist.current];
-
-    // if (isRandom) {
-    //   playRandomTrack();
-    //   handlePlayAudio();
-    //   return;
-    // }
-
-    executeDispatch(nextTrack);
-    transpileStorageValues();
-
-    setCurrentTrack({
-      name: nextTrack?.name,
-      numberTrack: nextTrack?.track_number,
-      uriTrack: nextTrack?.preview_url,
-      duration: nextTrack?.duration_ms,
-      artWork: nextTrack?.images[0].url,
-      nameArtist: nextTrack?.artists[0].name,
-      nameAlbum: nextTrack?.album.name,
-    });
-
-    handlePlayAudio();
-  }, []);
-
-  const transpileStorageValues = async () => {
-    try {
-      var sound = await AsyncStorage.getItem("sound");
-      console.log(sound);
-    } catch (error) {}
+    var followers = follower?.toFixed(3).split(".");
+    followers[0] = followers[0]?.split(/(?=(?:...)*$)/).join(".");
+    return followers.join(",");
   };
 
   const onPlaybackStatusUpdate = async (status: object) => {
@@ -358,6 +338,10 @@ export const Play = ({ route, navigation }) => {
     );
   };
 
+  if (isLoading && isFetching) {
+    return <Loading />;
+  }
+
   return (
     <Box style={{ flex: 1 }}>
       <ScrollView>
@@ -396,7 +380,7 @@ export const Play = ({ route, navigation }) => {
                         isTruncated
                         width="auto"
                       >
-                        {currentTrack?.nameAlbum}
+                        {context?.currentSound.nameAlbum}
                       </Text>
                     </Center>
                   </Box>
@@ -414,7 +398,11 @@ export const Play = ({ route, navigation }) => {
                   marginTop="10%"
                   borderRadius={10}
                   source={
-                    { uri: currentTrack?.artWork } ??
+                    {
+                      uri: context.album?.tracks?.items[
+                        context.album?.tracks.index
+                      ].images[2].url,
+                    } ??
                     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
                   }
                   alt="ArtWork albuns"
@@ -443,11 +431,11 @@ export const Play = ({ route, navigation }) => {
                     isTruncated
                     maxW={270}
                   >
-                    {currentTrack?.name}
+                    {context.album?.track.name}
                   </Text>
 
                   <Text color="#FFFFFF" fontSize="md">
-                    {currentTrack?.nameArtist}
+                    {context.album?.track.artists[0].name}
                   </Text>
                 </Box>
 

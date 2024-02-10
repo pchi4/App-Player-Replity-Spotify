@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StatusBar, ScrollView, View } from "react-native";
+import {
+  SafeAreaView,
+  StatusBar,
+  ScrollView,
+  View,
+  LogBox,
+} from "react-native";
 import { HStack, Box, Text, FlatList } from "native-base";
 import { useStateValue } from "../../context/State";
 
@@ -22,6 +28,13 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Home = ({ navigation }: object) => {
+  const [_, setNavigator] = useStateValue().navigator;
+
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+    setNavigator(navigation);
+  }, []);
+
   const { data, isError, isLoading, isFetching } = useGetAlbums();
   const {
     data: profile,
@@ -42,7 +55,7 @@ export const Home = ({ navigation }: object) => {
     isFetching: playlistFetching,
   } = useGetPlaytlist();
 
-  // const [context, dispatch] = useStateValue();
+  // const [context, dispatch] = useStateValue().reducer;
 
   const setProfileStore = async () => {
     if (profile) {
@@ -76,15 +89,6 @@ export const Home = ({ navigation }: object) => {
               Tocados recentes
             </Text>
           </Box>
-
-          <Text
-            onPress={() => AsyncStorage.clear()}
-            padding={6}
-            color={"white"}
-          >
-            {" "}
-            Apagar Storage
-          </Text>
 
           <FlatList
             style={{ paddingTop: StatusBar.currentHeight }}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   SafeAreaView,
   SectionList,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StatusBar,
   View,
+  LogBox,
 } from "react-native";
 import { ScrollView, FlatList } from "react-native-gesture-handler";
 import {
@@ -42,6 +43,10 @@ type PropsAlbums = {
 const { width, height } = Dimensions.get("screen");
 
 export const Albums = ({ route, navigation }: PropsAlbums) => {
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+  }, []);
+
   const {
     data: artists,
     isFetching,
@@ -54,12 +59,46 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     isFetching: isReleatedFetching,
   } = useGetSeveralArtist({ id: route.params.album?.artists[0].id });
 
-  const [context, dispatch] = useStateValue();
+  const [context, dispatch] = useStateValue().reducer;
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const handleDispatchs = (index: number, item: object) => {
+    dispatch({
+      type: "setAlbum",
+      payload: {
+        album: {
+          tracks: {
+            index,
+            items: route.params.album.tracks.items.map((value) => {
+              return {
+                preview_url: value.preview_url,
+                duration_ms: value.duration_ms,
+                name: value.name,
+                images: route.params.album.images,
+                track_number: value.track_number,
+                album: {
+                  name: route.params.album.name,
+                  type: route.params.album.type,
+                },
+                artists: route.params.album.artists,
+              };
+            }),
+          },
+          track: item,
+        },
+      },
+    });
+    dispatch({
+      type: "isNotMusic",
+      payload: {
+        isNotMusic: false,
+      },
+    });
   };
 
   if (
@@ -191,7 +230,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
               </Box>
               <FlatList
                 data={route.params.album.tracks.items}
-                keyExtractor={(item, idx) => String(idx)}
+                keyExtractor={(item) => String(item.id)}
                 nestedScrollEnabled={true}
                 renderItem={({ item, index }) => (
                   <Box
@@ -202,35 +241,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                     py="2"
                   >
                     <TouchableOpacity
-                      onPress={() =>
-                        dispatch({
-                          type: "setAlbum",
-                          payload: {
-                            album: {
-                              tracks: {
-                                index,
-                                items: route.params.album.tracks.items.map(
-                                  (value) => {
-                                    return {
-                                      preview_url: value.preview_url,
-                                      duration_ms: value.duration_ms,
-                                      name: value.name,
-                                      images: route.params.album.images,
-                                      track_number: value.track_number,
-                                      album: {
-                                        name: route.params.album.name,
-                                        type: route.params.album.type,
-                                      },
-                                      artists: route.params.album.artists,
-                                    };
-                                  }
-                                ),
-                              },
-                              track: item,
-                            },
-                          },
-                        })
-                      }
+                      onPress={() => handleDispatchs(index, item)}
                     >
                       <HStack space={[2, 3]} justifyContent="space-between">
                         <VStack>
@@ -241,7 +252,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
                             color="white"
                             bold
                             isTruncated
-                            maxWidth="sm"
+                            maxWidth={[280, 300]}
                             fontSize="md"
                           >
                             {item.name}
@@ -317,7 +328,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
               <FlatList
                 style={{ paddingTop: StatusBar.currentHeight }}
                 data={releatedArtist?.artists}
-                keyExtractor={(item) => String(item?.id)}
+                keyExtractor={(item) => String(item.id)}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 horizontal
@@ -338,11 +349,34 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
               />
 
               <Box paddingTop="4">
-                {route.params.album?.copyrights.map((value) => (
-                  <Text fontSize="md" fontWeight="bold" color="white">
-                    {value.text}
-                  </Text>
-                ))}
+                {route.params.album?.copyrights.map(
+                  (
+                    value: {
+                      text:
+                        | string
+                        | number
+                        | boolean
+                        | React.ReactElement<
+                            any,
+                            string | React.JSXElementConstructor<any>
+                          >
+                        | Iterable<React.ReactNode>
+                        | React.ReactPortal
+                        | null
+                        | undefined;
+                    },
+                    idx: React.Key | null | undefined
+                  ) => (
+                    <Text
+                      fontSize="md"
+                      fontWeight="bold"
+                      key={idx}
+                      color="white"
+                    >
+                      {value.text}
+                    </Text>
+                  )
+                )}
               </Box>
             </Box>
           </SafeAreaView>

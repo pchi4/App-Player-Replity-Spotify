@@ -11,15 +11,12 @@ import { Play } from "../../screens/Play";
 import { Playlist } from "../../screens/Playlist";
 import { Artist } from "../../screens/Artist";
 import { Controller } from "../../components/Controller";
+import { AvatarProfile } from "../../components/AvatartProfile";
+
+import { useVerifyControler } from "../../hooks";
 
 export default function HomeScreen() {
-  const Title = () => {
-    return (
-      <Text fontSize="md" fontWeight="bold" color="white" marginLeft="2">
-        Seja bem-vindo(a)
-      </Text>
-    );
-  };
+  const { isNotMusic } = useVerifyControler();
 
   return (
     <Stack.Navigator
@@ -36,7 +33,7 @@ export default function HomeScreen() {
           headerTitleStyle: {
             color: "white",
           },
-          headerLeft: () => <Title />,
+          headerLeft: () => <AvatarProfile title={"Bem vindo(a)"} />,
         }}
       />
       <Stack.Screen

@@ -13,7 +13,7 @@ export const CardArtist = ({
   return (
     <Box paddingRight="4" justifyContent="center" alignItems="center">
       <Pressable onPress={handleClick}>
-        <Box shadow={3}>
+        <Box>
           <Image
             alt="Art work Album"
             resizeMode="cover"

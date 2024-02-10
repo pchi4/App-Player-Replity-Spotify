@@ -19,7 +19,7 @@ export const CardPlaylist = ({
       paddingX="2"
     >
       <TouchableOpacity onPress={handleClick}>
-        <Box shadow={3}>
+        <Box>
           <Image
             alt="Art wor"
             resizeMode="cover"

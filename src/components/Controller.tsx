@@ -1,48 +1,40 @@
 import { Text, Box, HStack, Image, VStack, Progress } from "native-base";
-import { Dimensions, TouchableOpacity } from "react-native";
+import { Dimensions, TouchableOpacity, Platform } from "react-native";
 import { useStateValue } from "../context/State";
 import { Feather } from "@expo/vector-icons";
 import * as Device from "expo-device";
-import { useRefreshToken, useVerifyAlbum } from "../hooks";
+import { useVerifyAlbum } from "../hooks";
 import { useNavigation } from "@react-navigation/native";
 
 import * as React from "react";
 const { width, height } = Dimensions.get("screen");
 
-export const Controller = ({ navigation }) => {
+export const Controller = () => {
   var deviceModel = Device.deviceName;
-  const [context, dispatch] = useStateValue();
+  const [context, dispatch] = useStateValue().reducer;
+  const [navigator, _] = useStateValue().navigator;
   const { album } = useVerifyAlbum();
-  // const navigation = useNavigation();
-
-  console.log(navigation);
 
   return (
     <>
       {context.album?.tracks?.items && (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("home", {
+            navigator.navigate("home", {
               screen: "playMusic",
-              params: {
-                album: {
-                  tracks: {
-                    index: album.tracks.index,
-                    items: album.tracks.items,
-                  },
-                },
-              },
+              params: album,
             })
           }
         >
           <Box
-            width="100%"
+            width="96%"
             bg="#5C5E60"
             padding="2"
+            marginX={2}
             fontSize="md"
             fontWeight="bold"
             rounded="md"
-            bottom={height / 10}
+            bottom={Platform.OS === "android" ? height / 16 : height / 10}
             position="absolute"
           >
             <HStack justifyContent="space-between">
@@ -65,24 +57,18 @@ export const Controller = ({ navigation }) => {
                     alt="album art work"
                   />
                   <VStack>
-                    {context.album?.tracks?.items && (
-                      <Text
-                        pl={2}
-                        color="white"
-                        fontWeight="bold"
-                        fontSize="xs"
-                        isTruncated
-                        maxWidth={200}
-                      >
-                        {context.album?.tracks?.items[
-                          context.album?.tracks?.index
-                        ].name +
-                          " - " +
-                          context.album?.tracks?.items[
-                            context.album?.tracks?.index
-                          ].artists[0].name}
-                      </Text>
-                    )}
+                    <Text
+                      pl={2}
+                      color="white"
+                      fontWeight="bold"
+                      fontSize="xs"
+                      isTruncated
+                      maxWidth={200}
+                    >
+                      {context.album?.track.name +
+                        " - " +
+                        context.album?.track.artists[0].name}
+                    </Text>
 
                     <HStack pl="2" alignItems="center">
                       <Feather name="speaker" size={20 % 100} color="white" />

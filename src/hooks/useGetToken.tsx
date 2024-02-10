@@ -11,7 +11,7 @@ import apiInstance from "../services/api";
 import { CLIENT_SECRET, CLIENT_ID } from "@env";
 
 export const useGetToken = () => {
-  const [context, dispatch] = useStateValue();
+  const [context, dispatch] = useStateValue().reducer;
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -19,8 +19,8 @@ export const useGetToken = () => {
   };
 
   const config = {
-    CLIENT_ID,
-    CLIENT_SECRET,
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
     scopes: [
       "user-read-email",
       "user-library-read",
@@ -74,6 +74,8 @@ export const useGetToken = () => {
           data: new URLSearchParams(data).toString(),
         }
       );
+
+      console.log(result);
 
       if (result.data && result.data.access_token) {
         await AsyncStorage.setItem("token", result.data.access_token);

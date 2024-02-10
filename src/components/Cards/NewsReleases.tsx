@@ -13,7 +13,7 @@ export const CardNewsReleases = ({
   return (
     <Box paddingRight="4">
       <Pressable onPress={handleClick}>
-        <Box shadow={3}>
+        <Box>
           <Image
             alt="Art wor"
             resizeMode="cover"

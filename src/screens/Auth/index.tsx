@@ -18,11 +18,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Auth = ({ navigation }: object) => {
   const { accessToken } = useGetToken();
-  const { token } = useVerifyToken();
-
-  if (token) {
-    navigation.navigate("home");
-  }
 
   return (
     <Box style={{ flex: 1 }}>
@@ -58,7 +53,7 @@ export const Auth = ({ navigation }: object) => {
           <Button
             width="90%"
             marginTop={["8", "12", "10"]}
-            onPress={async () => await accessToken()}
+            onPress={() => accessToken()}
             bg="blue.500"
           >
             Conectar com o Spotify

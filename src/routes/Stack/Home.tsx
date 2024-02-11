@@ -1,7 +1,4 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
-import { Text } from "native-base";
 
 const Stack = createStackNavigator();
 
@@ -13,11 +10,7 @@ import { Artist } from "../../screens/Artist";
 import { Controller } from "../../components/Controller";
 import { AvatarProfile } from "../../components/AvatartProfile";
 
-import { useVerifyControler } from "../../hooks";
-
 export default function HomeScreen() {
-  const { isNotMusic } = useVerifyControler();
-
   return (
     <Stack.Navigator
       screenOptions={{
@@ -28,35 +21,54 @@ export default function HomeScreen() {
     >
       <Stack.Screen
         name=" "
-        component={Home}
         options={{
           headerTitleStyle: {
             color: "white",
           },
           headerLeft: () => <AvatarProfile title={"Bem vindo(a)"} />,
         }}
-      />
+      >
+        {(props) => (
+          <>
+            <Home {...props} />
+            <Controller />
+          </>
+        )}
+      </Stack.Screen>
       <Stack.Screen
         options={{
           headerShown: false,
         }}
         name="albums"
-        component={Albums}
-      />
+      >
+        {(props) => (
+          <>
+            <Albums {...props} />
+            <Controller />
+          </>
+        )}
+      </Stack.Screen>
       <Stack.Screen
         name="playMusic"
         options={{
           headerShown: false,
         }}
-        component={Play}
-      />
+      >
+        {(props) => <Play {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         options={{
           headerShown: false,
         }}
         name="playlists"
-        component={Playlist}
-      />
+      >
+        {(props) => (
+          <>
+            <Playlist {...props} />
+            <Controller />
+          </>
+        )}
+      </Stack.Screen>
       <Stack.Screen
         name="art"
         options={{
@@ -65,18 +77,14 @@ export default function HomeScreen() {
           },
           headerTitle: "Sobre o artista",
         }}
-        component={Artist}
-      />
-      <Stack.Screen
-        name="controller"
-        options={{
-          headerTitleStyle: {
-            color: "white",
-          },
-          headerTitle: " ",
-        }}
-        component={Controller}
-      />
+      >
+        {(props) => (
+          <>
+            <Artist {...props} />
+            <Controller />
+          </>
+        )}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

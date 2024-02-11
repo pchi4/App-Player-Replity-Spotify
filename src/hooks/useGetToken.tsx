@@ -25,6 +25,7 @@ export const useGetToken = () => {
       "user-read-email",
       "user-library-read",
       "user-read-recently-played",
+      "user-read-playback-state",
       "user-top-read",
       "playlist-read-private",
       "playlist-read-collaborative",
@@ -74,8 +75,6 @@ export const useGetToken = () => {
           data: new URLSearchParams(data).toString(),
         }
       );
-
-      console.log(result);
 
       if (result.data && result.data.access_token) {
         await AsyncStorage.setItem("token", result.data.access_token);

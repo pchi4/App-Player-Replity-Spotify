@@ -35,12 +35,9 @@ import {
 import { Loading } from "../../components/Loading";
 import { Feather } from "@expo/vector-icons";
 import { Sound } from "expo-av/build/Audio";
-import { usePlayRandom } from "./hooks/usePlayRandom";
+
 import { useGetDetailsArtist } from "./hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CarouselAutoScroll } from "./../../components/Carrousel";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ja } from "date-fns/locale";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -56,76 +53,73 @@ export const Play = ({ route, navigation }) => {
   const [isRandom, setIsRandom] = useState<boolean>(false);
   const [randomTrack, setRandomTrack] = useState<number>(0);
   const [totalTracks, setTotalTracks] = useState<number>(0);
+  const [currentTrack, setCurrentTrack] = useState({
+    name: null,
+    duration: null,
+    numberTrack: null,
+    uriTrack: null,
+    artWork: null,
+    nameArtist: null,
+  });
   const [context, dispatch] = useStateValue().reducer;
   // const value = useRef(route.params.album.tracks.index);
   const numberTrackPlaylist = useRef(JSON.parse(route.params).tracks.index);
+  const handlePlayAudio = async () => {
+    try {
+      if (currentSound) {
+        setCurrentSound(null);
+        await currentSound.unloadAsync();
+      }
+
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: false,
+        playThroughEarpieceAndroid: true,
+      });
+
+      const { sound, status } = await Audio.Sound.createAsync(
+        {
+          uri: currentTrack?.uriTrack,
+        },
+
+        {
+          shouldPlay: true,
+          isLooping: false,
+        },
+        onPlaybackStatusUpdate
+      );
+
+      setCurrentStatus(status);
+      setIsPlaying(status.isLoaded);
+
+      setCurrentSound(sound);
+      onPlaybackStatusUpdate(status);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    let nextTrack = JSON.parse(route.params).tracks.items[
-      numberTrackPlaylist.current
-    ];
-
-    // if (isRandom) {
-    //   playRandomTrack();
-    //   handlePlayAudio();
-    //   return;
-
-    // }
-
-    async function handlePlayAudio() {
-      try {
-        if (currentSound) {
-          setCurrentSound(null);
-          await currentSound.unloadAsync();
-        }
-
-        await Audio.setAudioModeAsync({
-          playsInSilentModeIOS: true,
-          staysActiveInBackground: false,
-          shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: true,
-        });
-
-        const { sound, status } = await Audio.Sound.createAsync(
-          { uri: currentTrack?.uriTrack },
-
-          {
-            shouldPlay: true,
-            isLooping: false,
-          },
-          onPlaybackStatusUpdate
-        );
-
-        setCurrentStatus(status);
-        setIsPlaying(status.isLoaded);
-
-        setCurrentSound(sound);
-        sound._onPlaybackStatusUpdate(status);
-      } catch (error) {
-        console.log(error);
-      }
+    if (isRandom) {
+      playRandomTrack();
+      handlePlayAudio();
+      return;
     }
 
-    const executeDispatch = async (track: object) => {
-      dispatch({
-        type: "setCurrentSound",
-        payload: {
-          currentSound: {
-            name: track?.name,
-            numberTrack: track?.track_number,
-            uriTrack: track?.preview_url,
-            duration: track?.duration_ms,
-            artWork: track?.images[0].url,
-            nameArtist: track?.artists[0].name,
-            nameAlbum: track?.album.name,
-          },
-        },
-      });
-      await handlePlayAudio();
-    };
+    var getTrack = context.album.tracks.items[context.album.tracks.index];
 
-    executeDispatch(nextTrack);
-  }, []);
+    setCurrentTrack({
+      name: getTrack?.name,
+      numberTrack: getTrack?.track_number,
+      uriTrack: getTrack?.preview_url,
+      duration: getTrack?.duration_ms,
+      artWork: getTrack?.images[0].url,
+      nameArtist: getTrack?.artists[0].name,
+    });
+
+    handlePlayAudio();
+  }, [currentTrack.name]);
 
   const {
     data: detailsArtist,
@@ -133,16 +127,6 @@ export const Play = ({ route, navigation }) => {
     isFetching,
   } = useGetDetailsArtist({
     id: context.album?.track.artists[0].id,
-  });
-
-  const [currentTrack, setCurrentTrack] = useState({
-    name: null,
-    duration: null,
-    numberTrack: null,
-    uriTrack: "",
-    artWork: null,
-    artists: null,
-    album: null,
   });
 
   const formatingFollowers = (follower: any) => {
@@ -154,6 +138,7 @@ export const Play = ({ route, navigation }) => {
   const onPlaybackStatusUpdate = async (status: object) => {
     setStatusSound(status);
     // console.log({ status });
+    console.log(status);
     if (status.isLoaded && status.isPlaying) {
       setCurrentTime(status.positionMillis);
       setTotalDuration(status.durationMillis);
@@ -167,7 +152,7 @@ export const Play = ({ route, navigation }) => {
     if (isReapeat) {
       if (status.didJustFinish) {
         setCurrentSound(null);
-        handlePlayAudio();
+        await handlePlayAudio();
       }
       return;
       // await currentSound?.replayAsync();
@@ -189,23 +174,36 @@ export const Play = ({ route, navigation }) => {
 
   const playNextTrack = async () => {
     try {
-      numberTrackPlaylist.current += 1;
-
-      let nextTrack =
-        route.params.album.tracks.items[numberTrackPlaylist.current];
       if (isRandom) {
         await playRandomTrack();
         await handlePlayAudio();
         return;
       }
+      numberTrackPlaylist.current += 1;
+
+      var getTrack = context.album.tracks.items[numberTrackPlaylist.current];
+
       setCurrentTrack({
-        name: nextTrack?.name,
-        numberTrack: nextTrack?.track_number,
-        uriTrack: nextTrack?.preview_url,
-        duration: nextTrack?.duration_ms,
-        artWork: nextTrack?.images[0].url,
-        nameArtist: nextTrack?.artists[0].name,
-        nameAlbum: nextTrack?.album.name,
+        name: getTrack?.name,
+        numberTrack: getTrack?.track_number,
+        uriTrack: getTrack?.preview_url,
+        duration: getTrack?.duration_ms,
+        artWork: getTrack?.images[0].url,
+        nameArtist: getTrack?.artists[0].name,
+      });
+
+      dispatch({
+        type: "setCurrentSound",
+        payload: {
+          currentSound: {
+            name: getTrack?.name,
+            numberTrack: getTrack?.track_number,
+            uriTrack: getTrack?.preview_url,
+            duration: getTrack?.duration_ms,
+            artWork: getTrack?.images[0].url,
+            nameArtist: getTrack?.artists[0].name,
+          },
+        },
       });
 
       const currentStatus = await currentSound?.getStatusAsync();
@@ -265,16 +263,20 @@ export const Play = ({ route, navigation }) => {
       if (randomTrack < 0) return;
       setRandomTrack(randomTrack - 1);
 
-      let nextTrack = route.params.album.tracks.items[randomTrack];
+      let nextTrack = context.album.tracks.items[randomTrack];
 
-      setCurrentTrack({
-        name: nextTrack?.name,
-        numberTrack: nextTrack?.track_number,
-        uriTrack: nextTrack?.preview_url,
-        duration: nextTrack?.duration_ms,
-        artWork: nextTrack?.images[0].url,
-        nameArtist: nextTrack?.artists[0].name,
-        nameAlbum: nextTrack?.album.name,
+      dispatch({
+        type: "setCurrentSound",
+        payload: {
+          currentSound: {
+            name: nextTrack?.name,
+            numberTrack: nextTrack?.track_number,
+            uriTrack: nextTrack?.preview_url,
+            duration: nextTrack?.duration_ms,
+            artWork: nextTrack?.images[0].url,
+            nameArtist: nextTrack?.artists[0].name,
+          },
+        },
       });
 
       const currentStatus = await currentSound?.getStatusAsync();
@@ -369,7 +371,7 @@ export const Play = ({ route, navigation }) => {
                   <Box>
                     <Center>
                       <Text color="#FFFFFF" fontSize="xs">
-                        {`TOCANDO DO ALBUM`}
+                        TOCANDO DO ALBUM
                       </Text>
 
                       <Text
@@ -380,7 +382,7 @@ export const Play = ({ route, navigation }) => {
                         isTruncated
                         width="auto"
                       >
-                        {context?.currentSound.nameAlbum}
+                        {context.album.tracks.items[0].album.name}
                       </Text>
                     </Center>
                   </Box>
@@ -401,7 +403,7 @@ export const Play = ({ route, navigation }) => {
                     {
                       uri: context.album?.tracks?.items[
                         context.album?.tracks.index
-                      ].images[2].url,
+                      ].images[0].url,
                     } ??
                     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
                   }
@@ -431,11 +433,11 @@ export const Play = ({ route, navigation }) => {
                     isTruncated
                     maxW={270}
                   >
-                    {context.album?.track.name}
+                    {currentTrack?.name}
                   </Text>
 
                   <Text color="#FFFFFF" fontSize="md">
-                    {context.album?.track.artists[0].name}
+                    {currentTrack?.nameArtist}
                   </Text>
                 </Box>
 

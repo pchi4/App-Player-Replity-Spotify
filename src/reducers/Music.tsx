@@ -7,8 +7,7 @@ export const initial = {
     numberTrack: null,
     uriTrack: null,
     artWork: null,
-    artists: null,
-    album: null,
+    nameArtist: null,
   },
   user: {
     token: null,

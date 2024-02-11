@@ -34,7 +34,7 @@ export const Controller = () => {
             fontSize="md"
             fontWeight="bold"
             rounded="md"
-            bottom={Platform.OS === "android" ? height / 16 : height / 10}
+            bottom={Platform.OS === "android" ? height / 50 : height / 46}
             position="absolute"
           >
             <HStack justifyContent="space-between">

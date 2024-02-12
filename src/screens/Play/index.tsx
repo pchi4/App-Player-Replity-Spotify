@@ -63,7 +63,8 @@ export const Play = ({ route, navigation }) => {
   });
   const [context, dispatch] = useStateValue().reducer;
   // const value = useRef(route.params.album.tracks.index);
-  const numberTrackPlaylist = useRef(JSON.parse(route.params).tracks.index);
+  const numberTrackPlaylist = useRef(JSON.parse(route.params)?.tracks.index);
+
   const handlePlayAudio = async () => {
     try {
       if (currentSound) {
@@ -71,12 +72,10 @@ export const Play = ({ route, navigation }) => {
         await currentSound.unloadAsync();
       }
 
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: false,
-        playThroughEarpieceAndroid: true,
-      });
+      // await Audio.setAudioModeAsync({
+      //   playsInSilentModeIOS: true,
+      //   staysActiveInBackground: true,
+      // });
 
       const { sound, status } = await Audio.Sound.createAsync(
         {
@@ -90,10 +89,10 @@ export const Play = ({ route, navigation }) => {
         onPlaybackStatusUpdate
       );
 
+      setCurrentSound(sound);
       setCurrentStatus(status);
       setIsPlaying(status.isLoaded);
 
-      setCurrentSound(sound);
       onPlaybackStatusUpdate(status);
     } catch (error) {
       console.log(error);
@@ -237,6 +236,7 @@ export const Play = ({ route, navigation }) => {
   const PlayAudio = async () => {
     try {
       setIsPlaying(true);
+      console.log({ currentSound });
       const currentStatus = await currentSound?.getStatusAsync();
       if (currentStatus?.isLoaded) {
         if (currentStatus?.isPlaying === false) {

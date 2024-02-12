@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   SafeAreaView,
   SectionList,
@@ -34,6 +34,7 @@ import { Feather } from "@expo/vector-icons";
 import { CardArtist } from "../../components/Cards/Artist";
 import { useStateValue } from "../../context/State";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Audio, AVPlaybackTolerance } from "expo-av";
 
 type PropsAlbums = {
   route: object;
@@ -43,6 +44,29 @@ type PropsAlbums = {
 const { width, height } = Dimensions.get("screen");
 
 export const Albums = ({ route, navigation }: PropsAlbums) => {
+  const [currentSound, setCurrentSound] = useState<
+    Audio.Sound | null | undefined
+  >();
+  const [currentStatus, setCurrentStatus] = useState(null);
+  const [statusSound, setStatusSound] = useState<Sound | null>();
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isReapeat, setIsRepeat] = useState<boolean>(false);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [isRandom, setIsRandom] = useState<boolean>(false);
+  const [randomTrack, setRandomTrack] = useState<number>(0);
+  const [totalTracks, setTotalTracks] = useState<number>(0);
+  const [currentTrack, setCurrentTrack] = useState({
+    name: null,
+    duration: null,
+    numberTrack: null,
+    uriTrack: null,
+    artWork: null,
+    nameArtist: null,
+  });
+  const sound = useRef(new Audio.Sound());
+
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
@@ -66,6 +90,87 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     const seconds = Math.floor((time % 60000) / 1000);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+
+  // useEffect(() => {
+  //   return currentSound
+  //     ? () => {
+  //         console.log("Unloading Sound");
+  //         currentSound.unloadAsync();
+  //       }
+  //     : undefined;
+  // }, [currentSound]);
+
+  // const handlePlayAudio = async () => {
+  //   try {
+  //     const currentStatus = await currentSound?.getStatusAsync();
+
+  //     if (currentStatus?.isLoading) {
+  //       console.log("passei aqui");
+  //       setCurrentSound(null);
+  //       await currentSound?.unloadAsync();
+  //     }
+
+  //     // await Audio.setAudioModeAsync({
+  //     //   playsInSilentModeIOS: true,
+  //     //   staysActiveInBackground: true,
+  //     // });
+
+  //     const { sound, status } = await Audio.Sound.createAsync(
+  //       {
+  //         uri: currentTrack?.uriTrack,
+  //       },
+
+  //       {
+  //         shouldPlay: true,
+  //         isLooping: false,
+  //       },
+  //       onPlaybackStatusUpdate
+  //     );
+
+  //     setCurrentSound(sound);
+  //     setCurrentStatus(status);
+  //     setIsPlaying(status.isLoaded);
+
+  //     onPlaybackStatusUpdate(status);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const onPlaybackStatusUpdate = async (status: object) => {
+  //   console.log(status);
+  //   if (status.isLoaded && status.isPlaying) {
+  //     setCurrentTime(status.positionMillis);
+  //     setTotalDuration(status.durationMillis);
+  //     dispatch({
+  //       type: "setStatus",
+  //       payload: {
+  //         statusSound: status,
+  //       },
+  //     });
+  //   }
+  //   if (isReapeat) {
+  //     if (status.didJustFinish) {
+  //       setCurrentSound(null);
+  //       await handlePlayAudio();
+  //     }
+  //     return;
+  //     // await currentSound?.replayAsync();
+  //   }
+
+  //   if (isRandom) {
+  //     let randomTracks = createRandomTracks();
+  //     // console.log(randomTracks);
+  //     return;
+  //   }
+  //   if (status.didJustFinish) {
+  //     setCurrentSound(null);
+
+  //     setCurrentTime(0);
+  //     setIsPlaying(false);
+  //     /*       playNextTrack(); */
+  //   }
+  // };
 
   const handleDispatchs = (index: number, item: object) => {
     dispatch({
@@ -99,6 +204,121 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
         isNotMusic: false,
       },
     });
+
+    console.log(item);
+
+    setCurrentTrack({
+      name: item?.name,
+      numberTrack: item?.track_number,
+      uriTrack: item?.preview_url,
+      duration: item?.duration_ms,
+      artWork: null,
+      nameArtist: item?.artists[0].name,
+    });
+
+    LoadAudio();
+    // await sound.current.playAsync();
+  };
+
+  const UpdateStatus = async (data) => {
+    try {
+      console.log(data);
+      if (data.didJustFinish) {
+        ResetPlayer();
+      } else if (data.positionMillis) {
+        if (data.durationMillis) {
+          // SetValue((data.positionMillis / data.durationMillis) * 100);
+        }
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
+
+  const ResetPlayer = async () => {
+    try {
+      const checkLoading = await sound.current.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        // SetValue(0);
+        setIsPlaying(false);
+        await sound.current.setPositionAsync(0);
+        await sound.current.stopAsync();
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
+
+  const PlayAudio = async () => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === false) {
+          sound.current.playAsync();
+          setIsPlaying(true);
+        }
+      }
+    } catch (error) {
+      setIsPlaying(false);
+    }
+  };
+
+  const PauseAudio = async () => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === true) {
+          sound.current.pauseAsync();
+          setIsPlaying(false);
+        }
+      }
+    } catch (error) {
+      setIsPlaying(true);
+    }
+  };
+
+  const SeekUpdate = async (data) => {
+    try {
+      const checkLoading = await sound.current.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        const result = (data / 100) * Duration;
+        await sound.current.setPositionAsync(Math.round(result));
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
+
+  const LoadAudio = async () => {
+    // setLoading(true);
+    const checkLoading = await sound.current.getStatusAsync();
+
+    try {
+      if (checkLoading.isPlaying) {
+        await sound.current.stopAsync();
+        await sound.current.unloadAsync();
+      }
+
+      await sound.current.unloadAsync();
+
+      const result = await sound.current.loadAsync(
+        { uri: currentTrack?.uriTrack },
+        { shouldPlay: true, isLooping: false }
+      );
+      if (result.isLoaded === false) {
+        // setLoading(false);
+        // setLoaded(false);
+        console.log("Error in Loading Audio");
+      } else {
+        sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
+        // setLoading(false);
+        // setLoaded(true);
+        // SetDuration(result.durationMillis);
+      }
+    } catch (error) {
+      // setLoading(false);
+      // setLoaded(false);
+    }
   };
 
   if (

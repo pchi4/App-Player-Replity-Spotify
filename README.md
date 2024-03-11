@@ -1,5 +1,12 @@
 # Project Player (Replica autoral do spotify)
 
+
+![NPM Version](https://img.shields.io/npm/v/react-native?logo=axios) ![NPM Version](https://img.shields.io/npm/v/react?logo=react) ![NPM Version](https://img.shields.io/npm/v/react?logo=expo) ![NPM Version](https://img.shields.io/npm/v/react-query?logo=reactquery) ![NPM Version](https://img.shields.io/npm/v/expo-av?logo=expo)
+
+
+
+
+
 ## Install dependecies: 
 
   ```
@@ -32,6 +39,19 @@
 ### Playlist page: 
 
 <img width="368" alt="Screenshot 2024-01-24 at 09 43 52" src="https://github.com/pchi4/player/assets/84159325/fe9a7ed2-9ec6-4b76-b30b-df6e8345ccc4">
+
+## Principal tecnologics:
+![Static Badge](https://img.shields.io/badge/React-Native-%23F0F0F0F0?logo=react)
+![Static Badge](https://img.shields.io/badge/React-Query-%23F0F0F0F0?logo=react)
+![Static Badge](https://img.shields.io/badge/Axios-%23F0F0F0F0?logo=axios&logoColor=%23000000)
+![Static Badge](https://img.shields.io/badge/Expo-%23F0F0F0F0?logo=expo&logoColor=%23000000)
+
+
+
+
+
+
+ 
 
 
 

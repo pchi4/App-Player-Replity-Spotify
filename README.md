@@ -1,3 +1,6 @@
+<h1 align="center">Hi 👋, I'm Douglas</h1>
+<h3 align="center">Desenvolvedor Front-end e Mobile</h3>
+
 # Project Player (Spotify copyright replica)
 
 
@@ -41,10 +44,15 @@
 <img width="368" alt="Screenshot 2024-01-24 at 09 43 52" src="https://github.com/pchi4/player/assets/84159325/fe9a7ed2-9ec6-4b76-b30b-df6e8345ccc4">
 
 ## Principal technologies:
-![Static Badge](https://img.shields.io/badge/React-Native-%23F0F0F0F0?logo=react)
-![Static Badge](https://img.shields.io/badge/React-Query-%23F0F0F0F0?logo=react)
+![Static Badge](https://img.shields.io/badge/ReactNative-%23F0F0F0F0?logo=react)
+![Static Badge](https://img.shields.io/badge/ReactQuery-%23F0F0F0F0?logo=react)
 ![Static Badge](https://img.shields.io/badge/Axios-%23F0F0F0F0?logo=axios&logoColor=%23000000)
 ![Static Badge](https://img.shields.io/badge/Expo-%23F0F0F0F0?logo=expo&logoColor=%23000000)
+
+<h3 align="left">Connect with me:</h3>
+<p align="left">
+<a href="https://linkedin.com/in/douglas-loopes" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="douglas-loopes" height="30" width="40" /></a>
+</p>
 
 
 

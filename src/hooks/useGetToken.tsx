@@ -62,7 +62,9 @@ export const useGetToken = () => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log("error ao requisitar o authenticacao", error);
+    }
   };
 
   const accessToken = async () => {

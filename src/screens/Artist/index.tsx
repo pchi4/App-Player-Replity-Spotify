@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { ScrollView, FlatList } from "react-native-gesture-handler";
+import { useStateValue } from "../../context/State";
 import { Image, Center, Box, Text, Avatar, HStack } from "native-base";
 const { width, height } = Dimensions.get("screen");
 
@@ -18,10 +19,19 @@ export const Artist = ({ navigation, route }) => {
     return followers.join(",");
   };
 
+  const [context, dispatch] = useStateValue().reducer;
+
   return (
     <Box style={{ flex: 1 }}>
       <ScrollView>
-        <Box style={{ height: "100%" }} backgroundColor="#212224" paddingX="4">
+        <Box
+          style={{
+            height: "100%",
+            paddingBottom: context.currentSound ? 90 : 0,
+          }}
+          backgroundColor="#212224"
+          paddingX="4"
+        >
           <SafeAreaView>
             <Box style={{ flex: 1 }}>
               <Center>

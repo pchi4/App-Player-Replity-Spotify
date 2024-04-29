@@ -3,7 +3,7 @@ import { Dimensions, TouchableOpacity, Platform } from "react-native";
 import { useStateValue } from "../context/State";
 import { Feather } from "@expo/vector-icons";
 import * as Device from "expo-device";
-import { useVerifyAlbum } from "../hooks";
+import { useVerifyAlbum, useLoadSound } from "../hooks";
 import { useNavigation } from "@react-navigation/native";
 
 import * as React from "react";
@@ -14,6 +14,31 @@ export const Controller = () => {
   const [context, dispatch] = useStateValue().reducer;
   const [navigator, _] = useStateValue().navigator;
   const { album } = useVerifyAlbum();
+  const { LoadAudio, currentSound } = useLoadSound({
+    uri: context.currentSound.uriTrack,
+  });
+  const PlayAudio = async () => {
+    try {
+      const currentStatus = await currentSound?.getStatusAsync();
+      if (currentStatus?.isLoaded) {
+        if (currentStatus?.isPlaying === false) {
+          currentSound?.playAsync();
+        }
+      }
+    } catch (error) {}
+  };
+  const PauseAudio = async () => {
+    try {
+      const currentStatus = await currentSound?.getStatusAsync();
+      if (currentStatus?.isLoaded) {
+        if (currentStatus?.isPlaying === true) {
+          currentSound?.pauseAsync();
+        }
+      }
+    } catch (error) {}
+  };
+
+  // console.log(context.currentSound);
 
   return (
     <>
@@ -93,14 +118,23 @@ export const Controller = () => {
                 >
                   <Feather name="speaker" size={24 % 100} color="#FFFFFF" />
                   <Feather name="plus-circle" size={24 % 100} color="#FFFFFF" />
-                  <Feather name="play" size={24 % 100} color="#FFFFFF" />
+                  {context.currentSound.isPlaying ? (
+                    <TouchableOpacity onPress={PauseAudio}>
+                      <Feather name="pause" size={24 % 100} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={PlayAudio}>
+                      <Feather name="play" size={24 % 100} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  )}
                 </HStack>
               </Box>
             </HStack>
             <Progress
               mt={2}
               width="100%"
-              value={20}
+              // mx={context.currentSound.totalDuration / 1000}
+              value={Math.floor(context.currentSound.duration / 1000)}
               colorScheme="emerald"
               size="xs"
             />

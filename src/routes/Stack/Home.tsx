@@ -75,6 +75,7 @@ export default function HomeScreen() {
           headerTitleStyle: {
             color: "white",
           },
+          headerTintColor: "#ffffff",
           headerTitle: "Sobre o artista",
         }}
       >

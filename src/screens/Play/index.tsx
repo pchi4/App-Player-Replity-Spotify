@@ -38,13 +38,15 @@ import { Sound } from "expo-av/build/Audio";
 
 import { useGetDetailsArtist } from "./hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLoadSound } from "../../hooks";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import TrackPlayer from "react-native-track-player";
 
+// The player is ready to be used
 const { width, height } = Dimensions.get("screen");
 
 export const Play = ({ route, navigation }) => {
-  const [currentSound, setCurrentSound] = useState<Audio.Sound | null>();
   const [currentStatus, setCurrentStatus] = useState(null);
-  const [statusSound, setStatusSound] = useState<Sound | null>();
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -65,46 +67,50 @@ export const Play = ({ route, navigation }) => {
   // const value = useRef(route.params.album.tracks.index);
   const numberTrackPlaylist = useRef(JSON.parse(route.params)?.tracks.index);
 
-  const handlePlayAudio = async () => {
-    try {
-      if (currentSound) {
-        setCurrentSound(null);
-        await currentSound.unloadAsync();
-      }
+  // const handlePlayAudio = async () => {
+  //   try {
+  //     if (currentSound) {
+  //       setCurrentSound(null);
+  //       await currentSound.unloadAsync();
+  //     }
 
-      // await Audio.setAudioModeAsync({
-      //   playsInSilentModeIOS: true,
-      //   staysActiveInBackground: true,
-      // });
+  //     // await Audio.setAudioModeAsync({
+  //     //   playsInSilentModeIOS: true,
+  //     //   staysActiveInBackground: true,
+  //     // });
 
-      const { sound, status } = await Audio.Sound.createAsync(
-        {
-          uri: currentTrack?.uriTrack,
-        },
+  //     const { sound, status } = await Audio.Sound.createAsync(
+  //       {
+  //         uri: currentTrack?.uriTrack,
+  //       },
 
-        {
-          shouldPlay: true,
-          isLooping: false,
-        },
-        onPlaybackStatusUpdate
-      );
+  //       {
+  //         shouldPlay: true,
+  //         isLooping: false,
+  //       },
+  //       onPlaybackStatusUpdate
+  //     );
 
-      setCurrentSound(sound);
-      setCurrentStatus(status);
-      setIsPlaying(status.isLoaded);
+  //     setCurrentSound(sound);(
+  //     setCurrentStatus(status);
+  //     setIsPlaying(status.isLoaded);
 
-      onPlaybackStatusUpdate(status);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     onPlaybackStatusUpdate(status);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
     if (isRandom) {
       playRandomTrack();
-      handlePlayAudio();
       return;
     }
+
+    setupPlayer();
+    // console.log(statusSound);
+
+    // LoadAudio();
 
     var getTrack = context.album.tracks.items[context.album.tracks.index];
 
@@ -116,8 +122,6 @@ export const Play = ({ route, navigation }) => {
       artWork: getTrack?.images[0].url,
       nameArtist: getTrack?.artists[0].name,
     });
-
-    handlePlayAudio();
   }, [currentTrack.name]);
 
   const {
@@ -128,68 +132,65 @@ export const Play = ({ route, navigation }) => {
     id: context.album?.track.artists[0].id,
   });
 
+  const { LoadAudio, currentSound, statusSound } = useLoadSound({
+    uri: context.currentSound.uriTrack,
+  });
+
+  console.log(context.statusSound);
+
   const formatingFollowers = (follower: any) => {
     var followers = follower?.toFixed(3).split(".");
     followers[0] = followers[0]?.split(/(?=(?:...)*$)/).join(".");
     return followers.join(",");
   };
 
-  const onPlaybackStatusUpdate = async (status: object) => {
-    setStatusSound(status);
-    // console.log({ status });
-    console.log(status);
-    if (status.isLoaded && status.isPlaying) {
-      setCurrentTime(status.positionMillis);
-      setTotalDuration(status.durationMillis);
-      dispatch({
-        type: "setStatus",
-        payload: {
-          statusSound: status,
-        },
-      });
-    }
-    if (isReapeat) {
-      if (status.didJustFinish) {
-        setCurrentSound(null);
-        await handlePlayAudio();
-      }
-      return;
-      // await currentSound?.replayAsync();
-    }
+  // const onPlaybackStatusUpdate = async (status: object) => {
+  //   setStatusSound(status);
+  //   // console.log({ status });
+  //   console.log(status);
+  //   if (status.isLoaded && status.isPlaying) {
+  //     setCurrentTime(status.positionMillis);
+  //     setTotalDuration(status.durationMillis);
+  //     dispatch({
+  //       type: "setStatus",
+  //       payload: {
+  //         statusSound: status,
+  //       },
+  //     });
+  //   }
+  //   if (isReapeat) {
+  //     if (status.didJustFinish) {
+  //       setCurrentSound(null);
+  //       await handlePlayAudio();
+  //     }
+  //     return;
+  //     // await currentSound?.replayAsync();
+  //   }
 
-    if (isRandom) {
-      let randomTracks = createRandomTracks();
-      // console.log(randomTracks);
-      return;
-    }
-    if (status.didJustFinish) {
-      setCurrentSound(null);
+  //   if (isRandom) {
+  //     let randomTracks = createRandomTracks();
+  //     // console.log(randomTracks);
+  //     return;
+  //   }
+  //   if (status.didJustFinish) {
+  //     setCurrentSound(null);
 
-      setCurrentTime(0);
-      setIsPlaying(false);
-      /*       playNextTrack(); */
-    }
-  };
+  //     setCurrentTime(0);
+  //     setIsPlaying(false);
+  //     /*       playNextTrack(); */
+  //   }
+  // };
 
   const playNextTrack = async () => {
     try {
       if (isRandom) {
         await playRandomTrack();
-        await handlePlayAudio();
         return;
       }
       numberTrackPlaylist.current += 1;
 
       var getTrack = context.album.tracks.items[numberTrackPlaylist.current];
-
-      setCurrentTrack({
-        name: getTrack?.name,
-        numberTrack: getTrack?.track_number,
-        uriTrack: getTrack?.preview_url,
-        duration: getTrack?.duration_ms,
-        artWork: getTrack?.images[0].url,
-        nameArtist: getTrack?.artists[0].name,
-      });
+      console.log(getTrack);
 
       dispatch({
         type: "setCurrentSound",
@@ -209,10 +210,11 @@ export const Play = ({ route, navigation }) => {
       if (currentStatus?.isLoaded) {
         if (currentStatus?.isPlaying) {
           await currentSound?.stopAsync();
-          await currentSound?.unloadAsync();
-          await handlePlayAudio();
+          // await currentSound?.unloadAsync();
+          // await currentSound?.playAsync();
         }
       }
+      LoadAudio();
     } catch (error) {}
   };
 
@@ -236,7 +238,6 @@ export const Play = ({ route, navigation }) => {
   const PlayAudio = async () => {
     try {
       setIsPlaying(true);
-      console.log({ currentSound });
       const currentStatus = await currentSound?.getStatusAsync();
       if (currentStatus?.isLoaded) {
         if (currentStatus?.isPlaying === false) {
@@ -260,10 +261,9 @@ export const Play = ({ route, navigation }) => {
 
   const playPeviousTrack = async () => {
     try {
-      if (randomTrack < 0) return;
-      setRandomTrack(randomTrack - 1);
+      numberTrackPlaylist.current -= 1;
 
-      let nextTrack = context.album.tracks.items[randomTrack];
+      let nextTrack = context.album.tracks.items[numberTrackPlaylist.current];
 
       dispatch({
         type: "setCurrentSound",
@@ -284,7 +284,6 @@ export const Play = ({ route, navigation }) => {
         if (currentStatus?.isPlaying) {
           await currentSound?.stopAsync();
           await currentSound?.unloadAsync();
-          await handlePlayAudio();
         }
       }
     } catch (error) {}
@@ -433,11 +432,11 @@ export const Play = ({ route, navigation }) => {
                     isTruncated
                     maxW={270}
                   >
-                    {currentTrack?.name}
+                    {context.currentSound?.name}
                   </Text>
 
                   <Text color="#FFFFFF" fontSize="md">
-                    {currentTrack?.nameArtist}
+                    {context.currentSound?.nameArtist}
                   </Text>
                 </Box>
 
@@ -460,8 +459,9 @@ export const Play = ({ route, navigation }) => {
 
               <Slider
                 style={{ height: 40, width: "100%" }}
-                value={currentTime / 1000}
-                maximumValue={totalDuration / 1000}
+                value={context?.currentSound.duration / 1000}
+                minimumValue={0}
+                maximumValue={context?.currentSound.totalDuration / 1000}
                 minimumTrackTintColor="#FFFFFF"
                 maximumTrackTintColor="#FFFFFF"
                 onValueChange={(value) => onChangeSlider(value)}
@@ -477,14 +477,14 @@ export const Play = ({ route, navigation }) => {
                   fontWeight="bold"
                   fontSize={["md", "md", "lg"]}
                 >
-                  {formatTime(currentTime)}
+                  {formatTime(context.currentSound.duration)}
                 </Text>
                 <Text
                   color="#FFFFFF"
                   fontWeight="bold"
                   fontSize={["md", "md", "lg"]}
                 >
-                  {formatTime(totalDuration)}
+                  {formatTime(context.currentSound.totalDuration)}
                 </Text>
               </HStack>
 
@@ -514,12 +514,12 @@ export const Play = ({ route, navigation }) => {
                   <Feather name="skip-back" size={40 % 100} color="#FFFFFF" />
                 </TouchableOpacity>
 
-                {isPlaying ? (
+                {context.currentSound.isPlaying ? (
                   <TouchableOpacity onPress={PauseAudio}>
                     <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity onPress={PlayAudio}>
+                  <TouchableOpacity onPress={setupPlayer}>
                     <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
                   </TouchableOpacity>
                 )}

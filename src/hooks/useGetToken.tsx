@@ -9,9 +9,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStateValue } from "../context/State";
 import apiInstance from "../services/api";
 import { CLIENT_SECRET, CLIENT_ID } from "@env";
+import { Platform } from "react-native";
+import * as Liking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
 
 export const useGetToken = () => {
   const [context, dispatch] = useStateValue().reducer;
+
+  const redirectURL = Liking.createURL("auth/teste");
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -32,7 +37,7 @@ export const useGetToken = () => {
       "playlist-modify-public",
     ],
     usePKCE: false,
-    redirectUri: "exp://10.91.116.139:8082/--/spotify-auth-callback",
+    redirectUri: "exp://10.0.2.2:8081/--/spotify-auth-callback",
   };
 
   function generateCodeVerifier(length: number): string {
@@ -48,33 +53,47 @@ export const useGetToken = () => {
 
   const [request, response, promptAsync] = useAuthRequest(config, discovery);
 
+  const requestToken = async () => {
+    try {
+      return await apiInstance("http://localhost:5000/auth/login", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+    } catch (error) {}
+  };
+
   const accessToken = async () => {
     try {
-      const resultPromptAsync = await promptAsync();
-      await AsyncStorage.clear();
+      // const resultPromptAsync = await promptAsync({
+      //   showInRecents: true,
+      // });
+      // await AsyncStorage.clear();
 
-      let codeVerifer = generateCodeVerifier(128);
+      // console.log(resultPromptAsync);
 
-      const data = {
-        grant_type: "authorization_code",
-        code: resultPromptAsync.params.code,
-        redirect_uri: "exp://10.91.116.139:8082/--/spotify-auth-callback",
-        client_id: CLIENT_ID,
-        code_verifier: codeVerifer,
-        client_secret: CLIENT_SECRET,
-      };
+      // let codeVerifer = generateCodeVerifier(128);
 
-      const result = await apiInstance(
-        "https://accounts.spotify.com/api/token",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          data: new URLSearchParams(data).toString(),
-        }
-      );
+      // const data = {
+      //   grant_type: "authorization_code",
+      //   code: resultPromptAsync.params.code,
+      //   redirect_uri: await WebBrowser.openAuthSessionAsync(
+      //     "exp://10.0.2.2:8081/--/spotify-auth-callback"
+      //   ),
+      //   client_id: CLIENT_ID,
+      //   code_verifier: codeVerifer,
+      //   client_secret: CLIENT_SECRET,
+      // };
+
+      const result = await apiInstance("http://localhost:5000/auth/token", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
 
       if (result.data && result.data.access_token) {
         await AsyncStorage.setItem("token", result.data.access_token);

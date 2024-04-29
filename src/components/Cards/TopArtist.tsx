@@ -1,5 +1,4 @@
 import { Box, Center, Text, Heading, Image } from "native-base";
-import ImageColors from "react-native-image-colors";
 import React, { useState, useEffect } from "react";
 
 export const CardTopArtist = () => {

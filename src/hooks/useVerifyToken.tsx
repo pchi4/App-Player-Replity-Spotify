@@ -12,7 +12,7 @@ export const useVerifyToken = () => {
       } catch (error) {}
     };
     getItemToken();
-  }, []);
+  }, [token]);
 
   return {
     token,

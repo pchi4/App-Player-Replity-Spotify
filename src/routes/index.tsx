@@ -11,11 +11,15 @@ import { useVerifyToken } from "../hooks/useVerifyToken";
 import HomeScreen from "./Stack/Home";
 import Library from "./Stack/Library";
 import AuthScreen from "./Stack/Auth";
+import { useStateValue } from "../context/State";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabsRoutes() {
   const { token } = useVerifyToken();
+  const [context, dispatch] = useStateValue().reducer;
+
+  console.log(context.user);
 
   return (
     <NavigationContainer>
@@ -32,7 +36,7 @@ export default function TabsRoutes() {
           tabBarInactiveTintColor: "rgb(111 109 213)",
         }}
       >
-        {token ? (
+        {context.user.token ? (
           <>
             <Tab.Screen
               name="home"
@@ -49,7 +53,11 @@ export default function TabsRoutes() {
                   if (routeName === "playMusic") {
                     return { display: "none" };
                   }
-                  return { backgroundColor: "rgb(24, 26, 27)" };
+                  return {
+                    backgroundColor: "rgb(24, 26, 27)",
+                    borderTopWidth: 0,
+                    elevation: 0,
+                  };
                 })(route),
               })}
             />

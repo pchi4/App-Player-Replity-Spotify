@@ -11,18 +11,27 @@ import { useVerifyToken } from "../hooks/useVerifyToken";
 import HomeScreen from "./Stack/Home";
 import Library from "./Stack/Library";
 import AuthScreen from "./Stack/Auth";
-import { useStateValue } from "../context/State";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabsRoutes() {
   const { token } = useVerifyToken();
-  const [context, dispatch] = useStateValue().reducer;
 
-  console.log(context.user);
+  console.log(token);
+
+  const liking = {
+    prefixes: ["exp://192.168.101.7:8081/--/myapp"],
+    config: {
+      screens: {
+        home: {
+          path: "home",
+        },
+      },
+    },
+  };
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={liking}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
@@ -36,7 +45,7 @@ export default function TabsRoutes() {
           tabBarInactiveTintColor: "rgb(111 109 213)",
         }}
       >
-        {context.user.token ? (
+        {token ? (
           <>
             <Tab.Screen
               name="home"

@@ -53,49 +53,29 @@ export const useGetToken = () => {
 
   const [request, response, promptAsync] = useAuthRequest(config, discovery);
 
-  const requestToken = async () => {
+  const getToken = async (code: string) => {
     try {
-      return await apiInstance("http://localhost:5000/auth/login", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-    } catch (error) {
-      console.log("error ao requisitar o authenticacao", error);
-    }
-  };
+      let codeVerifer = generateCodeVerifier(128);
+      const data = {
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: "exp://10.0.2.2:8081/--/spotify-auth-callback",
+        client_id: CLIENT_ID,
+        code_verifier: codeVerifer,
+        client_secret: CLIENT_SECRET,
+      };
 
-  const accessToken = async () => {
-    try {
-      // const resultPromptAsync = await promptAsync({
-      //   showInRecents: true,
-      // });
-      // await AsyncStorage.clear();
-
-      // console.log(resultPromptAsync);
-
-      // let codeVerifer = generateCodeVerifier(128);
-
-      // const data = {
-      //   grant_type: "authorization_code",
-      //   code: resultPromptAsync.params.code,
-      //   redirect_uri: await WebBrowser.openAuthSessionAsync(
-      //     "exp://10.0.2.2:8081/--/spotify-auth-callback"
-      //   ),
-      //   client_id: CLIENT_ID,
-      //   code_verifier: codeVerifer,
-      //   client_secret: CLIENT_SECRET,
-      // };
-
-      const result = await apiInstance("http://localhost:5000/auth/token", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
+      const result = await apiInstance(
+        "https://accounts.spotify.com/api/token",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          data: new URLSearchParams(data).toString(),
+        }
+      );
 
       if (result.data && result.data.access_token) {
         await AsyncStorage.setItem("token", result.data.access_token);
@@ -110,6 +90,36 @@ export const useGetToken = () => {
           },
         });
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const accessToken = async () => {
+    try {
+      const resultPromptAsync = await promptAsync({ showInRecents: true });
+      await AsyncStorage.clear();
+
+      console.log(resultPromptAsync);
+
+      await getToken(resultPromptAsync?.params?.code);
+
+      // const resRequestAuth = await requestToken();
+
+      // console.log(resRequestAuth?.data);
+
+      // let resultBrowser = await Liking.openURL(resRequestAuth?.data.url);
+
+      // const result = await apiInstance("http://10.42.0.204:4000/auth/token", {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/x-www-form-urlencoded",
+      //   },
+      // });
+
+      // console.log(result.data);
+      // console.log(resultBrowser);
     } catch (error) {
       // console.log(error);
     }

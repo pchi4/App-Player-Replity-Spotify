@@ -35,7 +35,7 @@ import { CardArtist } from "../../components/Cards/Artist";
 import { useStateValue } from "../../context/State";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Audio, AVPlaybackTolerance } from "expo-av";
-import { useLoadSound } from "../../hooks";
+import { useSetupPlayer } from "../../hooks";
 
 type PropsAlbums = {
   route: object;
@@ -45,16 +45,7 @@ type PropsAlbums = {
 const { width, height } = Dimensions.get("screen");
 
 export const Albums = ({ route, navigation }: PropsAlbums) => {
-  const [currentStatus, setCurrentStatus] = useState(null);
-  // const [statusSound, setStatusSound] = useState<Sound | null>();
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isReapeat, setIsRepeat] = useState<boolean>(false);
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
-  const [isRandom, setIsRandom] = useState<boolean>(false);
-  const [randomTrack, setRandomTrack] = useState<number>(0);
-  const [totalTracks, setTotalTracks] = useState<number>(0);
   const [currentTrack, setCurrentTrack] = useState({
     name: null,
     duration: null,
@@ -63,10 +54,12 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     artWork: null,
     nameArtist: null,
   });
+  const idArtist = route.params.album?.artists[0].id;
   const [context, dispatch] = useStateValue().reducer;
 
-  const { LoadAudio, currentSound, statusSound } = useLoadSound({
+  const { LoadAudio, currentSound, statusSound } = useSetupPlayer({
     uri: context?.currentSound.uriTrack,
+    isRandom: false,
   });
 
   useEffect(() => {
@@ -78,21 +71,28 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     data: artists,
     isFetching,
     isLoading,
-  } = useGetArtist({ id: route.params.album?.artists[0].id });
+  } = useGetArtist({ id: idArtist });
 
   const {
     data: releatedArtist,
     isLoading: isReleatedArtistLoading,
     isFetching: isReleatedFetching,
-  } = useGetSeveralArtist({ id: route.params.album?.artists[0].id });
-
-  // console.log(statusSound);
+  } = useGetSeveralArtist({ id: idArtist });
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+
+  useEffect(() => {
+    dispatch({
+      type: "setArtist",
+      payload: {
+        artists,
+      },
+    });
+  }, [artists]);
 
   const handleDispatchs = (index: number, item: object) => {
     dispatch({
@@ -143,77 +143,6 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
         },
       },
     });
-
-    // LoadAudio();
-  };
-
-  const UpdateStatus = async (data) => {
-    try {
-      console.log(data);
-      if (data.didJustFinish) {
-        ResetPlayer();
-      } else if (data.positionMillis) {
-        if (data.durationMillis) {
-          // SetValue((data.positionMillis / data.durationMillis) * 100);
-        }
-      }
-    } catch (error) {
-      console.log("Error");
-    }
-  };
-
-  const ResetPlayer = async () => {
-    try {
-      const checkLoading = await sound.current.getStatusAsync();
-      if (checkLoading.isLoaded === true) {
-        // SetValue(0);
-        setIsPlaying(false);
-        await sound.current.setPositionAsync(0);
-        await sound.current.stopAsync();
-      }
-    } catch (error) {
-      console.log("Error");
-    }
-  };
-
-  const PlayAudio = async () => {
-    try {
-      const result = await currentSound?.getStatusAsync();
-      if (result?.isLoaded) {
-        if (result.isPlaying === false) {
-          await currentSound?.playAsync();
-          setIsPlaying(true);
-        }
-      }
-    } catch (error) {
-      setIsPlaying(false);
-    }
-  };
-
-  const PauseAudio = async () => {
-    try {
-      const result = await currentSound?.getStatusAsync();
-      if (result?.isLoaded) {
-        if (result.isPlaying === true) {
-          await currentSound?.pauseAsync();
-          setIsPlaying(false);
-        }
-      }
-    } catch (error) {
-      setIsPlaying(true);
-    }
-  };
-
-  const SeekUpdate = async (data) => {
-    try {
-      const checkLoading = await sound.current.getStatusAsync();
-      if (checkLoading.isLoaded === true) {
-        const result = (data / 100) * Duration;
-        await sound.current.setPositionAsync(Math.round(result));
-      }
-    } catch (error) {
-      console.log("Error");
-    }
   };
 
   if (

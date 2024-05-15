@@ -3,6 +3,7 @@
     "name": "player",
     "slug": "player",
     "scheme": "myapp",
+    // "entryPoint": "./index.js",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,15 +13,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.pchia.player",
-      "associatedDomains": [
-        "applinks:expo.dev"
-      ]
+      "associatedDomains": ["applinks:expo.dev"]
     },
     "android": {
       "adaptiveIcon": {
@@ -37,9 +34,7 @@
         "projectId": "ceab26a2-0c77-4139-8357-8b074fc3ee82"
       }
     },
-    "plugins": [
-      "expo-build-properties"
-    ]
+    "plugins": ["expo-build-properties"]
   },
   "name": "player"
 }

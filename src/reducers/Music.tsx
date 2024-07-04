@@ -54,7 +54,7 @@ export default (state = initial, action: { type: string }) => {
 
     case "setArtist":
       AsyncStorage.setItem("artist", JSON.stringify(action.payload.artist));
-      return { ...state, artist: JSON.stringify(action.payload.artist) };
+      return { ...state, artist: action.payload.artist };
       break;
 
     default:

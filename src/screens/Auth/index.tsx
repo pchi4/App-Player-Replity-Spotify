@@ -11,9 +11,20 @@ import {
 } from "native-base";
 import { useGetToken } from "../../hooks/useGetToken";
 const { width, height } = Dimensions.get("screen");
+import { useSetupPlayer } from "../../hooks";
+import { useEffect } from "react";
 
 export const Auth = () => {
   const { accessToken } = useGetToken();
+
+  const { resquestPermissions } = useSetupPlayer({
+    uri: null,
+    isRandom: false,
+  });
+
+  useEffect(() => {
+    resquestPermissions();
+  }, []);
 
   return (
     <Box style={{ flex: 1 }}>

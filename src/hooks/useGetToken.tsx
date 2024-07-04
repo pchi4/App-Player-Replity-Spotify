@@ -100,8 +100,6 @@ export const useGetToken = () => {
       const resultPromptAsync = await promptAsync({ showInRecents: true });
       await AsyncStorage.clear();
 
-      console.log(resultPromptAsync);
-
       await getToken(resultPromptAsync?.params?.code);
 
       // const resRequestAuth = await requestToken();

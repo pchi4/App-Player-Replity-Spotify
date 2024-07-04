@@ -12,7 +12,7 @@ import { useStateValue } from "../context/State";
 export const Artist = () => {
   const [context, dispatch] = useStateValue().reducer;
 
-  console.log(context);
+  //   console.log(context);
 
   return (
     <Box

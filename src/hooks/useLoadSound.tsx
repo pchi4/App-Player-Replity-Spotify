@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Audio,
   AVPlaybackStatus,
@@ -15,14 +15,39 @@ interface PropsSetup {
 
 export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
   const [context, dispatch] = useStateValue().reducer;
-  const [currentSound, setCurrentSound] = useState<
-    Audio.Sound | null | undefined
-  >();
-  const [statusSound, setStatusSound] = useState<boolean>();
-  const numberTrack = useRef(context.album.tracks.index);
+  let numberTrack = useRef<number | null>(context.album.tracks.index).current;
+  const [sound, setSound] = useState<Audio.Sound>();
+  const [status, setStatus] = useState<AVPlaybackStatus>();
+  const [currentSound, setCurrentSound] = useState<Audio.Sound>();
+  let soundRef = useRef().current;
 
-  const LoadAudio = async () => {
+  const DEFAULT_PLAYBACK_STATUS = {
+    progressUpdateIntervalMillis: 500,
+    positionMillis: 0,
+    shouldPlay: true,
+    rate: 1.0,
+    shouldCorrectPitch: false,
+    volume: 1.0,
+    isMuted: false,
+    isLooping: false,
+  };
+
+  async function resquestPermissions() {
     try {
+      return await Audio.requestPermissionsAsync();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    console.log({ currentSound });
+    setSound(currentSound);
+  }, [currentSound]);
+
+  async function LoadAudio() {
+    try {
+      if (!uri) return;
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: true,
@@ -33,24 +58,45 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
         playThroughEarpieceAndroid: false,
       });
 
-      await currentSound?.unloadAsync();
-
-      const { sound, status } = await Audio.Sound.createAsync(
+      const { sound: playbackObject, status } = await Audio.Sound.createAsync(
         { uri },
-
-        {
-          shouldPlay: true,
-          isLooping: false,
-        },
-        onPlaybackStatusUpdate
+        DEFAULT_PLAYBACK_STATUS
       );
-      setCurrentSound(sound);
+
+      console.log(playbackObject);
+
+      setCurrentSound(playbackObject);
+      soundRef = playbackObject;
+
+      // setStatus(status);
+      playbackObject.setOnAudioSampleReceived;
+
+      playbackObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
     } catch (error) {
-      console.log(error);
+      Alert.alert("Error ao roda o load", error);
     }
-  };
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          // setIsPlaying(false);
+          sound.unloadAsync();
+          // setSound(null);
+        }
+      : undefined;
+  }, [sound, uri]);
+
   const onPlaybackStatusUpdate = (playbackStatus: AVPlaybackStatus) => {
-    // setStatusSound(playbackStatus);
+    dispatch({
+      type: "setStatus",
+      payload: {
+        statusSound: {
+          playbackStatus,
+        },
+      },
+    });
     if (!playbackStatus.isLoaded) {
       // Update your UI for the unloaded state
       if (playbackStatus.error) {
@@ -61,25 +107,17 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
       }
     } else {
       if (playbackStatus.isPlaying) {
-        dispatch({
-          type: "setCurrentSound",
-          payload: {
-            currentSound: {
-              ...context.currentSound,
-              duration: playbackStatus.positionMillis,
-              totalDuration: playbackStatus.durationMillis,
-              isPlaying: playbackStatus.isPlaying,
-            },
-          },
-        });
-        dispatch({
-          type: "setStatus",
-          payload: {
-            statusSound: {
-              playbackStatus,
-            },
-          },
-        });
+        // dispatch({
+        //   type: "setCurrentSound",
+        //   payload: {
+        //     currentSound: {
+        //       ...context.currentSound,
+        //       duration: playbackStatus.positionMillis,
+        //       totalDuration: playbackStatus.durationMillis,
+        //       isPlaying: playbackStatus.isPlaying,
+        //     },
+        //   },
+        // });
         // Update your UI for the playing state
       } else {
         // Update your UI for the paused state
@@ -106,28 +144,34 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
 
   async function play() {
     try {
-      const currentStatus = await currentSound?.getStatusAsync();
-      console.log("passsei aqui");
-      if (currentStatus?.isLoaded) {
-        if (currentStatus?.isPlaying === false) {
-          currentSound?.playAsync();
+      console.log({ sound, soundRef });
+      await sound?.playAsync();
+      if (context?.statusSound?.playbackStatus.isLoaded) {
+        if (context?.statusSound?.playbackStatus.isPlaying === false) {
+          // LoadAudio();
+          // await sound?.setStatusAsync({ shouldPlay: true });
         }
       }
     } catch (error) {
-      Alert.alert("deu ruim", error);
+      Alert.alert("Não é possivel dar play", error);
+      console.log(error);
     }
   }
 
   async function pause() {
     try {
-      const currentStatus = await currentSound?.getStatusAsync();
-      if (currentStatus?.isLoaded) {
-        if (currentStatus?.isPlaying) {
-          currentSound?.pauseAsync();
+      await sound?.pauseAsync();
+      await sound?.setStatusAsync({ shouldPlay: false });
+
+      if (context.statusSound?.playbackStatus.isLoaded) {
+        if (context.statusSound?.playbackStatus.isPlaying === true) {
+          // await sound.stopAsync();
+          // await sound.unloadAsync();
         }
       }
     } catch (error) {
-      Alert.alert("deu ruim", error);
+      console.info(error);
+      Alert.alert("Não é possivel dar pause", error);
     }
   }
 
@@ -138,12 +182,10 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
       //   return;
       // }
 
-      numberTrack.current += 1;
+      numberTrack += 1;
 
-      console.log(numberTrack);
-
-      var getTrack = context.album.tracks.items[numberTrack.current];
-      console.log(getTrack);
+      var getTrack = context.album.tracks.items[numberTrack];
+      // (getTrack);
 
       dispatch({
         type: "setCurrentSound",
@@ -170,12 +212,12 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
         }
       }
     } catch (error) {
-      console.log("deu error ao usar play", error);
+      "deu error ao usar play", error;
     }
   }
   async function previous() {
     try {
-      numberTrack.current -= 1;
+      numberTrack -= 1;
 
       let currentTrack = context.album.tracks.items[numberTrack];
 
@@ -201,7 +243,7 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
         }
       }
     } catch (error) {
-      console.log("deu error ao usar o previous", error);
+      "deu error ao usar o previous", error;
     }
   }
 
@@ -240,11 +282,11 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
 
   return {
     LoadAudio,
-    currentSound,
-    statusSound,
+    // statusSound,
     play,
     pause,
     next,
     previous,
+    resquestPermissions,
   };
 };

@@ -31,7 +31,7 @@ import {
 } from "./hooks";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer from "react-native-track-player";
-import { SetupService } from "../../services/SetupService";
+// import { SetupService } from "../../services/SetupService";
 
 export const Home = ({ navigation }: object) => {
   const [_, setNavigator] = useStateValue().navigator;
@@ -83,9 +83,11 @@ export const Home = ({ navigation }: object) => {
   // };
 
   const setProfileStore = async () => {
-    if (profile) {
-      await AsyncStorage.setItem("profile", JSON.stringify(profile));
-    }
+    try {
+      if (profile) {
+        await AsyncStorage.setItem("profile", JSON.stringify(profile));
+      }
+    } catch (error) {}
   };
 
   useEffect(() => {

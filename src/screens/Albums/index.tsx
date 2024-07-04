@@ -57,13 +57,16 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
   const idArtist = route.params.album?.artists[0].id;
   const [context, dispatch] = useStateValue().reducer;
 
-  const { LoadAudio, currentSound, statusSound } = useSetupPlayer({
+  const { LoadAudio } = useSetupPlayer({
     uri: context?.currentSound.uriTrack,
     isRandom: false,
   });
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+  }, []);
+
+  useEffect(() => {
     LoadAudio();
   }, [currentTrack.uriTrack]);
 
@@ -84,15 +87,6 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     const seconds = Math.floor((time % 60000) / 1000);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
-  useEffect(() => {
-    dispatch({
-      type: "setArtist",
-      payload: {
-        artists,
-      },
-    });
-  }, [artists]);
 
   const handleDispatchs = (index: number, item: object) => {
     dispatch({
@@ -130,6 +124,13 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
       nameArtist: item?.artists[0].name,
     });
 
+    // dispatch({
+    //   type: "setArtist",
+    //   payload: {
+    //     artists,
+    //   },
+    // });
+
     dispatch({
       type: "setCurrentSound",
       payload: {
@@ -158,7 +159,7 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     <Box>
       <LinearGradient
         colors={["#a3a5a8", "#212224", "#212224"]}
-        style={{ paddingBottom: currentSound ? 60 : 0 }}
+        style={{ paddingBottom: context?.currentSound ? 60 : 0 }}
       >
         <ScrollView>
           <SafeAreaView>

@@ -107,9 +107,21 @@ export const Play = ({ route, navigation }) => {
     );
   };
 
+  // console.log(context.statusSound);
+
   // if (isLoading && isFetching) {
   //   return <Loading />;
   // }
+
+  const formatedValueSlider = (value: number): number => {
+    if (!value) return 0;
+    return value / 1000;
+  };
+
+  const verifyNumberMaxSlider = (value: number): number => {
+    if (!value) return 0;
+    return value / 1000;
+  };
 
   return (
     <Box style={{ flex: 1 }}>
@@ -227,13 +239,12 @@ export const Play = ({ route, navigation }) => {
 
               <Slider
                 style={{ height: 40, width: "100%" }}
-                value={
-                  context?.statusSound?.playbackStatus?.positionMillis / 1000
-                }
-                minimumValue={0}
-                maximumValue={
-                  context?.statusSound.playbackStatus.durationMillis / 1000
-                }
+                value={formatedValueSlider(
+                  context?.statusSound?.playbackStatus?.positionMillis
+                )}
+                maximumValue={verifyNumberMaxSlider(
+                  context?.statusSound?.playbackStatus?.durationMillis
+                )}
                 minimumTrackTintColor="#FFFFFF"
                 maximumTrackTintColor="#FFFFFF"
                 onValueChange={(value) => onChangeSlider(value)}
@@ -286,13 +297,15 @@ export const Play = ({ route, navigation }) => {
                   <Feather name="skip-back" size={40 % 100} color="#FFFFFF" />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={pause}>
-                  <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={play}>
-                  <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
-                </TouchableOpacity>
+                {context.statusSound?.playbackStatus?.isPlaying ? (
+                  <TouchableOpacity onPress={pause}>
+                    <Feather name={"pause"} size={60 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={play}>
+                    <Feather name={"play"} size={60 % 100} color="#FFFFFF" />
+                  </TouchableOpacity>
+                )}
 
                 <TouchableOpacity>
                   <Feather

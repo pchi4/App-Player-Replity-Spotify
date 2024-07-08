@@ -36,6 +36,11 @@ import { useStateValue } from "../../context/State";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Audio, AVPlaybackTolerance } from "expo-av";
 import { useSetupPlayer } from "../../hooks";
+import TrackPlayer, {
+  useIsPlaying,
+  State,
+  usePlaybackState,
+} from "react-native-track-player";
 
 type PropsAlbums = {
   route: object;
@@ -45,7 +50,6 @@ type PropsAlbums = {
 const { width, height } = Dimensions.get("screen");
 
 export const Albums = ({ route, navigation }: PropsAlbums) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState({
     name: null,
     duration: null,
@@ -57,10 +61,43 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
   const idArtist = route.params.album?.artists[0].id;
   const [context, dispatch] = useStateValue().reducer;
 
+  const playerState = usePlaybackState();
+  console.log({ playerState });
+  const isPlaying = playerState === State.Playing;
+
   const { LoadAudio } = useSetupPlayer({
     uri: context?.currentSound.uriTrack,
     isRandom: false,
   });
+
+  async function loadedMusic() {
+    if (isPlaying) return;
+    try {
+      const track1 = {
+        url: "https://audio.jukehost.co.uk/rSmGXxf0OJLipPwFRyvoFKodDOj5VuWf",
+        title: "Anxiety",
+        artist: "NEFFEX",
+        artwork:
+          "https://i1.sndcdn.com/artworks-iCqupgQNLXSjKspS-0CGreg-t500x500.jpg",
+        playlist: ["Chill 🌱", "Instrumental 🎵", "Rap 🎤"],
+      };
+      const track2 = {
+        url: "https://audio.jukehost.co.uk/ZLdoXNocDAcsgeq6QKtPRHyvlqslNbke",
+        title: "As You Fade Away",
+        artist: "NEFFEX",
+        artwork: "https://i.ytimg.com/vi/JhUFfaArYk8/maxresdefault.jpg",
+        rating: 1,
+        playlist: ["Rap 🎤"],
+      };
+
+      // You can then [add](https://rntp.dev/docs/api/functions/queue#addtracks-insertbeforeindex) the items to the queue
+      await TrackPlayer.add([track1, track2]);
+      await TrackPlayer.play();
+      const state = await TrackPlayer.getState();
+
+      console.log({ state });
+    } catch (error) {}
+  }
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
@@ -88,31 +125,44 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  const handleDispatchs = (index: number, item: object) => {
-    dispatch({
-      type: "setAlbum",
-      payload: {
-        album: {
-          tracks: {
-            index,
-            items: route.params.album.tracks.items.map((value) => {
-              return {
-                preview_url: value.preview_url,
-                duration_ms: value.duration_ms,
-                name: value.name,
-                images: route.params.album.images,
-                track_number: value.track_number,
-                album: {
-                  name: route.params.album.name,
-                  type: route.params.album.type,
-                },
-                artists: route.params.album.artists,
-              };
-            }),
-          },
-          track: item,
-        },
-      },
+  const handleDispatchs = async (index: number, item: object) => {
+    // dispatch({
+    //   type: "setAlbum",
+    //   payload: {
+    //     album: {
+    //       tracks: {
+    //         index
+    //         items: route.params.album.tracks.items.map((value) => {
+    //           return {
+    //             preview_url: value.preview_url,
+    //             duration_ms: value.duration_ms,
+    //             name: value.name,
+    //             images: route.params.album.images,
+    //             track_number: value.track_number,
+    //             album: {
+    //               name: route.params.album.name,
+    //               type: route.params.album.type,
+    //             },
+    //             artists: route.params.album.artists,
+    //           };
+    //         }),
+    //       },
+    //       track: item,
+    //     },
+    //   },
+    // });
+    if (isPlaying) {
+      const activeTracks = await TrackPlayer.getActiveTrackIndex();
+      await TrackPlayer.remove(activeTracks);
+    }
+
+    await TrackPlayer.add({
+      url: item?.preview_url,
+      title: item?.name,
+      artist: item?.artists[0].name,
+      artwork: "https://i.ytimg.com/vi/JhUFfaArYk8/maxresdefault.jpg",
+      rating: 1,
+      playlist: ["Rap 🎤"],
     });
 
     setCurrentTrack({
@@ -124,26 +174,30 @@ export const Albums = ({ route, navigation }: PropsAlbums) => {
       nameArtist: item?.artists[0].name,
     });
 
+    const a = await TrackPlayer.getActiveTrack();
+    TrackPlayer.console.log(a);
+
+    await TrackPlayer.play();
+    // // dispatch({
+    // //   type: "setArtist",
+    // //   payload: {
+    // //     artists,i
+    // //   },
+    // // });
+
     // dispatch({
-    //   type: "setArtist",
+    //   type: "setCurrentSound",
     //   payload: {
-    //     artists,
+    //     currentSound: {
+    //       name: item?.name,
+    //       numberTrack: item?.track_number,
+    //       uriTrack: item?.preview_url,
+    //       duration: item?.duration_ms,
+    //       artWork: null,
+    //       nameArtist: item?.artists[0].name,
+    //     },
     //   },
     // });
-
-    dispatch({
-      type: "setCurrentSound",
-      payload: {
-        currentSound: {
-          name: item?.name,
-          numberTrack: item?.track_number,
-          uriTrack: item?.preview_url,
-          duration: item?.duration_ms,
-          artWork: null,
-          nameArtist: item?.artists[0].name,
-        },
-      },
-    });
   };
 
   if (

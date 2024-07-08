@@ -77,6 +77,8 @@ export const useGetToken = () => {
         }
       );
 
+      console.log({ result });
+
       if (result.data && result.data.access_token) {
         await AsyncStorage.setItem("token", result.data.access_token);
         await AsyncStorage.setItem("refreshToken", result.data.refresh_token);
@@ -91,7 +93,7 @@ export const useGetToken = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.log({ error });
     }
   };
 

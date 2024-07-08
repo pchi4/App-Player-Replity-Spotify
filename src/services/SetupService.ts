@@ -2,29 +2,29 @@ import TrackPlayer, {
   AppKilledPlaybackBehavior,
   Capability,
   RepeatMode,
-} from 'react-native-track-player';
+} from "react-native-track-player";
 
 export const DefaultRepeatMode = RepeatMode.Queue;
 export const DefaultAudioServiceBehaviour =
   AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification;
 
-export async function setup (){
-    TrackPlayer.updateOptions({
-      android: {
-        // This is the default behavior
-        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback
+export async function setup() {
+  TrackPlayer.updateOptions({
+    android: {
+      // This is the default behavior
+      appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
     },
     // Media controls capabilities
-    capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Stop,
-    ],
+    // capabilities: [
+    //   Capability.Play,
+    //   Capability.Pause,
+    //   Capability.SkipToNext,
+    //   Capability.SkipToPrevious,
+    //   Capability.Stop,
+    // ],
 
-    // Capabilities that will show up when the notification is in the compact form on Android
-    compactCapabilities: [Capability.Play, Capability.Pause],
+    // // Capabilities that will show up when the notification is in the compact form on Android
+    // compactCapabilities: [Capability.Play, Capability.Pause],
 
     // // Icons for the notification on Android (if you don't like the default ones)
     // playIcon: require('./play-icon.png'),
@@ -33,7 +33,7 @@ export async function setup (){
     // previousIcon: require('./previous-icon.png'),
     // nextIcon: require('./next-icon.png'),
     // icon: require('./notification-icon.png')
-});
+  });
 }
 
 // const setupPlayer = async (

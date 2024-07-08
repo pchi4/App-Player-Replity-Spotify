@@ -40,11 +40,6 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
     }
   }
 
-  useEffect(() => {
-    console.log({ currentSound });
-    setSound(currentSound);
-  }, [currentSound]);
-
   async function LoadAudio() {
     try {
       if (!uri) return;
@@ -63,10 +58,10 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
         DEFAULT_PLAYBACK_STATUS
       );
 
-      console.log(playbackObject);
-
       setCurrentSound(playbackObject);
       soundRef = playbackObject;
+
+      console.log({ currentSound, soundRef });
 
       // setStatus(status);
       playbackObject.setOnAudioSampleReceived;
@@ -76,6 +71,11 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
       Alert.alert("Error ao roda o load", error);
     }
   }
+
+  useCallback(() => {
+    // console.log({ currentSound });
+    setSound(currentSound);
+  }, [LoadAudio]);
 
   useEffect(() => {
     return sound
@@ -144,7 +144,7 @@ export const useSetupPlayer = ({ uri, isRandom }: PropsSetup) => {
 
   async function play() {
     try {
-      console.log({ sound, soundRef });
+      console.log({ sound, soundRef, currentSound });
       await sound?.playAsync();
       if (context?.statusSound?.playbackStatus.isLoaded) {
         if (context?.statusSound?.playbackStatus.isPlaying === false) {
